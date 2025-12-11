@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="282.0" prefWidth="487.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.AnmeldungController">
+   <children>
+      <BorderPane layoutX="165.0" layoutY="39.0" prefHeight="284.0" prefWidth="486.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <top>
+            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="50.0" prefWidth="691.0" text="Bitte melden Sie sich an, um mit dem Programm arbeiten zu können." textFill="#ee6f00" BorderPane.alignment="CENTER">
+               <BorderPane.margin>
+                  <Insets top="10.0" />
+               </BorderPane.margin>
+               <font>
+                  <Font size="14.5" />
+               </font>
+            </Label>
+         </top>
+         <center>
+            <Pane prefHeight="136.0" prefWidth="467.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label layoutY="11.0" text="Benutzername:">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                     <padding>
+                        <Insets left="2.0" />
+                     </padding>
+                  </Label>
+                  <TextField fx:id="textfieldUserName" layoutY="36.0" prefHeight="31.0" prefWidth="466.0" />
+                  <Label layoutY="72.0" text="Passwort:">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                     <padding>
+                        <Insets left="2.0" />
+                     </padding>
+                  </Label>
+                  <PasswordField fx:id="passwordField" layoutY="97.0" prefHeight="31.0" prefWidth="465.0" />
+               </children>
+               <BorderPane.margin>
+                  <Insets left="10.0" right="10.0" />
+               </BorderPane.margin>
+            </Pane>
+         </center>
+      </BorderPane>
+      <Button fx:id="buttonSignIn" layoutX="360.0" layoutY="216.0" mnemonicParsing="false" onAction="#signIn" prefHeight="48.0" prefWidth="113.0" text="Anmelden" AnchorPane.leftAnchor="354.0" AnchorPane.topAnchor="216.0">
+         <font>
+            <Font size="14.5" />
+         </font></Button>
+      <Button fx:id="buttonExitProgram" layoutX="18.0" layoutY="216.0" mnemonicParsing="false" onAction="#exitProgram" prefHeight="48.0" prefWidth="113.0" text="Beenden" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="216.0">
+         <font>
+            <Font size="14.5" />
+         </font></Button>
+      <ImageView fitHeight="81.0" fitWidth="79.0" layoutX="204.0" layoutY="193.0" opacity="0.5" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="204.0" AnchorPane.rightAnchor="204.0" AnchorPane.topAnchor="193.0">
+         <image>
+            <Image url="@tafel.png" />
+         </image>
+      </ImageView>
+   </children>
+</AnchorPane>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.statistiktool.GuthabenStatistikController" spacing="10" prefWidth="1200.0" prefHeight="900.0"> <!-- Größe angepasst -->
+
+    <children>
+        <VBox prefHeight="800.0" prefWidth="1200.0" spacing="10"> <!-- Größe angepasst -->
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+
+            <MenuBar prefHeight="30.0" prefWidth="1200.0"> <!-- Größe angepasst -->
+                <menus>
+                    <Menu text="Datei">
+                        <items>
+                            <MenuItem onAction="#handleExit" text="Programm beenden" />
+                        </items>
+                    </Menu>
+                </menus>
+            </MenuBar>
+
+            <Text text="Statistik: Guthaben und offene Beträge">
+                <font>
+                    <Font name="System Italic" size="20.0" />
+                </font>
+            </Text>
+
+            <!-- Verteilstelle und Typ Auswahl -->
+            <HBox spacing="20" alignment="CENTER">
+                <Label text="Verteilstelle:"/>
+                <ComboBox fx:id="verteilstelleComboBox" promptText="Verteilstelle auswählen" prefWidth="200">
+                </ComboBox>
+
+                <Label text="Typ:"/>
+                <ComboBox fx:id="typeComboBox" promptText="Typ auswählen" prefWidth="250">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Guthaben und offene Beträge"/>
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+            </HBox>
+
+            <!-- Tabelle zur Anzeige der Ergebnisse -->
+            <TableView fx:id="resultTableView" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="einkaufIdColumn" text="Einkauf ID" prefWidth="120">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="einkaufId"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="warentypColumn" text="Warentyp" prefWidth="150">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="warentyp"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="kundeColumn" text="Kunde" prefWidth="200">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="kunde"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="saldoColumn" text="Saldo" prefWidth="150">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="saldo"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="summeEinkaufColumn" text="Summe Einkauf" prefWidth="150">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="summeEinkauf"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="summeZahlungColumn" text="Summe Zahlung" prefWidth="150">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="summeZahlung"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="anzahlKinderColumn" text="Anzahl Kinder" prefWidth="120">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="anzahlKinder"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="anzahlErwachseneColumn" text="Anzahl Erwachsene" prefWidth="120">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="anzahlErwachsene"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                </columns>
+            </TableView>
+
+            <!-- Buttons für SQL-Abfrage und Laden der Daten, unten rechts platziert -->
+            <HBox spacing="30" alignment="BOTTOM_RIGHT">
+                <padding>
+                    <Insets top="10" right="10" bottom="10" left="10"/>
+                </padding>
+                <Button fx:id="generateSQLButton" text="SQL-Abfrage generieren" onAction="#handleGenerateSQLQuery" prefWidth="200" style="-fx-background-color: #9098d6"/>
+                <!--<Button fx:id="saveDataButton" text="Speichern" onAction="#handleSaveToDatabase" prefWidth="250" style="-fx-background-color: #9098d6"/>      -->
+                <Button fx:id="loadDataButton" text="Daten laden" onAction="#handleLoadData" prefWidth="150" style="-fx-background-color: #80c47c; -fx-text-fill: white;" />
+            </HBox>
+
+        </VBox>
+    </children>
+</VBox>

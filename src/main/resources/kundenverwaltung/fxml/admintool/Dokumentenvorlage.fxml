@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<!--@Author Gruppe1
+@Author Adam Starobrzanski
+Date: 21.07.2018-->
+
+
+<AnchorPane maxHeight="460.0" maxWidth="521.0" minHeight="460.0" minWidth="521.0" prefHeight="460.0"
+            prefWidth="521.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
+            fx:controller="kundenverwaltung.controller.admintool.DokumentenvorlageController">
+    <children>
+        <Label layoutX="14.0" layoutY="14.0" text="Dokumentenvorlage" AnchorPane.leftAnchor="14.0"
+               AnchorPane.topAnchor="10.0">
+            <font>
+                <Font name="System Bold" size="14.0"/>
+            </font>
+        </Label>
+        <TableView fx:id="filesTableView" layoutX="14.0" layoutY="30.0" prefHeight="200.0" prefWidth="200.0"
+                   AnchorPane.bottomAnchor="65.0" AnchorPane.leftAnchor="14.0"
+                   AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="30.0">
+            <columns>
+                <TableColumn fx:id="templateName" prefWidth="179.0" text="Vorlage"/>
+                <TableColumn fx:id="author" prefWidth="128.0" text="Autor"/>
+                <TableColumn fx:id="version" prefWidth="117.0" text="Dateiversion"/>
+                <TableColumn fx:id="status" prefWidth="62.0" text="Status"/>
+            </columns>
+        </TableView>
+        <Button fx:id="btnDelete" onAction="#deleteTemplate" layoutX="14.0" layoutY="421.0" maxWidth="110.0" minWidth="110.0"
+                mnemonicParsing="false" prefWidth="110.0" text="löschen"
+                AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="425.0"/>
+        <Button fx:id="btnActivate" onAction="#disabledTemplate" layoutX="130.0" layoutY="425.0" maxWidth="110.0"
+                minWidth="110.0" mnemonicParsing="false" prefWidth="110.0" text="de-/aktivieren"
+                AnchorPane.leftAnchor="140.0" AnchorPane.topAnchor="425.0"/>
+        <Button fx:id="btnExport" onAction="#exportTemplate" layoutX="270.0" layoutY="425.0" maxWidth="110.0" minWidth="110.0"
+                mnemonicParsing="false" prefWidth="110.0" text="exportieren"
+                AnchorPane.rightAnchor="140.0" AnchorPane.topAnchor="425.0"/>
+        <Button fx:id="btnImport" onAction="#importButtonAction" layoutX="449.0" layoutY="425.0"
+                maxWidth="110.0" minWidth="110.0" mnemonicParsing="false" prefWidth="110.0"
+                text="importieren" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="425.0"/>
+        <Label layoutX="14.0" layoutY="395.0" text="Vorlage:" AnchorPane.leftAnchor="14.0"
+               AnchorPane.topAnchor="400.0"/>
+        <Label fx:id="lbPathTest" layoutX="14.0" layoutY="395.0"
+               AnchorPane.leftAnchor="55.0" AnchorPane.topAnchor="400.0">
+
+        </Label>
+    </children>
+</AnchorPane>

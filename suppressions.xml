@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+        "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+        "https://checkstyle.org/dtds/suppressions_1_1.dtd">
+
+<suppressions>
+    <suppress checks="ConstantName" files=".*"/>
+
+    <suppress checks="MemberName" files=".*"/>
+
+    <suppress checks="ModifierOrder" files=".*"/>
+
+    <suppress checks="VisibilityModifier" files=".*"/>
+
+    <suppress checks="LocalVariableName" files=".*"/>
+
+    <suppress checks="WhitespaceAfter" files=".*"/>
+
+    <suppress checks="NewlineAtEndOfFile" files=".*"/>
+
+    <suppress checks="FinalClass" files=".*AuthService.java"/>
+
+</suppressions>

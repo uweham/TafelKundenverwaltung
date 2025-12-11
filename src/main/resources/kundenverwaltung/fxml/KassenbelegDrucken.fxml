@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="647.0" prefWidth="407.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.KassenbelegDruckenController">
+   <children>
+      <Pane layoutY="54.0" prefHeight="594.0" prefWidth="407.0" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="54.0">
+         <children>
+            <Label fx:id="labelPeriod" layoutX="16.0" layoutY="128.0" text="Zeitraum:" />
+             <RadioButton fx:id="rbAktuellerKunde" layoutX="16.0" layoutY="192.0" mnemonicParsing="false" text="Aktuellen Kunden" disable="false" selected="true">
+               <toggleGroup>
+                  <ToggleGroup fx:id="waehleKunde" />
+               </toggleGroup></RadioButton>
+            <ComboBox fx:id="cbWarentyp" layoutX="16.0" layoutY="413.0" prefHeight="17.0" prefWidth="380.0" />
+            <CheckBox fx:id="cbxZeitraumAutomatisch" layoutX="290.0" layoutY="144.0" mnemonicParsing="false" prefHeight="34.0" prefWidth="97.0" text="automatisch&#10;einstellen" />
+            <Label fx:id="labelProductType" layoutX="18.0" layoutY="393.0" text="Warentyp:" />
+            <RadioButton fx:id="rbAlleKunden" layoutX="16.0" layoutY="219.0" mnemonicParsing="false" text="Alle Kunden folgender Verteilstelle" toggleGroup="$waehleKunde" />
+            <CheckBox fx:id="cbxEinstellungenAlsStandard" layoutX="18.0" layoutY="513.0" mnemonicParsing="false" text="Diese Einstellungen als Standard speichern">
+               <font>
+                  <Font size="11.0" />
+               </font></CheckBox>
+            <Label fx:id="labelDate" layoutX="16.0" layoutY="66.0" text="Datum:" />
+            <Label fx:id="lbVerteilstelle" layoutX="15.0" layoutY="250.0" text="Verteilstelle:" disable="true"/>
+            <Button fx:id="buttonCancel" layoutX="282.0" layoutY="548.0" mnemonicParsing="false" onAction="#erstellenAbbrechen" prefHeight="31.0" prefWidth="105.0" text="Abbrechen">
+               <font>
+                  <Font size="13.0" />
+               </font></Button>
+            <ComboBox fx:id="cbZeitraum" layoutX="16.0" layoutY="148.0" prefHeight="9.0" prefWidth="247.0" />
+            <ComboBox fx:id="cbVorlage" layoutX="16.0" layoutY="21.0" prefHeight="31.0" prefWidth="380.0" />
+            <CheckBox fx:id="cbxLiefernummer" layoutX="18.0" layoutY="461.0" mnemonicParsing="false" text="Laufende Listennummer ausgeben" />
+            <CheckBox fx:id="cbxVerteilstelleAutomatisch" disable="true" layoutX="290.0" layoutY="266.0" mnemonicParsing="false" prefHeight="34.0" prefWidth="105.0" text="automatisch&#10;einstellen" />
+            <ComboBox fx:id="cbSortierreihnfolge" layoutX="263.0" layoutY="353.0" prefHeight="9.0" prefWidth="129.0" />
+            <DatePicker fx:id="datum" layoutX="16.0" layoutY="86.0" prefHeight="31.0" prefWidth="380.0" />
+            <ComboBox fx:id="cbSortierenNach" layoutX="16.0" layoutY="353.0" prefHeight="17.0" prefWidth="230.0" />
+            <Label fx:id="labelOrderBy" layoutX="16.0" layoutY="333.0" text="Sortieren nach:" />
+            <ComboBox fx:id="cbVerteilstelle" disable="true" layoutX="14.0" layoutY="270.0" prefHeight="9.0" prefWidth="247.0" />
+            <Label fx:id="labelTamplate" layoutX="16.0" layoutY="1.0" text="Vorlage:" />
+            <Separator layoutY="313.0" prefHeight="9.0" prefWidth="407.0" />
+            <Separator layoutX="4.0" layoutY="491.0" prefHeight="9.0" prefWidth="401.0" />
+            <Button fx:id="buttonCreate" layoutX="16.0" layoutY="548.0" mnemonicParsing="false" onAction="#createCashSettlement" prefHeight="31.0" prefWidth="105.0" text="Erstellen">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </Button>
+         </children>
+      </Pane>
+      <Label fx:id="labelHeader" alignment="CENTER" prefHeight="54.0" prefWidth="407.0" text="Geben Sie die Kassenabrechnung für das gewählte &#10;Datum aus." textFill="#ee6f00" AnchorPane.bottomAnchor="593.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+   </children>
+   <opaqueInsets>
+      <Insets />
+   </opaqueInsets>
+</AnchorPane>

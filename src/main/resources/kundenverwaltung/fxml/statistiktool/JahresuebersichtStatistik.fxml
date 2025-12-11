@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+
+
+<VBox spacing="10" alignment="CENTER" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.statistiktool.JahresuebersichtStatistikController">
+    <padding>
+        <Insets top="40" right="40" bottom="40" left="40"/>
+    </padding>
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+    <!-- Menüleiste -->
+    <MenuBar>
+        <menus>
+            <Menu text="Datei">
+                <items>
+                    <MenuItem onAction="#handleExit" text="Programm beenden" />
+                </items>
+            </Menu>
+        </menus>
+    </MenuBar>
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+    </padding>
+    <!-- Dropdown Menü zur Filterung nach Jahr -->
+    <ComboBox fx:id="yearDropdown" prefWidth="150" />
+
+    <!-- Tabelle zur Anzeige der Jahresübersicht -->
+    <TableView fx:id="jahresuebersichtTable" prefHeight="300" prefWidth="800">
+        <columns>
+            <TableColumn fx:id="monatColumn" text="Monat" prefWidth="120"/>
+            <TableColumn fx:id="neuzugaengeColumn" text="Neuzugänge" prefWidth="120"/>
+            <TableColumn fx:id="anzahlPersonenColumn" text="Anzahl Personen" prefWidth="150"/>
+            <TableColumn fx:id="gesamtUmsatzHaushaltColumn" text="Gesamtumsatz Haushalt" prefWidth="150"/>
+            <TableColumn fx:id="gesamtUmsatzEinkaufColumn" text="Gesamtumsatz Einkauf" prefWidth="150"/>
+        </columns>
+    </TableView>
+</VBox>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<VBox prefHeight="600.0" prefWidth="800.0" spacing="10" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.statistiktool.NationalitaetStatistikController">
+    <padding>
+        <Insets bottom="10" left="10" right="10" top="10" />
+    </padding>
+
+    <children>
+        <MenuBar>
+            <Menu text="Datei">
+                <MenuItem onAction="#handleExit" text="Programm beenden" />
+            </Menu>
+        </MenuBar>
+
+        <Text style="-fx-font-size: 24px;" text="Statistik: Nationalitäten" />
+
+        <HBox spacing="10">
+            <ComboBox fx:id="verteilstelleComboBox" promptText="Verteilstelle auswählen" style="-fx-font-size: 14px; -fx-background-color: #f9f9f9; -fx-border-color: #ccc;" />
+        </HBox>
+
+        <TableView fx:id="nationalitaetTableView" prefHeight="300.0" prefWidth="780.0">
+            <columns>
+                <TableColumn fx:id="nationalitaetColumn" prefWidth="390.0" text="Nationalität" />
+                <TableColumn fx:id="anzahlColumn" prefWidth="390.0" text="Anzahl der Personen" />
+            </columns>
+        </TableView>
+
+        <HBox spacing="30" alignment="BOTTOM_RIGHT">
+            <Button fx:id="loadButton" onAction="#handleLoadNationalitaeten" prefWidth="150" style="-fx-background-color: #80c47c; -fx-text-fill: white;" text="Daten laden" />
+        </HBox>
+    </children>
+</VBox>

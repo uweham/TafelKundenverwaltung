@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane maxHeight="600.0" maxWidth="800.0" minHeight="600.0" minWidth="800.0" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="setupprogram.DatabaseMigrationController">
+   <children>
+      <Label layoutX="14.0" layoutY="14.0" text="Datenmigration" AnchorPane.leftAnchor="37.0" AnchorPane.topAnchor="10.0">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Text layoutX="14.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hiermit werden die Datenbank-Daten aus dem alten Tafel-Kundenverwaltungsprogramm in die neue benötigte Datenbank übernommen." wrappingWidth="743.0" AnchorPane.leftAnchor="37.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="37.0">
+         <font>
+            <Font size="16.0" />
+         </font></Text>
+      <Separator layoutX="20.0" layoutY="332.0" prefHeight="3.0" prefWidth="850.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="37.0" AnchorPane.topAnchor="332.0" />
+      <TextField fx:id="txtDbAddressOld" layoutX="250.0" layoutY="127.0" prefHeight="30.0" prefWidth="180.0" promptText="z.B. 127.0.0.1" AnchorPane.leftAnchor="250.0" AnchorPane.topAnchor="127.0">
+         <font>
+            <Font size="14.0" />
+         </font></TextField>
+      <TextField fx:id="txtDbPortOld" layoutX="250.0" layoutY="162.0" prefHeight="30.0" prefWidth="180.0" promptText="z.B. 3306" AnchorPane.leftAnchor="250.0" AnchorPane.topAnchor="162.0">
+         <font>
+            <Font size="14.0" />
+         </font></TextField>
+      <TextField fx:id="txtDbUserOld" layoutX="250.0" layoutY="197.0" prefHeight="30.0" prefWidth="180.0" AnchorPane.leftAnchor="250.0" AnchorPane.topAnchor="197.0">
+         <font>
+            <Font size="14.0" />
+         </font></TextField>
+      <PasswordField fx:id="txtDbPasswordOld" layoutX="250.0" layoutY="232.0" prefHeight="30.0" prefWidth="180.0" AnchorPane.leftAnchor="250.0" AnchorPane.topAnchor="232.0">
+         <font>
+            <Font size="14.0" />
+         </font></PasswordField>
+      <TextField fx:id="txtDbNameOld" layoutX="250.0" layoutY="268.0" prefHeight="30.0" prefWidth="180.0" AnchorPane.leftAnchor="250.0" AnchorPane.topAnchor="268.0">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="txtDbAddressNew" layoutX="493.0" layoutY="126.0" prefHeight="30.0" prefWidth="180.0" promptText="z.B. 127.0.0.1">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="txtDbPortNew" layoutX="493.0" layoutY="161.0" prefHeight="30.0" prefWidth="180.0" promptText="z.B. 3306">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="txtDbUserNew" layoutX="493.0" layoutY="196.0" prefHeight="30.0" prefWidth="180.0">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </TextField>
+      <PasswordField fx:id="txtDbPasswordNew" layoutX="493.0" layoutY="231.0" prefHeight="30.0" prefWidth="180.0">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </PasswordField>
+      <Button fx:id="btnCheckConnect" layoutX="399.0" layoutY="341.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#checkDatabaseConnection" prefHeight="30.0" prefWidth="189.0" text="Verbindungen prüfen" textAlignment="CENTER" AnchorPane.leftAnchor="399.0" AnchorPane.topAnchor="341.0">
+         <font>
+            <Font size="14.5" />
+         </font>
+         <padding>
+            <Insets left="20.0" right="20.0" />
+         </padding></Button>
+      <Button fx:id="btnCreateDatabase" disable="true" layoutX="399.0" layoutY="417.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#createDatabase" prefHeight="30.0" prefWidth="189.0" text="Datenbank erstellen" textAlignment="CENTER" AnchorPane.leftAnchor="399.0" AnchorPane.topAnchor="417.0">
+         <font>
+            <Font size="14.5" />
+         </font>
+         <padding>
+            <Insets left="20.0" right="20.0" />
+         </padding>
+      </Button>
+      <Button fx:id="btnFinish" layoutX="615.0" layoutY="513.0" mnemonicParsing="false" onAction="#finishSetup" text="Fertigstellen" AnchorPane.leftAnchor="615.0" AnchorPane.topAnchor="513.0">
+         <font>
+            <Font size="14.5" />
+         </font>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <padding>
+            <Insets bottom="8.0" left="20.0" right="20.0" top="8.0" />
+         </padding>
+      </Button>
+      <Text layoutX="37.0" layoutY="219.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Datebank Benutzername:" AnchorPane.leftAnchor="37.0" AnchorPane.topAnchor="199.576171875">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <Label layoutX="37.0" layoutY="92.0" text="Verbindungsdaten" AnchorPane.leftAnchor="37.0" AnchorPane.topAnchor="92.0">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Text layoutX="37.0" layoutY="145.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Server-Adresse:" AnchorPane.leftAnchor="37.0" AnchorPane.topAnchor="125.576171875">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <Text layoutX="37.0" layoutY="184.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Server Port:" AnchorPane.leftAnchor="37.0" AnchorPane.topAnchor="164.576171875">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <Text layoutX="37.0" layoutY="254.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Datebank Password:" AnchorPane.leftAnchor="37.0" AnchorPane.topAnchor="234.576171875">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <Text layoutX="37.0" layoutY="290.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Datebank Name:" AnchorPane.leftAnchor="37.0" AnchorPane.topAnchor="270.576171875">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <Separator layoutX="20.0" layoutY="492.0" prefHeight="3.0" prefWidth="850.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="37.0" AnchorPane.topAnchor="492.0" />
+      <Separator layoutX="460.0" layoutY="95.0" orientation="VERTICAL" prefHeight="220.0" prefWidth="6.0" AnchorPane.leftAnchor="460.0" AnchorPane.topAnchor="95.0" />
+      <Label layoutX="276.0" layoutY="92.0" text="alte Datenbank">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="514.0" layoutY="92.0" text="neue Datenbank">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <CheckBox fx:id="ckbxOldDb" disable="true" layoutX="250.0" layoutY="307.0" mnemonicParsing="false" opacity="1" visible="false" AnchorPane.leftAnchor="250.0" AnchorPane.topAnchor="307.0" />
+      <CheckBox fx:id="ckbxNewDb" disable="true" layoutX="493.0" layoutY="307.0" mnemonicParsing="false" opacity="1" visible="false" AnchorPane.leftAnchor="493.0" AnchorPane.topAnchor="307.0" />
+      <Text layoutX="88.0" layoutY="362.423828125" strokeType="OUTSIDE" strokeWidth="0.0" text="1. Datenbank-Verbindungen prüfen" AnchorPane.leftAnchor="88.0" AnchorPane.topAnchor="343.0">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <Text layoutX="89.0" layoutY="437.0" strokeType="OUTSIDE" strokeWidth="0.0" text="3. leere Datenbank-Struktur erstellen" AnchorPane.leftAnchor="89.0" AnchorPane.topAnchor="417.0">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <Text layoutX="88.0" layoutY="398.423828125" strokeType="OUTSIDE" strokeWidth="0.0" text="2. Name der neuen Datenbank:" AnchorPane.leftAnchor="88.0" AnchorPane.topAnchor="379.0">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <TextField fx:id="txtDbNameNew" disable="true" layoutX="399.0" layoutY="379.0" prefHeight="30.0" prefWidth="189.0" AnchorPane.leftAnchor="399.0" AnchorPane.topAnchor="379.0">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </TextField>
+      <Text layoutX="90.0" layoutY="474.423828125" strokeType="OUTSIDE" strokeWidth="0.0" text="4. Daten-Migration starten">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <Button fx:id="btnStartMigration" disable="true" layoutX="400.0" layoutY="455.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#startMigration" prefHeight="30.0" prefWidth="189.0" text="Migration starten" textAlignment="CENTER">
+         <font>
+            <Font size="14.5" />
+         </font>
+         <padding>
+            <Insets left="20.0" right="20.0" />
+         </padding>
+      </Button>
+      <CheckBox fx:id="ckbxMigrate" disable="true" layoutX="600.0" layoutY="460.0" mnemonicParsing="false" opacity="1" visible="false">
+         <font>
+            <Font size="14.5" />
+         </font></CheckBox>
+      <CheckBox fx:id="ckbxDbCreate" disable="true" layoutX="600.0" layoutY="422.0" mnemonicParsing="false" opacity="1" visible="false">
+         <font>
+            <Font size="14.5" />
+         </font></CheckBox>
+      <Button fx:id="btnBack" layoutX="45.0" layoutY="513.0" mnemonicParsing="false" onAction="#returnToOptionMenu" text="Zurück" AnchorPane.leftAnchor="37.0" AnchorPane.topAnchor="513.0">
+         <font>
+            <Font size="14.5" />
+         </font>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <padding>
+            <Insets bottom="8.0" left="20.0" right="20.0" top="8.0" />
+         </padding>
+      </Button>
+      <Separator layoutX="35.0" layoutY="91.0" prefHeight="3.0" prefWidth="850.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="37.0" AnchorPane.topAnchor="85.0" />
+   </children>
+</AnchorPane>

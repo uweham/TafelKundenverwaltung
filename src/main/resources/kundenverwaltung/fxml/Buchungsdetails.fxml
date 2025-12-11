@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.BuchungController">
+   <children>
+      <BorderPane maxHeight="260.0" maxWidth="430.0" prefHeight="253.0" prefWidth="357.0">
+         <bottom>
+            <HBox alignment="CENTER" prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Button fx:id="btnBuchungOK" mnemonicParsing="false" onAction="#btnBuchungOK" prefWidth="121.0" text="OK">
+                           <HBox.margin>
+                              <Insets left="5.0" />
+                           </HBox.margin>
+                        </Button>
+                     </children>
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </HBox>
+                  <HBox alignment="CENTER_RIGHT" layoutX="291.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Button fx:id="btnBuchungAbbrechen" mnemonicParsing="false" onAction="#btnBuchungAbbrechen" prefWidth="121.0" text="Abbrechen">
+                           <HBox.margin>
+                              <Insets right="5.0" />
+                           </HBox.margin></Button>
+                     </children>
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                  </HBox>
+               </children>
+            </HBox>
+         </bottom>
+         <top>
+            <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
+               <children>
+                  <Label fx:id="labelHeader" contentDisplay="CENTER" text="Für die Buchung sind weitere Informationen erforderlich." textFill="#ee6f00" wrapText="true" HBox.hgrow="ALWAYS">
+                     <HBox.margin>
+                        <Insets left="15.0" />
+                     </HBox.margin>
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                  </Label>
+               </children>
+               <BorderPane.margin>
+                  <Insets />
+               </BorderPane.margin>
+            </HBox>
+         </top>
+         <left>
+            <VBox prefHeight="180.0" prefWidth="254.0" BorderPane.alignment="CENTER">
+               <BorderPane.margin>
+                  <Insets left="15.0" />
+               </BorderPane.margin>
+               <children>
+                  <Label fx:id="lblEinkaufDurch" text="Einkauf für / durch">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </Label>
+                  <Label fx:id="lblEinkaufDurch1erforderlich" text="erforderlich" textFill="RED" />
+                  <ComboBox fx:id="cbEinkaufDurch" prefHeight="25.0" prefWidth="221.0" />
+                  <Label fx:id="lblBuchungstext" text="Buchungstext">
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </Label>
+                  <Label fx:id="lblBuchungstext1erforderlich" text="erforderlich" textFill="RED" />
+                  <TextField fx:id="txtBuchungstext">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </TextField>
+               </children>
+            </VBox>
+         </left>
+      </BorderPane>
+   </children>
+</AnchorPane>

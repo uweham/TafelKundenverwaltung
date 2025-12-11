@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane maxHeight="600.0" maxWidth="800.0" minHeight="600.0" minWidth="800.0" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="setupprogram.NewDatabaseInstallationController">
+   <children>
+      <Label layoutX="14.0" layoutY="14.0" text="Erstellung einer neuen Datenbank" AnchorPane.leftAnchor="37.0" AnchorPane.topAnchor="10.0">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Text layoutX="14.0" layoutY="57.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Eine Verbindung zum Datenbank-Server wird erstellt und anschließend werden die benötigten Tabellen mit dem ausgewählten .sql Skript erzeugt." wrappingWidth="733.333984375" AnchorPane.leftAnchor="37.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="37.0">
+         <font>
+            <Font size="18.0" />
+         </font></Text>
+      <Separator layoutX="7.0" layoutY="335.0" prefHeight="3.0" prefWidth="700.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="37.0" AnchorPane.topAnchor="335.0" />
+      <TextField fx:id="txtDbAddress" layoutX="255.0" layoutY="170.0" prefHeight="30.0" prefWidth="213.0" promptText="z.B. 127.0.0.1" AnchorPane.leftAnchor="255.0" AnchorPane.topAnchor="170.0">
+         <font>
+            <Font size="14.0" />
+         </font></TextField>
+      <TextField fx:id="txtDbPort" layoutX="255.0" layoutY="205.0" prefHeight="30.0" prefWidth="213.0" promptText="z.B. 3306" AnchorPane.leftAnchor="255.0" AnchorPane.topAnchor="205.0">
+         <font>
+            <Font size="14.0" />
+         </font></TextField>
+      <TextField fx:id="txtDbUser" layoutX="255.0" layoutY="240.0" prefHeight="30.0" prefWidth="213.0" AnchorPane.leftAnchor="255.0" AnchorPane.topAnchor="240.0">
+         <font>
+            <Font size="14.0" />
+         </font></TextField>
+      <PasswordField fx:id="txtDbPassword" layoutX="255.0" layoutY="275.0" prefHeight="30.0" prefWidth="213.0" AnchorPane.leftAnchor="255.0" AnchorPane.topAnchor="275.0">
+         <font>
+            <Font size="14.0" />
+         </font></PasswordField>
+      <Button fx:id="btnCheckConnect" layoutX="535.0" layoutY="236.0" maxWidth="372.0" minWidth="100.0" mnemonicParsing="false" onAction="#btnConnectDatabase" prefHeight="38.0" prefWidth="199.0" text="Prüfen und verbinden" textAlignment="CENTER" AnchorPane.leftAnchor="535.0" AnchorPane.topAnchor="236.0">
+         <font>
+            <Font size="14.5" />
+         </font>
+         <padding>
+            <Insets bottom="8.0" left="20.0" right="20.0" top="8.0" />
+         </padding></Button>
+      <TextField fx:id="txtDbName" layoutX="255.0" layoutY="407.0" prefHeight="25.0" prefWidth="213.0" AnchorPane.leftAnchor="255.0" AnchorPane.topAnchor="407.0">
+         <font>
+            <Font size="14.0" />
+         </font></TextField>
+      <Button fx:id="btnImportDatabase" disable="true" layoutX="488.0" layoutY="403.0" maxWidth="372.0" minWidth="100.0" mnemonicParsing="false" onAction="#btnImportDatabase" prefHeight="38.0" prefWidth="249.0" text="Datenbank Struktur importieren" textAlignment="CENTER" AnchorPane.leftAnchor="488.0" AnchorPane.topAnchor="403.0">
+         <font>
+            <Font size="14.5" />
+         </font>
+         <padding>
+            <Insets bottom="8.0" left="20.0" right="20.0" top="8.0" />
+         </padding>
+      </Button>
+      <Button fx:id="btnFinish" disable="true" layoutX="601.0" layoutY="514.0" mnemonicParsing="false" onAction="#finishSetup" text="Fertigstellen" AnchorPane.leftAnchor="615.0" AnchorPane.topAnchor="514.0">
+         <font>
+            <Font size="14.5" />
+         </font>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <padding>
+            <Insets bottom="8.0" left="20.0" right="20.0" top="8.0" />
+         </padding>
+      </Button>
+      <Text layoutX="37.0" layoutY="262.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Datenbank Benutzername:" AnchorPane.leftAnchor="37.0" AnchorPane.topAnchor="242.576171875">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <Label layoutX="37.0" layoutY="135.0" text="Datenbank Verbindungsdaten" AnchorPane.leftAnchor="37.0" AnchorPane.topAnchor="135.0">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Text layoutX="37.0" layoutY="188.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Server-Adresse:" AnchorPane.leftAnchor="37.0" AnchorPane.topAnchor="168.576171875">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <Text layoutX="37.0" layoutY="227.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Server-Port:" AnchorPane.leftAnchor="37.0" AnchorPane.topAnchor="207.0">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <Text layoutX="37.0" layoutY="297.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Datenbank Password:" AnchorPane.leftAnchor="37.0" AnchorPane.topAnchor="277.576171875">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <CheckBox fx:id="ckbxConnectionOkay" disable="true" layoutX="536.0" layoutY="279.0" mnemonicParsing="false" opacity="1" visible="false" AnchorPane.leftAnchor="536.0" AnchorPane.topAnchor="279.0">
+         <font>
+            <Font size="14.5" />
+         </font>
+      </CheckBox>
+      <Label layoutX="37.0" layoutY="358.0" text="MySQL Datenbank Struktur erzeugen" AnchorPane.leftAnchor="37.0" AnchorPane.topAnchor="358.0">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Text layoutX="37.0" layoutY="429.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Datenbank Name:" AnchorPane.leftAnchor="37.0" AnchorPane.topAnchor="409.576171875">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <Separator layoutX="15.0" layoutY="474.0" prefHeight="3.0" prefWidth="700.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="37.0" AnchorPane.topAnchor="474.0" />
+      <Button fx:id="btnBack" layoutX="611.0" layoutY="524.0" mnemonicParsing="false" onAction="#returnToOptionMenu" text="Zurück" AnchorPane.leftAnchor="37.0" AnchorPane.topAnchor="514.0">
+         <font>
+            <Font size="14.5" />
+         </font>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <padding>
+            <Insets bottom="8.0" left="20.0" right="20.0" top="8.0" />
+         </padding>
+      </Button>
+      <Separator layoutX="20.0" layoutY="116.0" prefHeight="3.0" prefWidth="700.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="110.0" />
+   </children>
+</AnchorPane>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" 
+    minWidth="-Infinity" prefHeight="480.0" prefWidth="700.0" 
+    xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" 
+    fx:controller="kundenverwaltung.controller.admintool.DatabaseBackupController">
+   <children>
+      <Label layoutX="24.0" layoutY="10.0" text="Datenbanksicherung" 
+          AnchorPane.leftAnchor="21.0" AnchorPane.topAnchor="10.0">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Text layoutX="21.0" layoutY="56.423828125" strokeType="OUTSIDE" 
+          strokeWidth="0.0" text="Die regelmäßige Datensicherung sollte nicht vernachlässigt werden. Denn nur bei einer regelmäßigen Sicherung Ihrer Datenbank sind Sie gegen den Ernstfall gewappnet." 
+          wrappingWidth="665.0" AnchorPane.leftAnchor="21.0" AnchorPane.rightAnchor="43.0" 
+          AnchorPane.topAnchor="37.0">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <Separator layoutX="20.0" layoutY="127.0" prefHeight="8.0" prefWidth="703.0" 
+          AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="37.0" AnchorPane.topAnchor="127.0" />
+      <Label layoutX="34.0" layoutY="198.0" text="Datenbank exportieren (Datensicherung)" 
+          AnchorPane.leftAnchor="34.0" AnchorPane.topAnchor="198.0">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <!-- Server-Einstellungen -->
+      <Text layoutX="34.0" layoutY="252.423828125" strokeType="OUTSIDE" strokeWidth="0.0" 
+          text="Server Adresse/Name" AnchorPane.leftAnchor="34.0" AnchorPane.topAnchor="233.0">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <TextField fx:id="txtDbServerEx" editable="false" layoutX="240.0" layoutY="231.0" 
+          AnchorPane.leftAnchor="240.0" AnchorPane.topAnchor="231.0" />
+      <Text layoutX="34.0" layoutY="289.423828125" strokeType="OUTSIDE" strokeWidth="0.0" 
+          text="Server Port" AnchorPane.leftAnchor="34.0" AnchorPane.topAnchor="270.0">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <TextField fx:id="txtDbPortEx" editable="false" layoutX="240.0" layoutY="268.0" 
+          AnchorPane.leftAnchor="240.0" AnchorPane.topAnchor="268.0" />
+      <Text layoutX="34.0" layoutY="324.0" strokeType="OUTSIDE" strokeWidth="0.0" 
+          text="Datenbank Benutzername" AnchorPane.leftAnchor="34.0" AnchorPane.topAnchor="304.576171875">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <TextField fx:id="txtDbUserEx" editable="false" layoutX="240.0" layoutY="305.0" 
+          AnchorPane.leftAnchor="240.0" AnchorPane.topAnchor="305.0" />
+      <Text layoutX="34.0" layoutY="359.0" strokeType="OUTSIDE" strokeWidth="0.0" 
+          text="Datenbank Name" AnchorPane.leftAnchor="34.0" AnchorPane.topAnchor="339.576171875">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+      <TextField fx:id="txtDbNameEx" editable="false" layoutX="240.0" layoutY="341.0" 
+          AnchorPane.leftAnchor="240.0" AnchorPane.topAnchor="341.0" />
+
+      <!-- Sicherungsordner -->
+      <Label layoutX="34.0" layoutY="384.0" text="Sicherungsordner" 
+          AnchorPane.leftAnchor="34.0" AnchorPane.topAnchor="384.0">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <TextField fx:id="txtBackupPath" editable="false" layoutX="240.0" layoutY="380.0" 
+          prefWidth="300.0" AnchorPane.leftAnchor="240.0" AnchorPane.topAnchor="380.0" />
+      <Button fx:id="btnChooseBackupFolder" layoutX="550.0" layoutY="379.0" 
+          mnemonicParsing="false" onAction="#chooseBackupFolder" prefHeight="30.0" 
+          prefWidth="120.0" text="Pfad auswählen" AnchorPane.leftAnchor="550.0" 
+          AnchorPane.topAnchor="379.0">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+
+      <!-- mysqldump.exe Pfad -->
+      <Label layoutX="34.0" layoutY="424.0" text="mysqldump.exe Pfad" 
+          AnchorPane.leftAnchor="34.0" AnchorPane.topAnchor="424.0">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <TextField fx:id="txtMysqldumpPath" editable="false" layoutX="240.0" layoutY="420.0" 
+          prefWidth="300.0" AnchorPane.leftAnchor="240.0" AnchorPane.topAnchor="420.0" />
+      <Button fx:id="btnChooseMysqldump" layoutX="550.0" layoutY="419.0" 
+          mnemonicParsing="false" onAction="#chooseMysqldump" prefHeight="30.0" 
+          prefWidth="120.0" text="Datei auswählen" AnchorPane.leftAnchor="550.0" 
+          AnchorPane.topAnchor="419.0">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+
+      <!-- Backup starten -->
+      <Button fx:id="btnBackup" layoutX="466.0" layoutY="460.0" maxWidth="372.0" 
+          minWidth="100.0" mnemonicParsing="false" onAction="#backupDatabase" prefHeight="30.0" 
+          prefWidth="162.0" text="Datenbank exportieren" textAlignment="CENTER" 
+          AnchorPane.leftAnchor="466.0" AnchorPane.topAnchor="460.0">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Button>
+   </children>
+</AnchorPane>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="600.0" prefWidth="1040.0" spacing="10" style="-fx-padding: 15;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.errorreport.ErrorReportLogController">
+   <Label text="Fehlerbericht Logeintrag">
+      <font>
+         <Font name="System Bold" size="18" />
+      </font>
+   </Label>
+
+    <GridPane hgap="10" vgap="10">
+        <Label text="Zeitstempel:" />
+        <TextField fx:id="timestampField" editable="false" prefHeight="25.0" prefWidth="459.0" GridPane.columnIndex="1" />
+
+        <Label text="Level:" GridPane.rowIndex="1" />
+        <TextField fx:id="levelField" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+   
+        <Label text="Quelle:" GridPane.rowIndex="2" />
+        <TextField fx:id="sourceField" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <columnConstraints>
+         <ColumnConstraints />
+         <ColumnConstraints />
+      </columnConstraints>
+      <rowConstraints>
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+      </rowConstraints>
+    </GridPane>
+
+    <Label text="Nachricht:" />
+    <TextArea fx:id="messageArea" editable="false" prefHeight="373.0" prefWidth="1010.0" wrapText="true" />
+
+    <HBox alignment="CENTER_RIGHT" spacing="10">
+        <Button onAction="#onClose" text="Schließen" />
+    </HBox>
+</VBox>

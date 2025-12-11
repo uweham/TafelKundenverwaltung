@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+
+<AnchorPane prefHeight="800.0" prefWidth="1040.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.statistiktool.ArchivierteKundenStatistikController">
+    <children>
+        <VBox>
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+            <!-- Menüleiste -->
+            <MenuBar>
+                <menus>
+                    <Menu text="Datei">
+                        <items>
+                            <MenuItem onAction="#handleExit" text="Programm beenden" />
+                        </items>
+                    </Menu>
+                </menus>
+            </MenuBar>
+
+            <!-- Titel und Beschreibung -->
+            <VBox spacing="5">
+                <Label text="Statistik: Archivierte/Gesperrte Kunden" fx:id="titleLabel" alignment="CENTER">
+                    <font>
+                        <Font size="28.0"/>
+                    </font>
+                </Label>
+                <Label text="Hier können Sie archivierte und gesperrte Kunden einsehen." wrapText="true" textFill="#606060" />
+            </VBox>
+
+            <!-- Kundentyp Auswahl -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <ComboBox fx:id="customerTypeComboBox" promptText="Typ auswählen" onAction="#handleCustomerTypeChange" prefWidth="200">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Archivierte Kunden" />
+                            <String fx:value="Gesperrte Kunden" />
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+            </HBox>
+
+            <!-- Tabelle der Kunden -->
+            <TableView fx:id="customerTable" prefHeight="600.0" prefWidth="1000.0" style="-fx-border-color: #d3d3d3; -fx-border-radius: 5;">
+                <columns>
+                    <TableColumn fx:id="kdNrColumn" text="Kundennummer" prefWidth="120.0" />
+                    <TableColumn fx:id="nameColumn" text="Name" prefWidth="250.0" />
+                    <TableColumn fx:id="strasseColumn" text="Straße" prefWidth="250.0" />
+                    <TableColumn fx:id="plzColumn" text="Plz" prefWidth="150.0" />
+                    <TableColumn fx:id="ortColumn" text="Ort" prefWidth="230.0" />
+                </columns>
+            </TableView>
+
+            <!-- Fußzeile -->
+            <HBox alignment="CENTER_RIGHT" spacing="10">
+                <Button text="Kunde bearbeiten" onAction="#handleEditCustomer" style="-fx-background-color: #9098d6; -fx-text-fill: white; -fx-font-size: 14px;" />
+                <Button text="Löschen" onAction="#handleDeleteCustomer" style="-fx-background-color: #c45c63; -fx-text-fill: white; -fx-font-size: 14px;" />
+                <Button text="Schließen" onAction="#handleExit" style="-fx-background-color: #D3D3D3; -fx-font-size: 14px;" />
+            </HBox>
+        </VBox>
+    </children>
+</AnchorPane>

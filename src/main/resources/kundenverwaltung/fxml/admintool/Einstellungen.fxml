@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" >
+   <children>
+      <Label layoutX="14.0" layoutY="14.0" text="Einstellungen" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="10.0">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Text layoutX="14.0" layoutY="87.423828125" strokeType="OUTSIDE" strokeWidth="0.0" text="Kunden werden automatisch in das Artchiv verschoben wenn sie über einen bestimmten Zeitraum nicht mehr zum Einkaufen erschienen sind. Legen Sie heir den Zeitraum fest." wrappingWidth="724.40625" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="112.0" AnchorPane.topAnchor="68.0">
+         <font>
+            <Font size="18.0" />
+         </font></Text>
+      <Label layoutX="14.0" layoutY="50.0" text="Kundenarchivierung" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="50.0">
+         <font>
+            <Font size="14.0" />
+         </font></Label>
+      <TextField fx:id="text" layoutX="14.0" layoutY="150.0" prefHeight="25.0" prefWidth="481.0" />
+      <Button fx:id="save" layoutX="745.0" layoutY="645.0" mnemonicParsing="false"  text="speichern" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="20.0" />
+      <Text layoutX="14.0" layoutY="135.0" strokeType="OUTSIDE" strokeWidth="0.0" text="(In Monaten)" AnchorPane.leftAnchor="14.0">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Text>
+   </children>
+</AnchorPane>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.StatistikAnsehenController">
+    <children>
+        <VBox spacing="10" alignment="TOP_CENTER">
+            <TextArea fx:id="csvContentArea" prefHeight="300.0" prefWidth="580.0" editable="false" />
+            <HBox spacing="10">
+                <Button fx:id="buttonPrint" text="Drucken" onAction="#handlePrint" />
+                <Button fx:id="buttonDownload" text="Als PDF herunterladen" onAction="#handleDownload" />
+                <Button fx:id="buttonClose" text="Schließen" onAction="#handleClose" />
+            </HBox>
+        </VBox>
+    </children>
+</AnchorPane>

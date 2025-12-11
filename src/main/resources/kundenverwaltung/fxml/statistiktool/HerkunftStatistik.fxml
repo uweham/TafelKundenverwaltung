@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="800.0" prefWidth="1040.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="kundenverwaltung.controller.statistiktool.HerkunftStatistikController">
+
+    <children>
+        <VBox prefHeight="800.0" prefWidth="1040.0" spacing="10">
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+            </padding>
+
+            <!-- Menü -->
+            <MenuBar prefHeight="30.0" prefWidth="1040.0">
+                <menus>
+                    <Menu text="Datei">
+                        <items>
+                            <MenuItem onAction="#handleExit" text="Programm beenden"/>
+                        </items>
+                    </Menu>
+                </menus>
+            </MenuBar>
+
+            <Separator prefHeight="2.0"/>
+
+            <Label style="-fx-font-size: 24; -fx-font-weight: bold;"
+                   text="Statistik: Herkunft der Kunden"/>
+
+            <!-- Filterzeile 1 -->
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <Label style="-fx-font-size: 16;" text="Bei der Ausgabe, die Anzahl der:"/>
+                <ComboBox fx:id="auswahlComboBox" promptText="Wählen Sie...">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Haushalt"/>
+                            <String fx:value="Personen"/>
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+                <Label style="-fx-font-size: 16;" text="Nur anzeigen:"/>
+                <ComboBox fx:id="kundenStatusComboBox" promptText="Wählen Sie...">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Aktive Kunden"/>
+                            <String fx:value="Archivierte Kunden"/>
+                            <String fx:value="Alle Kunden"/>
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+            </HBox>
+
+            <!-- Filterzeile 2 -->
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <Label style="-fx-font-size: 16;" text="Nur Haushalte, deren Anmeldung zwischen:"/>
+                <DatePicker fx:id="startDatumPicker" promptText="Startdatum"/>
+                <Label text="und"/>
+                <DatePicker fx:id="endDatumPicker" promptText="Enddatum"/>
+                <Button onAction="#loadHerkunftStatistik" prefWidth="150"
+                        style="-fx-background-color: #80c47c; -fx-text-fill: white;"
+                        text="Daten laden"/>
+            </HBox>
+
+            <Separator prefHeight="2.0"/>
+
+            <!-- Inhalte: Tabelle & Diagramm -->
+            <TabPane prefHeight="570.0" prefWidth="1020.0">
+                <tabs>
+                    <!-- Tab: Tabelle -->
+                    <Tab text="Tabelle" closable="false">
+                        <content>
+                            <TableView fx:id="herkunftTable" prefHeight="570.0" prefWidth="1020.0">
+                                <columns>
+                                    <TableColumn fx:id="ortColumn" minWidth="150.0" prefWidth="201.0" text="Ort"/>
+                                    <TableColumn fx:id="hausnummerColumn" minWidth="100.0" prefWidth="277.0" text="Hausnummer"/>
+                                    <TableColumn fx:id="plzColumn" minWidth="100.0" prefWidth="226.0" text="PLZ"/>
+                                    <TableColumn fx:id="anzahlHaushalteColumn" minWidth="150.0" prefWidth="315.0" text="Anzahl Haushalte"/>
+                                </columns>
+                            </TableView>
+                        </content>
+                    </Tab>
+
+                    <!-- Tab: Diagramm (horizontaler BarChart + Top-N + Reset) -->
+                    <Tab text="Diagramm" closable="false">
+                        <content>
+                            <VBox spacing="8.0">
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <Label text="Anzeigen:"/>
+                                    <ComboBox fx:id="topNCombo" prefWidth="120">
+                                        <items>
+                                            <FXCollections fx:factory="observableArrayList">
+                                                <String fx:value="Top 5"/>
+                                                <String fx:value="Top 10"/>
+                                                <String fx:value="Top 20"/>
+                                                <String fx:value="Alle"/>
+                                            </FXCollections>
+                                        </items>
+                                    </ComboBox>
+                                    <Button fx:id="resetFilterBtn" text="Filter zurücksetzen" onAction="#resetFilters"/>
+                                </HBox>
+
+                                <!-- Horizontal: X = Number (Anzahl), Y = Category (PLZ) -->
+                                <BarChart fx:id="plzBarChart" prefHeight="520.0" prefWidth="1020.0"
+                                          title="Kunden/Haushalte nach PLZ"
+                                          legendVisible="false" animated="false"
+                                          categoryGap="6.0" barGap="2.0">
+                                    <xAxis>
+                                        <NumberAxis fx:id="countAxis" label="Anzahl" forceZeroInRange="true"/>
+                                    </xAxis>
+                                    <yAxis>
+                                        <CategoryAxis fx:id="plzAxis" label="PLZ"/>
+                                    </yAxis>
+                                </BarChart>
+                            </VBox>
+                        </content>
+                    </Tab>
+                </tabs>
+            </TabPane>
+        </VBox>
+    </children>
+</AnchorPane>

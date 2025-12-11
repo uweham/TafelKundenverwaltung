@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="600.0" prefWidth="1040.0" spacing="10" style="-fx-padding: 15;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.errorreport.ErrorReportNewController">
+
+    <Label text="Fehlerbericht erstellen">
+        <font>
+            <Font name="System Bold" size="18" />
+        </font>
+    </Label>
+
+    <GridPane hgap="10" vgap="10">
+        <Label text="Titel:" />
+        <TextField fx:id="titleField" prefHeight="25.0" prefWidth="867.0" GridPane.columnIndex="1" />
+
+        <columnConstraints>
+            <ColumnConstraints maxWidth="129.0" minWidth="48.0" prefWidth="116.0" />
+            <ColumnConstraints hgrow="ALWAYS" maxWidth="952.0" minWidth="871.0" prefWidth="884.0" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints />
+        </rowConstraints>
+    </GridPane>
+
+   <HBox alignment="CENTER_LEFT" spacing="10">
+      <children>
+         <Label text="Screenshot hochladen:" />
+         <Button fx:id="screenshotBtn" text="Datei auswählen" />
+         <Label fx:id="selectedFileLabel" text="Keine Datei ausgewählt" />
+      </children>
+   </HBox>
+
+    <Label text="Beschreibung:" />
+
+    <TextArea fx:id="descriptionArea" editable="true" prefHeight="491.0" prefWidth="1010.0" wrapText="true" />
+
+    <HBox alignment="CENTER_RIGHT" spacing="10">
+        <Button fx:id="saveBtn" onAction="#onSendReportToServerButton" text="Absenden" />
+        <Button fx:id="cancelBtn" onAction="#handleCanceling" text="Abbrechen" />
+    </HBox>
+</VBox>

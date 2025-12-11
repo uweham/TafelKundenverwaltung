@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label layoutX="14.0" layoutY="14.0" text="Datenbankpflege und Optimierung" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="10.0">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="14.0" layoutY="43.0" text="Umsätze löschen" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="43.0">
+         <font>
+            <Font size="14.0" />
+         </font></Label>
+      <Text layoutX="14.0" layoutY="83.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Dieser Vorgang reduziert die Größe der Datenbank. Die Daten stehen dann jedoch nicht mehr zu statistischen Auswerrtungen zur Verfügung." wrappingWidth="480.744140625" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="355.255859375" AnchorPane.topAnchor="63.576171875">
+         <font>
+            <Font size="18.0" />
+         </font></Text>
+      <Text layoutX="14.0" layoutY="182.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Umsätze, die älter als" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="162.576171875">
+         <font>
+            <Font size="18.0" />
+         </font></Text>
+      <Text layoutX="268.0" layoutY="182.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Monate sind, aus der Datenbank löschen.">
+         <font>
+            <Font size="18.0" />
+         </font></Text>
+      <Button layoutX="14.0" layoutY="190.0" mnemonicParsing="false" text="ausführen" />
+      <Button layoutX="465.0" layoutY="421.0" mnemonicParsing="false" text="speichern" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="20.0" />
+      <TextField layoutX="190.0" layoutY="159.0" prefHeight="31.0" prefWidth="64.0" />
+   </children>
+</AnchorPane>

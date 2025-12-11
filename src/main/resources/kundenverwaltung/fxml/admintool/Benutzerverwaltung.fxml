@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.admintool.BenutzerverwaltungController">
+   <children>
+      <Label layoutX="14.0" layoutY="14.0" text="Benutzerverwaltung" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="10.0">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="15.0" layoutY="37.0" text="Welchen Benutzer möchten Sie bearbeiten:" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="37.0">
+         <font>
+            <Font size="18.0" />
+         </font></Label>
+      <Button fx:id="btnNew" layoutX="600.0" layoutY="50.0" maxWidth="230.0" minWidth="230.0" mnemonicParsing="false" onAction="#neuenBenutzerAnlegen" prefWidth="230.0" text="Neuen Benutzer anlegen" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="50.0" />
+      <Button fx:id="btnDel" layoutX="600.0" layoutY="110.0" maxWidth="230.0" minWidth="230.0" mnemonicParsing="false" onAction="#benutzerLoeschen" prefWidth="230.0" text="Benutzer löschen" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="120.0" />
+      <Button fx:id="btncopy" layoutX="20.0" layoutY="660.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#berechtigungenKopieren" prefWidth="200.0" text="Berechtigungen kopieren" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="14.0" />
+      <Button fx:id="btnSave" layoutX="640.0" layoutY="660.0" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#einstellungenSpeichern" prefWidth="200.0" text="Einstellungen speichern" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="20.0" />
+      <Text layoutX="15.0" layoutY="176.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Berechtigungen:" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="155.0">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Text>
+      <Text layoutX="171.0" layoutY="175.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Legen Sie fest, was der gewählte Benutzer darf." AnchorPane.leftAnchor="160.0" AnchorPane.topAnchor="155.0">
+         <font>
+            <Font size="18.0" />
+         </font></Text>
+      <ScrollPane fx:id="scrollPane" fitToWidth="true" layoutX="20.0" layoutY="184.0" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="462.0" prefViewportHeight="600.0" prefWidth="656.0" AnchorPane.leftAnchor="14.0">
+        <content>
+          <AnchorPane fx:id="anchorpane" maxHeight="-Infinity" minHeight="-Infinity" minWidth="0.0" prefHeight="756.0" prefWidth="637.0">
+               <children>
+                  <CheckBox fx:id="C1" lineSpacing="10.0" mnemonicParsing="false" text="1) volle Systemrechte. Dieses Benutzerrecht überschreibt alle anderen." AnchorPane.topAnchor="0.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </CheckBox>
+                  <CheckBox fx:id="C2" layoutY="27.0" lineSpacing="10.0" mnemonicParsing="false" text="2) darf Kunden im Kundenbestand suchen" AnchorPane.topAnchor="27.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </CheckBox>
+                  <CheckBox fx:id="C3" layoutY="54.0" lineSpacing="10.0" mnemonicParsing="false" text="3) darf neue Kunden anlegen" AnchorPane.topAnchor="54.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </CheckBox>
+                  <CheckBox fx:id="C4" layoutY="81.0" lineSpacing="10.0" mnemonicParsing="false" text="4) darf Kunden bearbeiten" AnchorPane.topAnchor="81.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </CheckBox>
+                  <CheckBox fx:id="C5" layoutY="108.0" lineSpacing="10.0" mnemonicParsing="false" text="5) darf Kunden anderer Verteilstellen bearbeiten" AnchorPane.topAnchor="108.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </CheckBox>
+                  <CheckBox fx:id="C6" layoutY="135.0" lineSpacing="10.0" mnemonicParsing="false" text="6) darf Kunden löschen" AnchorPane.topAnchor="135.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </CheckBox>
+                  <CheckBox fx:id="C7" layoutY="162.0" lineSpacing="10.0" mnemonicParsing="false" text="7) darf Personen zum Kunden hinzufügen" AnchorPane.topAnchor="162.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </CheckBox>
+                  <CheckBox fx:id="C8" layoutY="189.0" lineSpacing="10.0" mnemonicParsing="false" text="8) darf Personen vom Kunden löschen" AnchorPane.topAnchor="189.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </CheckBox>
+                  <CheckBox fx:id="C9" layoutY="216.0" lineSpacing="10.0" mnemonicParsing="false" text="9) darf Umsatz &quot;Umsatz bezahlt&quot; buchen" AnchorPane.topAnchor="216.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </CheckBox>
+                  <CheckBox fx:id="C10" mnemonicParsing="false" text="10) darf Umsatz &quot;Dieses bezahlt&quot; buchen" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="243.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </CheckBox>
+                  <CheckBox fx:id="C11" layoutY="270.0" lineSpacing="10.0" mnemonicParsing="false" text="11) darf Umsätze von Kunden anderer Verteilstellen buchen" AnchorPane.topAnchor="270.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </CheckBox>
+                  <CheckBox fx:id="C12" layoutY="297.0" lineSpacing="10.0" mnemonicParsing="false" text="12) darf Buchungen stornieren" AnchorPane.topAnchor="297.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </CheckBox>
+                  <CheckBox fx:id="C13" layoutY="324.0" lineSpacing="10.0" mnemonicParsing="false" text="13) darf Buchungen anderer Verteilstellen stornieren" AnchorPane.topAnchor="324.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </CheckBox>
+                  <CheckBox fx:id="C14" layoutY="351.0" lineSpacing="10.0" mnemonicParsing="false" text="14) darf Kundenlisten ausdrucken" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="351.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </CheckBox>
+                  <CheckBox fx:id="C15" layoutY="378.0" lineSpacing="10.0" mnemonicParsing="false" text="15) darf die Kasse abrechnen" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="378.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </CheckBox>
+                  <CheckBox fx:id="C16" layoutY="405.0" lineSpacing="10.0" mnemonicParsing="false" text="16) darf die Erfassungs-Verteilstelle über die Auswahl wechseln" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="405.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </CheckBox>
+                  <CheckBox fx:id="C17" layoutY="459.0" lineSpacing="10.0" mnemonicParsing="false" text="17) darf das Erfassungs-Datum über die Auswahl wechseln" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="432.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </CheckBox>
+                  <CheckBox fx:id="C18" layoutY="432.0" lineSpacing="10.0" mnemonicParsing="false" text="18) darf die Statistiken einsehen" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="459.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </CheckBox>
+                  <CheckBox fx:id="C19" layoutY="459.0" lineSpacing="10.0" mnemonicParsing="false" onAction="#berechtigungenKopieren" text="19)  darf Bescheide ändern" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="486.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </CheckBox>
+                  <CheckBox fx:id="C20" layoutY="486.0" mnemonicParsing="false" text="20) darf Bemerkungen ändern" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="513.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </CheckBox>
+                  <CheckBox fx:id="C21" layoutY="513.0" mnemonicParsing="false" text="21) darf Benutzerpasswörter ändern" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="540.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </CheckBox>
+                  <CheckBox fx:id="C22" layoutY="540.0" mnemonicParsing="false" text="22) darf den Betreuer eines Kunden ändern" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="567.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </CheckBox>
+                  <CheckBox fx:id="C23" layoutY="567.0" mnemonicParsing="false" text="23) darf Verteilstellenzugehörigkeit, örtliche Kundennumer und Ausgabetag ändern" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="594.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </CheckBox>
+                  <CheckBox fx:id="C24" layoutY="594.0" mnemonicParsing="false" text="24) darf die Kundenausweise drucken" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="621.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </CheckBox>
+                  <CheckBox fx:id="C25" layoutY="621.0" mnemonicParsing="false" text="25) darf die Informationen unter &quot;Infos/Ändern...&quot; einsehen" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="648.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </CheckBox>
+                  <CheckBox fx:id="C26" layoutY="648.0" mnemonicParsing="false" text="26) darf Vollmachten ausstellen" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="675.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </CheckBox>
+                  <CheckBox fx:id="C27" layoutY="675.0" mnemonicParsing="false" text="27) darf Funktionen -sonstiges Drucken- verwenden" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="702.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </CheckBox>
+                  <CheckBox fx:id="C28" layoutY="702.0" mnemonicParsing="false" text="28) darf mit dem Tafel Admintool arbeiten" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="729.0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </CheckBox>
+               </children>
+            </AnchorPane>
+        </content>
+      </ScrollPane>
+      <ComboBox fx:id="comboBenutzer" layoutX="15.0" layoutY="64.0" prefHeight="31.0" prefWidth="342.0" AnchorPane.leftAnchor="15.0" />
+      <Button fx:id="BtnChange" layoutX="600.0" layoutY="85.0" maxWidth="230.0" minWidth="230.0" mnemonicParsing="false" onAction="#benutzerdatenAendern" prefWidth="230.0" text="Benutzerdaten ändern" AnchorPane.topAnchor="85.0" />
+   </children>
+</AnchorPane>

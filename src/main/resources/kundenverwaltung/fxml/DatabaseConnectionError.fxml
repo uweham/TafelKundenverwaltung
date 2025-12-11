@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane layoutY="1.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="337.0" prefWidth="578.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.DatabaseConnectionErrorController">
+    <children>
+        <Pane layoutY="77.0" prefHeight="232.0" prefWidth="578.0" AnchorPane.bottomAnchor="65.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="77.0">
+            <children>
+                <Label fx:id="labelServerName" layoutX="14.0" layoutY="4.0" text="Server-Adresse:">
+               <font>
+                  <Font size="14.0" />
+               </font></Label>
+                <TextField fx:id="txtServername" layoutX="14.0" layoutY="25.0" prefHeight="31.0" prefWidth="225.0" />
+                <Label fx:id="labelPort" layoutX="289.0" layoutY="4.0" text="Port:">
+               <font>
+                  <Font size="14.0" />
+               </font></Label>
+                <TextField fx:id="txtPort" layoutX="289.0" layoutY="25.0" prefHeight="31.0" prefWidth="225.0" />
+                <Label fx:id="labelLogin" layoutX="15.0" layoutY="67.0" text="Benutzername:">
+               <font>
+                  <Font size="14.0" />
+               </font></Label>
+                <TextField fx:id="txtUser" layoutX="14.0" layoutY="88.0" prefHeight="31.0" prefWidth="225.0" />
+                <Label fx:id="labelPassword" layoutX="289.0" layoutY="67.0" text="Passwort:">
+               <font>
+                  <Font size="14.0" />
+               </font></Label>
+                <PasswordField fx:id="txtPasswort" layoutX="289.0" layoutY="88.0" prefHeight="31.0" prefWidth="225.0" />
+                <Label fx:id="labelDatabase" layoutX="14.0" layoutY="133.0" text="Datenbank-Name:">
+               <font>
+                  <Font size="14.0" />
+               </font></Label>
+                <TextField fx:id="txtDatenbank" layoutX="14.0" layoutY="154.0" prefHeight="31.0" prefWidth="225.0" />
+
+            </children>
+        </Pane>
+        <Label fx:id="labelHeader" alignment="CENTER" contentDisplay="CENTER" layoutX="53.0" layoutY="14.0" prefHeight="46.0" prefWidth="473.0" text="Das Kundenverwaltungsprogramm konnte nicht gestartet werden. Es konnte keine Verbindung zum Datenbank-Server hergestellt werden." textAlignment="CENTER" textFill="#ee6f00" wrapText="true" AnchorPane.leftAnchor="53.0" AnchorPane.topAnchor="14.0">
+         <font>
+            <Font size="15.0" />
+         </font></Label>
+      <Label fx:id="labelCheckConnection" layoutX="143.0" layoutY="301.0" />
+        <Button fx:id="buttonCheckAndSetConnection" layoutX="255.0" layoutY="266.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#checkAndSetConnection" prefHeight="31.0" prefWidth="183.0" text="Prüfen und übernehmen" AnchorPane.leftAnchor="255.0" AnchorPane.topAnchor="266.0">
+         <font>
+            <Font size="14.0" />
+         </font></Button>
+        <Button fx:id="buttonCancel" layoutX="455.0" layoutY="266.0" mnemonicParsing="false" onAction="#einstellungenAnwendenAbbrechen" prefHeight="31.0" prefWidth="95.0" text="Abbrechen" AnchorPane.leftAnchor="455.0" AnchorPane.topAnchor="266.0">
+         <font>
+            <Font size="14.0" />
+         </font></Button>
+    </children>
+</AnchorPane>

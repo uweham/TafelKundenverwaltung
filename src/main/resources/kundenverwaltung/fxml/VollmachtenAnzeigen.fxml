@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.VollmachtenController">
+   <children>
+      <BorderPane prefHeight="313.0" prefWidth="441.0">
+         <top>
+            <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
+               <children>
+                  <Label fx:id="labelHeadingShow" text="Sehen Sie hier die Liste der bestehenden Vollmachten" textFill="#ee6f00">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
+         </top>
+         <center>
+            <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label fx:id="labelCurrentPowerOfAttorney" text="Aktuell bestehende Vollmachten">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="5.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TableView fx:id="tvBestehendeVollmachten" prefHeight="200.0" prefWidth="421.0">
+                     <columns>
+                        <TableColumn fx:id="columnBestehendEmpfaenger" prefWidth="75.0" text="Empfänger" />
+                        <TableColumn fx:id="columnBestehendKdnr" prefWidth="75.0" text="Kundennummer" />
+                        <TableColumn fx:id="columnBestehendAusstelldatum" prefWidth="75.0" text="Ausstelldatum" />
+                        <TableColumn fx:id="columnBestehendAblaufdatum" prefWidth="75.0" text="Ablaufdatum" />
+                     </columns>
+                     <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                     </columnResizePolicy>
+                  </TableView>
+               </children>
+               <BorderPane.margin>
+                  <Insets left="10.0" right="10.0" top="5.0" />
+               </BorderPane.margin>
+            </VBox>
+         </center>
+         <bottom>
+            <VBox prefHeight="80.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+               <children>
+                  <HBox alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                     <children>
+                        <Button fx:id="btnAddPowerOfAttorneyShow" mnemonicParsing="false" onAction="#btnVollmachtenAnzeigenHinzufuegen" prefWidth="138.0" text="Hinzufügen">
+                           <HBox.margin>
+                              <Insets right="10.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="btnEditPowerOfAttorneyShow" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#btnVollmachtenAnzeigenBearbeiten" prefWidth="138.0" text="Bearbeiten">
+                           <HBox.margin>
+                              <Insets right="10.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="btnDeletePowerOfAttorneyShow" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#btnVollmachtenAnzeigenLoeschen" prefWidth="138.0" text="Löschen" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="btnAnzeigenSchliessen" mnemonicParsing="false" onAction="#btnVollmachtenAnzeigenSchliessen" prefHeight="25.0" prefWidth="133.0" text="Schließen" />
+                     </children>
+                  </HBox>
+               </children>
+               <BorderPane.margin>
+                  <Insets left="10.0" right="10.0" />
+               </BorderPane.margin>
+            </VBox>
+         </bottom>
+      </BorderPane>
+   </children>
+</AnchorPane>

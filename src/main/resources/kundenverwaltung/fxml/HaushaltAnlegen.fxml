@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<!--Author NaN
+Last Change:
+Author: Adam Starobrzanski
+Date: 18.07.2018 -->
+
+<AnchorPane prefHeight="656.0" prefWidth="582.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.HaushaltAnlegenController">
+   <children>
+      <Label fx:id="labelHeader" alignment="CENTER" contentDisplay="BOTTOM" layoutX="166.0" layoutY="26.0" prefHeight="17.0" prefWidth="582.0" text="Geben Sie hier die Daten des Kunden ein.&#10;Die Vergabe der Kundennummer erfolgt automatisch." textAlignment="CENTER" textFill="#ee6f00" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0" />
+      <TabPane fx:id="tabpane" layoutX="117.0" layoutY="51.0" prefHeight="546.0" prefWidth="582.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="51.0">
+        <tabs>
+          <Tab fx:id="tabkundendaten" text="Kundendaten">
+            <content>
+                  <AnchorPane prefHeight="569.0" prefWidth="582.0">
+                     <children>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="520.0" prefWidth="582.0">
+                           <children>
+                              <TextField fx:id="txtVorname" layoutX="29.0" layoutY="63.0" onKeyReleased="#firstToUppercase" prefHeight="28.0" prefWidth="244.0" AnchorPane.leftAnchor="29.0" AnchorPane.topAnchor="63.0" />
+                              <TextField fx:id="txtNachname" layoutX="306.0" layoutY="63.0" onKeyReleased="#firstToUppercase" prefHeight="28.0" prefWidth="244.0" AnchorPane.leftAnchor="306.0" AnchorPane.topAnchor="63.0" />
+                              <ComboBox fx:id="cbAnrede" layoutX="29.0" layoutY="119.0" prefHeight="28.0" prefWidth="244.0" AnchorPane.leftAnchor="29.0" AnchorPane.topAnchor="119.0">
+                                  <items>
+                                      <FXCollections fx:factory="observableArrayList">
+                                          <String fx:value="Herr" />
+                                          <String fx:value="Frau" />
+                                          <String fx:value="Divers" />
+                                      </FXCollections>
+                                  </items>
+                              </ComboBox>
+                              <DatePicker fx:id="dateGeb" editable="true" layoutX="308.0" layoutY="119.0" prefHeight="28.0" prefWidth="244.0" promptText="dd.MM.yyyy" AnchorPane.leftAnchor="306.0" AnchorPane.topAnchor="119.0" />
+                              <ComboBox fx:id="cbGender" layoutX="29.0" layoutY="176.0" prefHeight="28.0" prefWidth="244.0" AnchorPane.leftAnchor="29.0" AnchorPane.topAnchor="176.0">
+                                 <items>
+                                    <FXCollections fx:factory="observableArrayList">
+                                       <String fx:value="Männlich" />
+                                       <String fx:value="Weiblich" />
+                                       <String fx:value="Sonstiges" />
+                                       <String fx:value="Keine Angabe" />
+                                    </FXCollections>
+                                 </items>
+                              </ComboBox>
+                              <ComboBox fx:id="cbBesBerechtigung" layoutX="308.0" layoutY="176.0" prefHeight="28.0" prefWidth="244.0" AnchorPane.leftAnchor="308.0" AnchorPane.topAnchor="176.0" />
+                               <ComboBox fx:id="cbNation" editable="true" layoutX="31.0" layoutY="235.0" prefHeight="28.0" prefWidth="244.0" AnchorPane.leftAnchor="29.0" AnchorPane.topAnchor="235.0" />
+                              <Label fx:id="labelFirstName" layoutX="31.0" layoutY="45.0" text="Vorname" AnchorPane.leftAnchor="31.0" AnchorPane.topAnchor="45.0" />
+                              <Label fx:id="labelSurname" layoutX="308.0" layoutY="45.0" text="Name" AnchorPane.leftAnchor="308.0" AnchorPane.topAnchor="45.0" />
+                              <Label fx:id="labelAnrede" layoutX="31.0" layoutY="101.0" text="Anrede" AnchorPane.leftAnchor="31.0" AnchorPane.topAnchor="101.0" />
+
+
+
+
+                              <Label fx:id="labelBirthday" layoutX="308.0" layoutY="101.0" text="Geburtsdatum" AnchorPane.leftAnchor="308.0" AnchorPane.topAnchor="101.0" />
+
+
+
+
+
+
+
+                              <Label fx:id="labelNation" layoutX="31.0" layoutY="217.0" text="Nationalität" AnchorPane.leftAnchor="31.0" AnchorPane.topAnchor="217.0" />
+
+
+                              <Label fx:id="labelAuthorization" layoutX="308.0" layoutY="158.0" text="Besondere Berechtigung" AnchorPane.leftAnchor="308.0" AnchorPane.topAnchor="158.0" />
+                              <Label fx:id="labelStreet" layoutX="31.0" layoutY="318.0" text="Straße" AnchorPane.leftAnchor="31.0" AnchorPane.topAnchor="318.0" />
+                              <TextField fx:id="txtStrasse" layoutX="31.0" layoutY="336.0" onKeyReleased="#firstToUppercase" prefHeight="28.0" prefWidth="244.0" AnchorPane.leftAnchor="29.0" AnchorPane.topAnchor="336.0" />
+                              <TextField fx:id="txtHausnummer" layoutX="308.0" layoutY="336.0" prefHeight="28.0" prefWidth="244.0" AnchorPane.leftAnchor="306.0" AnchorPane.topAnchor="336.0" />
+                              <TextField fx:id="txtPostleitzahl" layoutX="31.0" layoutY="397.0" onAction="#plzGesetzt" onKeyPressed="#plzGesetzt" onKeyReleased="#plzGesetzt" prefHeight="28.0" prefWidth="244.0" AnchorPane.leftAnchor="29.0" AnchorPane.topAnchor="397.0" />
+                              <TextField fx:id="txtWohnort" layoutX="308.0" layoutY="397.0" onKeyReleased="#firstToUppercase" prefHeight="28.0" prefWidth="244.0" AnchorPane.leftAnchor="306.0" AnchorPane.topAnchor="397.0" />
+                              <TextField fx:id="txtTelefon" layoutX="31.0" layoutY="459.0" prefHeight="28.0" prefWidth="244.0" AnchorPane.leftAnchor="29.0" AnchorPane.topAnchor="459.0" />
+                              <TextField fx:id="txtMobilTelefon" layoutX="308.0" layoutY="459.0" prefHeight="28.0" prefWidth="244.0" AnchorPane.leftAnchor="306.0" AnchorPane.topAnchor="459.0" />
+                              <Label fx:id="labelHousenumber" layoutX="311.0" layoutY="318.0" text="Hausnummer" AnchorPane.leftAnchor="308.0" AnchorPane.topAnchor="318.0" />
+                              <Label fx:id="labelPostcode" layoutX="31.0" layoutY="379.0" text="Postleitzahl" AnchorPane.leftAnchor="31.0" AnchorPane.topAnchor="379.0" />
+                              <Label fx:id="labelLocation" layoutX="308.0" layoutY="379.0" text="Wohnort" AnchorPane.leftAnchor="308.0" AnchorPane.topAnchor="379.0" />
+                              <Label fx:id="labelPhoneNumber" layoutX="31.0" layoutY="441.0" text="Telefonnummer" AnchorPane.leftAnchor="31.0" AnchorPane.topAnchor="441.0" />
+                              <Label fx:id="labelMobileNumber" layoutX="308.0" layoutY="441.0" text="Mobiltelefon-Nr." AnchorPane.leftAnchor="308.0" AnchorPane.topAnchor="441.0" />
+                              <Separator layoutX="14.0" layoutY="28.0" orientation="VERTICAL" prefHeight="243.0" prefWidth="5.0" />
+                              <Separator layoutX="565.0" layoutY="28.0" orientation="VERTICAL" prefHeight="243.0" prefWidth="3.0" />
+                              <Separator layoutX="15.0" layoutY="270.0" prefHeight="0.0" prefWidth="552.0" />
+                              <Separator layoutX="15.0" layoutY="27.0" prefHeight="2.0" prefWidth="552.0" />
+                              <Label fx:id="labelHouseholdDirectorHeader" layoutX="29.0" layoutY="8.0" text="Haushaltsvorstand">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                              <Separator layoutX="14.0" layoutY="308.0" orientation="VERTICAL" prefHeight="193.0" prefWidth="5.0" />
+                              <Separator layoutX="564.0" layoutY="308.0" orientation="VERTICAL" prefHeight="193.0" prefWidth="3.0" />
+                              <Separator layoutX="15.0" layoutY="500.0" prefHeight="3.0" prefWidth="552.0" />
+                              <Separator layoutX="15.0" layoutY="305.0" prefHeight="2.0" prefWidth="552.0" />
+                              <Label fx:id="labelPersonDataHeader" layoutX="29.0" layoutY="286.0" text="Kontaktdaten">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                              <Button fx:id="btnAendern" layoutX="510.0" layoutY="442.0" mnemonicParsing="false" onAction="#pressButtonAendern" text="Neu" visible="false" AnchorPane.leftAnchor="510.0" AnchorPane.topAnchor="397.0" />
+                              <ComboBox fx:id="cbWohnort" disable="true" layoutX="305.0" layoutY="442.0" prefHeight="27.0" prefWidth="244.0" visible="false" AnchorPane.leftAnchor="306.0" AnchorPane.topAnchor="397.0" />
+                              <Label fx:id="labelGender" layoutX="31.0" layoutY="158.0" text="Geschlecht" AnchorPane.leftAnchor="31.0" AnchorPane.topAnchor="158.0" />
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab fx:id="tabausgabe" text="Verteilstelle &amp; Ausgabegruppe">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Label fx:id="labelCustomerSince" layoutX="29.0" layoutY="14.0" text="Kunde seit" AnchorPane.leftAnchor="29.0" AnchorPane.topAnchor="14.0" />
+                        <DatePicker fx:id="dateKundeSeit" editable="false" layoutX="29.0" layoutY="35.0" prefHeight="28.0" prefWidth="244.0" AnchorPane.leftAnchor="29.0" AnchorPane.topAnchor="35.0" />
+                        <Label fx:id="labelOutputGroup" layoutX="307.0" layoutY="14.0" text="Ausgabegruppe" AnchorPane.leftAnchor="307.0" AnchorPane.topAnchor="14.0" />
+                        <ComboBox fx:id="cbAusgabegruppe" layoutX="307.0" layoutY="35.0" onAction="#setzeAusgabegruppe" prefHeight="28.0" prefWidth="244.0" AnchorPane.leftAnchor="307.0" AnchorPane.topAnchor="35.0" />
+                        <Label fx:id="labelDistributionPoint" layoutX="29.0" layoutY="80.0" text="Verteilstelle" AnchorPane.leftAnchor="29.0" AnchorPane.topAnchor="80.0" />
+                        <ComboBox fx:id="cbVerteilstelle" layoutX="29.0" layoutY="99.0" prefHeight="28.0" prefWidth="244.0" AnchorPane.leftAnchor="29.0" AnchorPane.topAnchor="99.0" />
+                        <CheckBox fx:id="cbxLieferung" layoutX="29.0" layoutY="165.0" mnemonicParsing="false" text="Haushalt wird beliefert" AnchorPane.leftAnchor="29.0" AnchorPane.topAnchor="165.0" />
+                        <Label fx:id="labelGroupColor" layoutX="307.0" layoutY="80.0" text="Gruppenfarbe" AnchorPane.leftAnchor="307.0" AnchorPane.topAnchor="80.0" />
+                        <Rectangle fx:id="gruppenfarbe" arcHeight="5.0" arcWidth="5.0" fill="#ffffff00" height="28.0" layoutX="306.0" layoutY="99.0" stroke="BLACK" strokeType="INSIDE" width="244.0" AnchorPane.leftAnchor="306.0" AnchorPane.topAnchor="99.0" />
+                        <Label fx:id="labelOutputTimes" layoutX="307.0" layoutY="144.0" text="Ausgabezeiten" AnchorPane.leftAnchor="307.0" AnchorPane.topAnchor="144.0" />
+                        <TextArea fx:id="txtAusgabetag" editable="false" layoutX="307.0" layoutY="165.0" prefHeight="85.0" prefWidth="244.0" AnchorPane.leftAnchor="307.0" AnchorPane.topAnchor="165.0">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font></TextArea>
+                        <Separator layoutX="288.0" layoutY="8.0" orientation="VERTICAL" prefHeight="575.0" prefWidth="5.0" AnchorPane.leftAnchor="288.0" AnchorPane.topAnchor="8.0" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab fx:id="tabdse" text="Datenschutzerklärung">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="20.0" prefWidth="582.0">
+                     <children>
+                        <CheckBox fx:id="cbxDatenschutz" layoutX="29.0" layoutY="458.0" mnemonicParsing="false" text="Der Kunde wurde über die Erfassung und Verwendung seiner Daten &#10;informiert und hat sich damit einverstanden erklärt." AnchorPane.leftAnchor="29.0" AnchorPane.topAnchor="458.0" />
+                        <ScrollPane layoutX="24.0" layoutY="14.0" prefHeight="390.0" prefWidth="542.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="14.0">
+                           <content>
+                              <Label fx:id="labelDatenschutz" prefWidth="538.0">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                           </content>
+                        </ScrollPane>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+      <Button fx:id="buttonAddHousehold" layoutX="29.0" layoutY="606.0" mnemonicParsing="false" onAction="#btnHaushaltHinzufuegen" text="Hinzufügen" AnchorPane.leftAnchor="29.0" AnchorPane.topAnchor="606.0">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Button>
+      <Button fx:id="buttonCancel" layoutX="465.0" layoutY="606.0" mnemonicParsing="false" onAction="#btnAbbrechen" text="Abbrechen" AnchorPane.leftAnchor="465.0" AnchorPane.topAnchor="606.0">
+         <font>
+            <Font size="13.0" />
+         </font></Button>
+   </children>
+</AnchorPane>

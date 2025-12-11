@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="861.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.admintool.AusgabegruppeController">
+   <children>
+      <Label layoutX="14.0" layoutY="14.0" text="Ausgabetage und Ausgabezeiten" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="10.0">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Text layoutX="14.0" layoutY="73.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welche Ausgabegruppe möchten Sie bearbeiten?" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="53.576171875">
+         <font>
+            <Font size="18.0" />
+         </font></Text>
+      <ChoiceBox fx:id="chGruppe" layoutX="14.0" layoutY="78.0" minWidth="230.0" prefHeight="31.0" prefWidth="392.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="78.0" />
+      <Button fx:id="btnUmbenennen" layoutX="14.0" layoutY="115.0" minWidth="230.0" mnemonicParsing="false" onAction="#ausgabegruppeUmbenennen" prefHeight="31.0" prefWidth="392.0" text="gewählte Ausgabegruppe umbennenen" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="115.0" />
+      <Button fx:id="btnNeu" layoutX="425.0" layoutY="115.0" minWidth="230.0" mnemonicParsing="false" onAction="#neueAusgabegrupperstellen" prefHeight="31.0" prefWidth="314.0" text="neue Ausgabegruppe erstellen" AnchorPane.rightAnchor="111.0" />
+      <CheckBox fx:id="chkAktiv" alignment="TOP_LEFT" layoutX="15.0" layoutY="175.0" mnemonicParsing="false" prefHeight="34.0" prefWidth="778.0" text="Diese Ausgabegruppe ist aktiv und wird im Tafel Kundenverwaltungsprogramm angezeigt." wrapText="true" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="175.0">
+         <font>
+            <Font size="18.0" />
+         </font></CheckBox>
+      <Text layoutX="14.0" layoutY="228.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Farbe der Ausgabegruppe :" AnchorPane.leftAnchor="14.0">
+         <font>
+            <Font size="18.0" />
+         </font></Text>
+      <Separator layoutY="44.0" prefHeight="3.0" prefWidth="521.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="44.0" />
+      <Separator layoutY="163.0" prefHeight="3.0" prefWidth="521.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="163.0" />
+      <ColorPicker fx:id="colPick" layoutX="253.0" layoutY="205.0" minWidth="150.0" prefHeight="31.0" prefWidth="259.0" />
+      <Button fx:id="btnSpeichern" layoutX="677.0" layoutY="526.0" mnemonicParsing="false" onAction="#ausgabegruppeSpeichern" text="speichern" AnchorPane.bottomAnchor="310.0" AnchorPane.rightAnchor="106.0" />
+      <TableView fx:id="tabelleAusgabetage" layoutX="22.0" layoutY="334.0" prefHeight="158.0" prefWidth="722.0">
+        <columns>
+          <TableColumn fx:id="spalteAusgabetag" prefWidth="274.0" text="Ausgabetag" />
+          <TableColumn fx:id="spalteStartzeit" minWidth="0.0" prefWidth="223.0" text="Startzeit" />
+            <TableColumn fx:id="spalteEndzeit" prefWidth="211.0" text="Endzeit" />
+        </columns>
+      </TableView>
+      <Button fx:id="btnAusgabetagerstellen" layoutX="22.0" layoutY="245.0" mnemonicParsing="false" onAction="#ausgabetagerstellen" prefHeight="25.0" prefWidth="722.0" text="Ausgabetag - Zeit erstellen " />
+      <ComboBox fx:id="comboAusgabetag" layoutX="104.0" layoutY="296.0" prefHeight="25.0" prefWidth="191.0" />
+      <Label layoutX="26.0" layoutY="300.0" text="Ausgabetag" />
+      <Button fx:id="btnAusgabetagverknuepfen" layoutX="354.0" layoutY="296.0" mnemonicParsing="false" onAction="#ausgabetagverknuepfen" text="Ausgabetag hinzufügen" />
+      <Button fx:id="btnAusgabetageverwalten" layoutX="563.0" layoutY="296.0" mnemonicParsing="false" onAction="#ausgabetageVerwalten" text="Ausgabetage verwalten" />
+   </children>
+</AnchorPane>

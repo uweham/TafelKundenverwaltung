@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<GridPane hgap="10" prefHeight="282.0" prefWidth="487.0" vgap="15" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.server.UserNewAndEditController">
+
+    <padding>
+        <Insets bottom="20" left="20" right="20" top="20" />
+    </padding>
+
+    <children>
+        <Label fx:id="labelTitle" text="Create User" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="0">
+            <font>
+                <Font name="System Bold" size="18.0" />
+            </font>
+        </Label>
+
+        <Label text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <TextField fx:id="usernameField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+        <Label text="New Password:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+        <Label fx:id="txtRepeatPassword" text="Repeat Password:" GridPane.rowIndex="3" />
+        <PasswordField fx:id="passwordField2" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+        <Label text="Role:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+        <ComboBox fx:id="roleComboBox" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+        <HBox alignment="CENTER_RIGHT" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+            <children>
+                <Button fx:id="saveButton" defaultButton="true" onAction="#handleSave" text="Save" />
+                <Button fx:id="cancelButton" onAction="#handleCancel" text="Cancel" />
+            </children>
+            <GridPane.margin>
+                <Insets top="10.0" />
+            </GridPane.margin>
+        </HBox>
+    </children>
+
+    <columnConstraints>
+        <ColumnConstraints hgrow="NEVER" maxWidth="129.0" minWidth="65.0" prefWidth="127.0" />
+        <ColumnConstraints hgrow="ALWAYS" maxWidth="372.0" minWidth="308.0" prefWidth="310.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" />
+        <RowConstraints />
+        <RowConstraints vgrow="ALWAYS" />
+    </rowConstraints>
+</GridPane>

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="286.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.BescheideBearbeitenController">
+   <children>
+      <BorderPane minHeight="361.0" minWidth="440.0" prefHeight="361.0" prefWidth="440.0">
+         <top>
+            <HBox alignment="CENTER_LEFT" prefHeight="63.0" prefWidth="401.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
+               <children>
+                  <Label fx:id="labelHeadingAddAssesment" alignment="TOP_LEFT" contentDisplay="TOP" prefHeight="34.0" prefWidth="407.0" text="Bitte wählen Sie ein Familienmitglied und ein Bescheid aus und geben Sie die Gültigkeitsdaten ein." textAlignment="CENTER" textFill="#ee6f00" wrapText="true">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                  </Label>
+               </children>
+               <BorderPane.margin>
+                  <Insets bottom="10.0" />
+               </BorderPane.margin>
+            </HBox>
+         </top>
+         <bottom>
+            <HBox alignment="CENTER" prefHeight="47.0" prefWidth="381.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Button fx:id="btnSaveAssessment" mnemonicParsing="false" onAction="#btnBescheidAnlegenOk" prefHeight="32.0" prefWidth="121.0" text="OK">
+                     <HBox.margin>
+                        <Insets right="139.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="btnHinzufuegenSchliessen" mnemonicParsing="false" onAction="#btnBescheidAnlegenAbbrechen" prefHeight="32.0" prefWidth="121.0" text="Abbrechen" />
+               </children>
+               <BorderPane.margin>
+                  <Insets left="10.0" right="10.0" />
+               </BorderPane.margin>
+            </HBox>
+         </bottom>
+         <center>
+            <VBox prefHeight="241.0" prefWidth="430.0" BorderPane.alignment="CENTER">
+               <BorderPane.margin>
+                  <Insets left="10.0" />
+               </BorderPane.margin>
+               <children>
+                  <Label prefHeight="21.0" prefWidth="29.0">
+                     <font>
+                        <Font size="8.0" />
+                     </font>
+                  </Label>
+                  <Pane prefHeight="211.0" prefWidth="465.0" style="-fx-border-color: #D8D8D8">
+                     <children>
+                        <VBox prefHeight="187.0" prefWidth="432.0">
+                           <children>
+                              <Label prefHeight="0.0" prefWidth="29.0">
+                                 <font>
+                                    <Font size="8.0" />
+                                 </font>
+                              </Label>
+                              <HBox prefHeight="16.0" prefWidth="319.0" VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <Label fx:id="labelMemberOfTheFamily" prefHeight="25.0" prefWidth="141.0" text="Familienmitglied" HBox.hgrow="ALWAYS">
+                                       <HBox.margin>
+                                          <Insets right="10.0" />
+                                       </HBox.margin>
+                                       <font>
+                                          <Font size="16.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets left="10.0" right="10.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="361.0" VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <ComboBox fx:id="cbFamilienmitglied" minHeight="30.0" prefHeight="25.0" prefWidth="235.0" HBox.hgrow="ALWAYS">
+                                       <HBox.margin>
+                                          <Insets bottom="10.0" right="180.0" />
+                                       </HBox.margin>
+                                    </ComboBox>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets left="10.0" right="10.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox prefHeight="16.0" prefWidth="319.0" VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <Label fx:id="labelAssessmentType" prefHeight="16.0" prefWidth="100.0" text="Bescheidart" HBox.hgrow="ALWAYS">
+                                       <HBox.margin>
+                                          <Insets right="10.0" />
+                                       </HBox.margin>
+                                       <font>
+                                          <Font size="16.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets left="10.0" right="10.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox alignment="CENTER" prefHeight="35.0" prefWidth="377.0" VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <ComboBox fx:id="cbBescheidart" minHeight="30.0" onAction="#setDateOfExpiry" prefHeight="30.0" prefWidth="239.0" HBox.hgrow="ALWAYS">
+                                       <HBox.margin>
+                                          <Insets bottom="10.0" right="180.0" />
+                                       </HBox.margin>
+                                    </ComboBox>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets left="10.0" right="10.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox prefHeight="25.0" prefWidth="376.0" VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <Label fx:id="labelValidFrom" prefHeight="25.0" prefWidth="101.0" text="Gültig ab:" HBox.hgrow="ALWAYS">
+                                       <HBox.margin>
+                                          <Insets left="1.0" right="10.0" />
+                                       </HBox.margin>
+                                       <font>
+                                          <Font size="16.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="labelDateOfExpiry" layoutX="10.0" layoutY="10.0" prefHeight="16.0" prefWidth="81.0" text="Gültig bis:" HBox.hgrow="ALWAYS">
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                       <font>
+                                          <Font size="16.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets left="10.0" right="10.0" top="5.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox alignment="CENTER" layoutX="10.0" layoutY="25.0" prefHeight="41.0" prefWidth="361.0" VBox.vgrow="ALWAYS">
+                                 <children>
+                                    <DatePicker fx:id="dateGueltigAb" onAction="#changeDatePickerFormat" prefWidth="120.0">
+                                       <HBox.margin>
+                                          <Insets right="10.0" />
+                                       </HBox.margin>
+                                    </DatePicker>
+                                    <DatePicker fx:id="dateGueltigBis" layoutX="10.0" layoutY="10.0" onAction="#changeDatePickerFormat" prefWidth="120.0">
+                                       <HBox.margin>
+                                          <Insets right="10.0" />
+                                       </HBox.margin>
+                                    </DatePicker>
+                                    <Label fx:id="labelOr" prefHeight="20.0" prefWidth="31.0" text="oder">
+                                       <HBox.margin>
+                                          <Insets right="10.0" />
+                                       </HBox.margin>
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <CheckBox fx:id="cbxUnbegrenzt" mnemonicParsing="false" onAction="#setzeBescheidUnbegrenzt" prefHeight="25.0" prefWidth="114.0" text="unbegrenzt">
+                                       <font>
+                                          <Font size="16.0" />
+                                       </font></CheckBox>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets left="10.0" right="10.0" />
+                                 </VBox.margin>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </Pane>
+               </children>
+            </VBox>
+         </center>
+      </BorderPane>
+      <Label layoutX="10.0" layoutY="10.0" prefHeight="0.0" prefWidth="29.0">
+         <font>
+            <Font size="8.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="385.0" prefWidth="620.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.admintool.AusgabetageVerwaltenController">
+   <children>
+      <TableView fx:id="tabelleAusgabetage" layoutX="13.0" layoutY="20.0" prefHeight="295.0" prefWidth="594.0">
+        <columns>
+          <TableColumn fx:id="spalteAusgabetag" prefWidth="225.0" text="Ausgabetag" />
+          <TableColumn fx:id="spalteStartzeit" prefWidth="186.0" text="Startzeit" />
+            <TableColumn fx:id="spalteEndzeit" prefWidth="179.0" text="Endzeit" />
+        </columns>
+      </TableView>
+      <Button fx:id="btnAusgabetagentfernen" layoutX="466.0" layoutY="322.0" mnemonicParsing="false" onAction="#ausgabetagentfernen" text="Ausgabetag entfernen" />
+      <Button fx:id="btnAbbrechen" layoutX="358.0" layoutY="322.0" mnemonicParsing="false" onAction="#abbrechen" text="Abbrechen" />
+   </children>
+</AnchorPane>

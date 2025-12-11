@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label layoutX="34.0" layoutY="14.0" text="Herzlich Willkommen" AnchorPane.leftAnchor="34.0" AnchorPane.topAnchor="14.0">
+         <font>
+            <Font name="System Bold" size="36.0" />
+         </font>
+      </Label>
+      <Text layoutX="20.0" layoutY="86.0" strokeType="OUTSIDE" strokeWidth="0.0" text="In diesem Programmteilhaben Sie die Möglichkeit das Tafel Kundenverwaltungsprogramm Ihren Bedürfnissen anzupassen." wrappingWidth="481.705078125" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="66.576171875">
+         <font>
+            <Font size="18.0" />
+         </font></Text>
+      <Text layoutX="21.0" layoutY="165.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Bitte beachten Sie: Dieses Programm befindet sich in fortlaufender Entwicklung." AnchorPane.topAnchor="145.576171875">
+         <font>
+            <Font size="18.0" />
+         </font></Text>
+      <Label layoutX="14.0" layoutY="198.0" text="Installierte Programme und Programmversionen:">
+         <font>
+            <Font size="18.0" />
+         </font></Label>
+      <Text layoutX="648.0" layoutY="260.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Version:">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Text>
+      <Text layoutX="14.0" layoutY="260.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Programm:">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Text>
+      <Text layoutX="286.0" layoutY="260.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Interne Bezeichnung:">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Text>
+      <Text layoutX="514.0" layoutY="260.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Build:">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtPro" layoutX="14.0" layoutY="290.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tafel Admintool">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtInt" layoutX="286.0" layoutY="290.0" strokeType="OUTSIDE" strokeWidth="0.0" text="admintool">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtVer" layoutX="646.0" layoutY="290.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtBuild" layoutX="514.0" layoutY="290.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtBuild1" layoutX="514.0" layoutY="309.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtVer1" layoutX="646.0" layoutY="309.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtInt1" layoutX="286.0" layoutY="309.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Datenbank">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtPro1" layoutX="14.0" layoutY="309.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tafel Systemdatenbank">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtBuild2" layoutX="514.0" layoutY="328.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtVer2" layoutX="646.0" layoutY="328.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtInt2" layoutX="286.0" layoutY="328.0" strokeType="OUTSIDE" strokeWidth="0.0" text="lita">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtPro2" layoutX="14.0" layoutY="328.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tafel Kundenverwaltungsprogramm">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtBuild3" layoutX="514.0" layoutY="347.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtVer3" layoutX="646.0" layoutY="347.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtInt3" layoutX="286.0" layoutY="347.0" strokeType="OUTSIDE" strokeWidth="0.0" text="statistik">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+      <Text fx:id="txtPro3" layoutX="14.0" layoutY="347.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tafel statistik">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Text>
+   </children>
+</AnchorPane>

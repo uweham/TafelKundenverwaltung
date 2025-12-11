@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ButtonType?>
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<?scenebuilder-stylesheet stylesheet.css?>
+
+<DialogPane fx:id="dialogPane" contentText="In der Datenbank ist bereits ein Kunde mit dem angegebenen Namen und/oder der Adresse vorhanden. Möchten Sie trotzdem den neuen Kunden anlegen?" headerText="Achtung!" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="230.0" prefWidth="709.0" scaleShape="false" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.BuchungController">
+    <header>
+      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="60.0" prefWidth="807.0" scaleShape="false">
+         <children>
+            <Text layoutX="22.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Achtung: Es liegen Warnungen vor!" wrappingWidth="784.59375">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Text>
+         </children>
+      </AnchorPane>
+    </header>
+    <content>
+      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="182.0" prefWidth="807.0">
+         <children>
+            <Separator layoutY="105.0" prefHeight="13.0" prefWidth="709.0" />
+            <ImageView fitHeight="95.0" fitWidth="128.0" layoutX="617.0" layoutY="-47.0" pickOnBounds="true" preserveRatio="true" />
+            <ListView fx:id="lwWarnungen" layoutX="22.0" layoutY="-11.0" prefHeight="90.0" prefWidth="650.0" />
+            <Text fx:id="textContinue" layoutX="22.0" layoutY="101.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Möchten Sie trotzdem weitermachen?" />
+         </children>
+      </AnchorPane>
+    </content>
+
+         <buttonTypes>
+      <ButtonType fx:id="yes" fx:constant="YES" />
+      <ButtonType fx:id="no" fx:constant="NO" />
+      <ButtonType fx:id="cancel" fx:constant="CANCEL" />
+   </buttonTypes>
+   <graphic>
+      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+   </graphic>
+</DialogPane>

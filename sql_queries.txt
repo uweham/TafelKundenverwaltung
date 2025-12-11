@@ -1,0 +1,41 @@
+SELECT * FROM ausgabegruppe
+SELECT * FROM ausgabegruppe_ausgabe
+SELECT * FROM ausgabetagzeit
+SELECT * FROM berechtigung
+SELECT * FROM bescheid
+SELECT * FROM bescheidart
+SELECT * FROM deleted_memberofthefamily
+SELECT * FROM einkauf
+SELECT * FROM einstellungen
+SELECT * FROM familienmitglied
+SELECT * FROM Geburtsdatum
+SELECT * FROM haushalt
+SELECT * FROM nation
+SELECT * FROM neue_tabelle
+SELECT * FROM ortsteil
+SELECT * FROM PIECHART
+SELECT * FROM plz
+SELECT * FROM recht
+SELECT * FROM statistiktool
+SELECT * FROM tools
+SELECT * FROM users
+SELECT * FROM verteilestelle
+SELECT * FROM vollmacht
+SELECT * FROM vorlage
+SELECT * FROM warentyp
+INSERT INTO ausgabegruppe (column1, column2) VALUES (value1, value2)
+UPDATE ausgabetagzeit SET column1 = value1 WHERE condition
+DELETE FROM berechtigung WHERE condition
+CREATE TABLE neue_tabelle (column1 datatype, column2 datatype)
+ALTER TABLE einkauf ADD column_name datatype
+DROP TABLE deleted_memberofthefamily
+
+select * from altersgruppen
+show coulmns from altersgruppen
+show coulmns from altersgruppen;
+SHOW COLUMNS FROM altersgruppen;
+SHOW COULMNS FROM altersgruppen;
+SHOW COULMNS FROM altersgruppen
+SHOW COLUMNS FROM PieChart;
+show columns from altersgruppen;
+DELETE FROM altersgruppe;

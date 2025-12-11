@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane prefHeight="400.0" prefWidth="900.0" style="-fx-background-color: white; -fx-padding: 20;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.server.ServerConnectionErrorController4Member">
+    <top>
+        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="1040.0" text="Verbindung mit dem Server der Hochschule Osnabrück konnte nicht hergestellt werden" textFill="RED" BorderPane.alignment="CENTER">
+            <font>
+                <Font name="System Bold" size="20.0" />
+            </font>
+        </Label>
+    </top>
+
+    <center>
+        <VBox alignment="CENTER" spacing="15.0" BorderPane.alignment="CENTER">
+            <children>
+                <ImageView fx:id="syncImage" fitHeight="133.0" fitWidth="121.0" preserveRatio="true">
+                    <image>
+                        <Image url="@error_icon.png" />
+                    </image>
+                </ImageView>
+                <Text text="Die Wunschanfrage/Fehlerbericht konnte nicht mit dem Tafel-Server synchronisiert werden, daher wurde dieser lokal gespeichert und wird bei Verfügbarkeit automatisch mit dem Server synchronisiert." textAlignment="CENTER" wrappingWidth="552.0">
+                    <font>
+                        <Font size="16.0" />
+                    </font>
+                </Text>
+            </children>
+        </VBox>
+    </center>
+
+    <bottom>
+        <VBox alignment="BOTTOM_RIGHT" spacing="15.0" BorderPane.alignment="CENTER_RIGHT">
+            <children>
+                <Button fx:id="buttonExit" onAction="#exitProgram" prefWidth="120.0" style="-fx-background-color: #d9534f; -fx-text-fill: white; -fx-font-size: 14;" text="OK" />
+            </children>
+        </VBox>
+    </bottom>
+</BorderPane>
