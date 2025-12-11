@@ -78,7 +78,7 @@ public class KontaktdatenBearbeitenController
         if (pruefeFelderHaushalt())
         {
 
-            haushalt.setStrasse(ersteBuchstabenGross(txtKDStrasse.getText()));
+            haushalt.setStrasse(txtKDStrasse.getText().trim());     // inihibit first letter Uppercase
             haushalt.setHausnummer(txtKDHausnummer.getText().trim());
             haushalt.setMobilnummer(txtKDMobiltelefon.getText().trim());
             haushalt.setTelefonnummer(txtKDTelefonnummer.getText().trim());
