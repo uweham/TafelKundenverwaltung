@@ -14,23 +14,15 @@ import kundenverwaltung.toolsandworkarounds.GetTemplateType;
 public class VorlageDAOimpl implements VorlageDAO
 {
     private static final GetTemplateType GET_TEMPLATE_TYPE = new GetTemplateType();
+    
     /**
-     *.
+     * Erstellt eine neue Vorlage in der Datenbank.
+     * Nutzt RETURN_GENERATED_KEYS für die ID, statt sie manuell zu berechnen.
      */
     @Override
     public boolean create(Vorlage vorlage)
     {
-        String idAbfrage = "Select AUTO_INCREMENT "
-    +
-                "FROM INFORMATION_SCHEMA.TABLES "
-    +
-                "WHERE TABLE_SCHEMA = 'lingener-tafel' "
-    +
-                "AND TABLE_NAME = 'vorlage'";
-
-
         String sql = "INSERT INTO vorlage("
-               /*+ "vorlageID,"*/
                 + "templateType,"
                 + "name,"
                 + "autor,"
@@ -42,18 +34,10 @@ public class VorlageDAOimpl implements VorlageDAO
                 + "daten)"
                 + "VALUES(?,?,?,?,?,?,?,?,?)";
 
-        try
+        try (Connection con = SQLConnection.getCon();
+             PreparedStatement smt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS))
         {
-            Connection con =  SQLConnection.getCon();
-            Statement smtID = con.createStatement();
-            ResultSet count = smtID.executeQuery(idAbfrage);
-            count.next();
-            int vorlageID = count.getInt(1) + 1;
-            vorlage.setVorlageId(vorlageID);
-            smtID.close();
-
-            PreparedStatement smt = con.prepareStatement(sql);
-            smt.setString(1, GET_TEMPLATE_TYPE.getTemplateString(vorlage.getTemplateType())); //String.valueOf(vorlage.getTemplateType()));
+            smt.setString(1, GET_TEMPLATE_TYPE.getTemplateString(vorlage.getTemplateType()));
             smt.setString(2, vorlage.getName());
             smt.setString(3, vorlage.getAutor());
             smt.setString(4, vorlage.getFileVersion());
@@ -63,17 +47,31 @@ public class VorlageDAOimpl implements VorlageDAO
             smt.setBoolean(8, vorlage.isAktiv());
             smt.setBlob(9, vorlage.getDaten());
 
-            smt.executeUpdate();
-            smt.close();
+            int affectedRows = smt.executeUpdate();
+
+            if (affectedRows == 0) {
+                return false;
+            }
+
+            // Generierte ID abholen und im Objekt setzen
+            try (ResultSet generatedKeys = smt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    vorlage.setVorlageId(generatedKeys.getInt(1));
+                } else {
+                    System.out.println("Erstellen der Vorlage fehlgeschlagen, keine ID erhalten.");
+                    return false;
+                }
+            }
             return true;
 
         } catch (SQLException e)
         {
             e.printStackTrace();
-            System.out.println("Vorlage Einfügen Klappt nicht");
+            System.out.println("Vorlage Einfügen Klappt nicht: " + e.getMessage());
         }
         return false;
     }
+
     /**
      *.
      */
@@ -81,31 +79,19 @@ public class VorlageDAOimpl implements VorlageDAO
     public boolean update(Vorlage vorlage)
     {
         String sql = "UPDATE vorlage "
-    +
-                //"SET templateType = ?, " +
-                "SET name = ?, "
-                +
-                "autor = ?, "
-                +
-                "fileVersion = ?, "
-                +
-                "fileTypes = ?, "
-                +
-                "defaultText = ?, "
-                +
-                "passwort = ?, "
-                +
-                "aktiv = ?, "
-                +
-                "daten = ? "
-                +
-                "WHERE vorlageID = ?";
+                + "SET name = ?, "
+                + "autor = ?, "
+                + "fileVersion = ?, "
+                + "fileTypes = ?, "
+                + "defaultText = ?, "
+                + "passwort = ?, "
+                + "aktiv = ?, "
+                + "daten = ? "
+                + "WHERE vorlageID = ?";
 
-        try
+        try (Connection con = SQLConnection.getCon();
+             PreparedStatement smt = con.prepareStatement(sql))
         {
-            Connection con =  SQLConnection.getCon();
-            PreparedStatement smt = con.prepareStatement(sql);
-            //smt.setString(1, String.valueOf(vorlage.getTemplateType()));
             smt.setString(1, vorlage.getName());
             smt.setString(2, vorlage.getAutor());
             smt.setString(3, vorlage.getFileVersion());
@@ -115,8 +101,8 @@ public class VorlageDAOimpl implements VorlageDAO
             smt.setBoolean(7, vorlage.isAktiv());
             smt.setBlob(8, vorlage.getDaten());
             smt.setInt(9, vorlage.getVorlageId());
+            
             smt.executeUpdate();
-            smt.close();
             return true;
 
         } catch (SQLException e)
@@ -133,14 +119,11 @@ public class VorlageDAOimpl implements VorlageDAO
     public boolean delete(Vorlage vorlage)
     {
         String sql = "Delete From vorlage Where vorlageID= ?";
-        try
+        try (Connection con = SQLConnection.getCon();
+             PreparedStatement smt = con.prepareStatement(sql))
         {
-            Connection con =  SQLConnection.getCon();
-            PreparedStatement smt = con.prepareStatement(sql);
             smt.setInt(1, vorlage.getVorlageId());
             smt.executeUpdate();
-            smt.close();
-
             return true;
 
         } catch (SQLException e)
@@ -157,27 +140,25 @@ public class VorlageDAOimpl implements VorlageDAO
     public Vorlage read(int vorlageID)
     {
         String sql = "SELECT * FROM vorlage WHERE vorlageID = ?";
-        try
+        try (Connection con = SQLConnection.getCon();
+             PreparedStatement smt = con.prepareStatement(sql))
         {
-            Connection con = SQLConnection.getCon();
-            PreparedStatement smt = con.prepareStatement(sql);
             smt.setInt(1, vorlageID);
-            ResultSet vorlageResult = smt.executeQuery();
-            vorlageResult.next();
-            Vorlagearten templateType = Vorlagearten.valueOf(vorlageResult.getString("templateType"));
-            String name = vorlageResult.getString("name");
-            String autor = vorlageResult.getString("autor");
-            String fileVersion = vorlageResult.getString("fileVersion");
-            String fileType = vorlageResult.getString("fileType");
-            String defaultText = vorlageResult.getString("defaultText");
-            int passwort = vorlageResult.getInt("passwort");
-            Boolean aktiv = vorlageResult.getBoolean("aktiv");
-            Blob daten = vorlageResult.getBlob("daten");
-            smt.close();
+            try (ResultSet vorlageResult = smt.executeQuery()) {
+                if (vorlageResult.next()) {
+                    Vorlagearten templateType = Vorlagearten.valueOf(vorlageResult.getString("templateType"));
+                    String name = vorlageResult.getString("name");
+                    String autor = vorlageResult.getString("autor");
+                    String fileVersion = vorlageResult.getString("fileVersion");
+                    String fileType = vorlageResult.getString("fileTypes"); // Achtung: Spaltenname korrigiert falls nötig, oft fileTypes in DB
+                    String defaultText = vorlageResult.getString("defaultText");
+                    int passwort = vorlageResult.getInt("passwort");
+                    Boolean aktiv = vorlageResult.getBoolean("aktiv");
+                    Blob daten = vorlageResult.getBlob("daten");
 
-            Vorlage vorlage = new Vorlage(vorlageID, templateType, name, autor, fileVersion, fileType, defaultText, passwort, aktiv, daten);
-
-            return vorlage;
+                    return new Vorlage(vorlageID, templateType, name, autor, fileVersion, fileType, defaultText, passwort, aktiv, daten);
+                }
+            }
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -194,21 +175,32 @@ public class VorlageDAOimpl implements VorlageDAO
     /**
      *.
      */
+    @Override
     public ArrayList<Vorlage> getAllTemplate()
     {
         String sql = "SELECT * FROM vorlage";
-        try
+        ArrayList<Vorlage> resultTemplates = new ArrayList<>();
+        
+        try (Connection connection = SQLConnection.getCon();
+             Statement statement = connection.createStatement();
+             ResultSet resultSetTemplates = statement.executeQuery(sql))
         {
-            ArrayList<Vorlage> resultTemplates = new ArrayList<>();
-            new SQLConnection();
-			Connection connection = SQLConnection.getCon();
-            Statement statement = connection.createStatement();
-            ResultSet resultSetTemplates = statement.executeQuery(sql);
-
             while (resultSetTemplates.next())
             {
                 int templateId = resultSetTemplates.getInt("vorlageId");
-                String templateType = resultSetTemplates.getString("templateType");
+                String templateTypeString = resultSetTemplates.getString("templateType");
+                // Safety check für Enum Konvertierung
+                Vorlagearten templateType = null;
+                try {
+                    if(templateTypeString != null && !templateTypeString.isEmpty()) {
+                        // Versuche erst direktes Mapping, sonst via Helper
+                        // Hier nutzen wir deinen Helper, da in DB oft Strings wie "kvpAusweis" stehen
+                        templateType = GET_TEMPLATE_TYPE.getTemplateType(templateTypeString);
+                    }
+                } catch (Exception e) {
+                    System.out.println("Unbekannter Template Typ: " + templateTypeString);
+                }
+
                 String name = resultSetTemplates.getString("name");
                 String author = resultSetTemplates.getString("autor");
                 String fileVersion = resultSetTemplates.getString("fileVersion");
@@ -218,10 +210,11 @@ public class VorlageDAOimpl implements VorlageDAO
                 Boolean aktiv = resultSetTemplates.getBoolean("aktiv");
                 Blob files = resultSetTemplates.getBlob("daten");
 
-                Vorlage template = new Vorlage(templateId, GET_TEMPLATE_TYPE.getTemplateType(templateType), name, author, fileVersion, fileTypes,
+                if (templateType != null) {
+                     Vorlage template = new Vorlage(templateId, templateType, name, author, fileVersion, fileTypes,
                         defaultText, password, aktiv, files);
-
-                resultTemplates.add(template);
+                     resultTemplates.add(template);
+                }
             }
             return resultTemplates;
 
@@ -231,7 +224,7 @@ public class VorlageDAOimpl implements VorlageDAO
             e.printStackTrace();
         }
 
-        return null;
+        return resultTemplates; // Leere Liste statt null zurückgeben ist sicherer
     }
     /**
      *.
@@ -253,14 +246,9 @@ public class VorlageDAOimpl implements VorlageDAO
                 + "daten)"
                 + "VALUES(?,?,?,?,?,?,?,?,?,?)";
 
-        try
+        try (PreparedStatement smt = conOldDb.prepareStatement(sqlRead);
+             ResultSet vorlageResult = smt.executeQuery())
         {
-            //Connection alteDbCon = AlteDbSQLConnection.getCon();    //zu migrierende DB
-            //Connection con =  SQLConnection.getCon();               //neue DB
-
-            PreparedStatement smt = conOldDb.prepareStatement(sqlRead);
-            ResultSet vorlageResult = smt.executeQuery();
-
             while (vorlageResult.next())
             {
                 int vorlageId = vorlageResult.getInt("id");
@@ -269,14 +257,13 @@ public class VorlageDAOimpl implements VorlageDAO
                 String autor = vorlageResult.getString("autor");
                 String fileversion = vorlageResult.getString("fileversion");
                 String filetypes = vorlageResult.getString("filetypes");
-                String defaultText = vorlageResult.getString("defaultext");     //In der alten DB auch falsch geschrieben
-                Boolean passwort = vorlageResult.getBoolean("passwort");
+                String defaultText = vorlageResult.getString("defaultext");
+                Boolean passwort = vorlageResult.getBoolean("passwort"); // Achtung: In alter DB vllt boolean, neue int?
                 Boolean aktiv = vorlageResult.getBoolean("aktiv");
                 Blob daten = vorlageResult.getBlob("daten");
 
-                try
+                try (PreparedStatement smt2 = conNewdDb.prepareStatement(sql))
                 {
-                    PreparedStatement smt2 = conNewdDb.prepareStatement(sql);
                     smt2.setInt(1, vorlageId);
                     smt2.setString(2, templatetype);
                     smt2.setString(3, name);
@@ -284,17 +271,17 @@ public class VorlageDAOimpl implements VorlageDAO
                     smt2.setString(5, fileversion);
                     smt2.setString(6, filetypes);
                     smt2.setString(7, defaultText);
-                    smt2.setBoolean(8, passwort);
+                    smt2.setInt(8, passwort ? 1 : 0); // Cast boolean to int if needed
                     smt2.setBoolean(9, aktiv);
                     smt2.setBlob(10, daten);
                     smt2.executeUpdate();
-                    smt2.close();
                 } catch (SQLException e)
                 {
                     e.printStackTrace();
-                    System.out.println("Vorlage Migrieren klappt nicht");
+                    System.out.println("Vorlage Migrieren klappt nicht für ID: " + vorlageId);
                 }
             }
+            return true;
 
         } catch (SQLException e)
         {
@@ -310,47 +297,44 @@ public class VorlageDAOimpl implements VorlageDAO
     @Override public ArrayList<Vorlage> getTemplates(Vorlagearten template)
     {
         String sql = "SELECT * FROM vorlage WHERE aktiv = TRUE AND templateType = ?";
-
         ArrayList<Vorlage> resultTemplateList = new ArrayList<>();
 
-        try
+        try (Connection connection = SQLConnection.getCon();
+             PreparedStatement smt = connection.prepareStatement(sql))
         {
-            new SQLConnection();
-			Connection connection = SQLConnection.getCon();
-            PreparedStatement smt = connection.prepareStatement(sql);
             smt.setString(1, GET_TEMPLATE_TYPE.getTemplateString(template));
-            ResultSet templateResult = smt.executeQuery();
+            
+            try (ResultSet templateResult = smt.executeQuery()) {
+                while (templateResult.next())
+                {
+                    int templateId = templateResult.getInt("vorlageId");
+                    // Typ sicher holen
+                    String typeStr = templateResult.getString("templateType");
+                    Vorlagearten templateType = GET_TEMPLATE_TYPE.getTemplateType(typeStr);
+                    
+                    String name = templateResult.getString("name");
+                    String author = templateResult.getString("autor");
+                    String fileVersion = templateResult.getString("fileVersion");
+                    String fileType = templateResult.getString("fileTypes");
+                    String defaultText = templateResult.getString("defaultText");
+                    int password = templateResult.getInt("passwort");
+                    boolean isActive = templateResult.getBoolean("aktiv");
+                    Blob blob = templateResult.getBlob("daten");
 
-            while (templateResult.next())
-            {
-                int templateId = templateResult.getInt("vorlageId");
-                Vorlagearten templateType = GET_TEMPLATE_TYPE.getTemplateType(templateResult.getString("templateType"));
-                String name = templateResult.getString("name");
-                String author = templateResult.getString("autor");
-                String fileVersion = templateResult.getString("fileVersion");
-                String fileType = templateResult.getString("fileTypes");
-                String defaultText = templateResult.getString("defaultText");
-                int password = templateResult.getInt("passwort");
-                boolean isActive = templateResult.getBoolean("aktiv");
-                Blob blob = templateResult.getBlob("daten");
+                    Vorlage tempTemplate =
+                            new Vorlage(templateId, templateType, name, author, fileVersion, fileType,
+                                    defaultText, password, isActive, blob);
 
-                Vorlage tempTemplate =
-                        new Vorlage(templateId, templateType, name, author, fileVersion, fileType,
-                                defaultText, password, isActive, blob);
-
-                resultTemplateList.add(tempTemplate);
-
-
+                    resultTemplateList.add(tempTemplate);
+                }
             }
             return resultTemplateList;
-
-
 
         } catch (SQLException e)
         {
             e.printStackTrace();
         }
 
-        return null;
+        return resultTemplateList;
     }
 }

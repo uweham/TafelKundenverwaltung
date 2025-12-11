@@ -13,4 +13,5 @@ public interface VorlageDAO
     Vorlage read(int vorlageID);
     boolean migrate(Connection alteDbCon, Connection conNewdDb);
     ArrayList<Vorlage> getTemplates(Vorlagearten template);
+    ArrayList<Vorlage> getAllTemplate();
 }

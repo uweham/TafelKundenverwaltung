@@ -6,7 +6,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
-
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import kundenverwaltung.service.UpdateService;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 import javafx.application.Platform;
 import java.util.List;
 import javafx.beans.property.DoubleProperty;
@@ -247,6 +252,8 @@ public class MainWindowController
     @FXML
     private Label labelZuZahlen;
     @FXML
+    private Label versionLabel; 
+    @FXML
     private Label labelHeuteKassiert;
     @FXML
     private Label labelKontosaldo;
@@ -296,6 +303,7 @@ public class MainWindowController
     @SuppressWarnings("unchecked")
     public void initialize()
     {
+      
         columnKundennummer.setCellValueFactory(new PropertyValueFactory<>("Kundennummer"));
         columnKundennummer.setId("Kundennummer");
 
@@ -359,8 +367,34 @@ public class MainWindowController
 
 
         TablePreferenceServiceImpl.getInstance().setupPersistence(kundensucheOutput, "KundenSucheOutput");
+        
+        loadVersion();
+        
+        if (!isDevEnvironment()) {
+          new kundenverwaltung.service.UpdateService().checkForUpdates();
+      }
     }
+    
+    private void loadVersion() {
+      try (InputStream input = getClass().getResourceAsStream("/version.properties")) {
+          Properties props = new Properties();
+          if (input != null) {
+              props.load(input);
+              String version = props.getProperty("app.version", "Unbekannt");
+              System.setProperty("app.version", version);
+              if (versionLabel != null) {
+                  versionLabel.setText("Version: " + version);
+              }
+          }
+      } catch (IOException ex) {
+          System.err.println("Version konnte nicht geladen werden.");
+      }
+  }
 
+  private boolean isDevEnvironment() {
+      String v = System.getProperty("app.version");
+      return v == null || v.startsWith("${"); 
+  }
 
     /**
      *.
@@ -1303,6 +1337,7 @@ public class MainWindowController
         }
     }
 
+    
     public User getUser()
     {
         return user;

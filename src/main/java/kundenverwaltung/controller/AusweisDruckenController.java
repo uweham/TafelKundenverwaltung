@@ -87,6 +87,7 @@ public class AusweisDruckenController extends Thread
     private static final int SECOND_POSITION = 1;
 
     private static final String FUNCTION_CREATE_TABLE = "tableCreate(";
+    private static final String FUNCTION_SET_CONFIG = "setConfig(";
     private static final String FUNCTION_END = ");";
     private static final String SEPERATOR = ",";
     private static final String HIGH_COMMA = "\"";
@@ -101,13 +102,18 @@ public class AusweisDruckenController extends Thread
     private static final String NEW_ID_CARD = "%Ausweis_Neu%";
     private static final String NULL = "null";
 
-
     private Familienmitglied familymember;
 
     @FXML private CheckBox cbxArchivierteKunden;
     @FXML private CheckBox cbxGesperrteKunden;
     @FXML private CheckBox cbxAutomatischEinstellen;
     @FXML private CheckBox cbxEinkaufsberechtigte;
+
+    // --- NEU: Die Hybrid-Konfigurator Checkboxen ---
+    @FXML private CheckBox cbxShowMarker;
+    @FXML private CheckBox cbxShowGroup;
+    @FXML private CheckBox cbxShowBarcodeGroup;
+
     @FXML private RadioButton rbAktuellerKunde;
     @FXML private RadioButton rbAlleKunden;
     @FXML private ComboBox<Verteilstelle> cbVerteilstelle;
@@ -134,16 +140,13 @@ public class AusweisDruckenController extends Thread
     private HaushaltDAOimpl haushaltDAOimpl = new HaushaltDAOimpl();
     private FamilienmitgliedDAOimpl familienmitgliedDAOimpl = new FamilienmitgliedDAOimpl();
 
-    private ArrayList<Vorlage> templatesArrayList =
-            vorlageDAOimpl.getTemplates(Vorlagearten.Ausweis);
-    private ObservableList<Vorlage> templateObserverList =
-            FXCollections.observableArrayList(templatesArrayList);
-    private ArrayList<Verteilstelle> distributionPointsArrayList = verteilstelleDAOimpl.readAll();
-    private ObservableList<Verteilstelle> distributionPointsObservableList =
-            FXCollections.observableArrayList(distributionPointsArrayList);
-    private ArrayList<Warentyp> productTypeArrayList = warentypDAOimpl.readAll();
+    private ArrayList<Vorlage> templatesArrayList;
+    private ObservableList<Vorlage> templateObserverList;
+    private ArrayList<Verteilstelle> distributionPointsArrayList;
+    private ObservableList<Verteilstelle> distributionPointsObservableList;
+    private ArrayList<Warentyp> productTypeArrayList;
     private ObservableList<Warentyp> productTypeObservableList;
-    private ObservableList<OrderBy> orderByObservableList = orderBy();
+    private ObservableList<OrderBy> orderByObservableList;
 
     private Warentyp invalidProductType = new Warentyp(-1, "Alle", 0, 0, false);
     private ArrayList<Haushalt> customerArrayList;
@@ -167,6 +170,17 @@ public class AusweisDruckenController extends Thread
      */
     public void initialize()
     {
+        templatesArrayList = vorlageDAOimpl.getTemplates(Vorlagearten.Ausweis);
+        templateObserverList = FXCollections.observableArrayList(templatesArrayList);
+
+        distributionPointsArrayList = verteilstelleDAOimpl.readAll();
+        distributionPointsObservableList = FXCollections.observableArrayList(distributionPointsArrayList);
+
+        productTypeArrayList = warentypDAOimpl.readAll();
+        productTypeArrayList.add(0, invalidProductType);
+        productTypeObservableList = FXCollections.observableArrayList(productTypeArrayList);
+        orderByObservableList = orderBy();
+
         cbVorlage.setItems(templateObserverList);
         cbVorlage.setConverter(new StringConverter<Vorlage>()
         {
@@ -184,8 +198,6 @@ public class AusweisDruckenController extends Thread
         cbVerteilstelle.setItems(distributionPointsObservableList);
         cbVerteilstelle.getSelectionModel().selectFirst();
 
-        productTypeArrayList.add(FIRST_POSITION, invalidProductType);
-        productTypeObservableList = FXCollections.observableArrayList(productTypeArrayList);
         cbWarentyp.setItems(productTypeObservableList);
         cbWarentyp.getSelectionModel().selectFirst();
 
@@ -206,12 +218,10 @@ public class AusweisDruckenController extends Thread
         cbSortierReihenfolge.setItems(SORT_ASC_DESC_OBSERVABLELIST);
         cbSortierReihenfolge.getSelectionModel().selectFirst();
 
-        // --- NEU: ToggleGroup + Listener wie im Kassenbeleg-Controller ---
         waehleKunde = new ToggleGroup();
         rbAktuellerKunde.setToggleGroup(waehleKunde);
         rbAlleKunden.setToggleGroup(waehleKunde);
 
-        // Erstellen-Button initial sperren, bis eine gültige Auswahl vorliegt
         buttonCreate.setDisable(true);
 
         waehleKunde.selectedToggleProperty().addListener((obs, oldT, newT) ->
@@ -235,11 +245,9 @@ public class AusweisDruckenController extends Thread
             {
                 buttonCreate.setDisable(true);
             }
-            // Visuals für Verteilstelle etc. aktualisieren
             checkClientsFromDistributionPoints();
         });
 
-        // UI gemäß aktuellem Radiostatus initial justieren
         checkClientsFromDistributionPoints();
     }
 
@@ -248,7 +256,6 @@ public class AusweisDruckenController extends Thread
         template = cbVorlage.getValue();
         orderBy = cbSortierenNach.getValue();
 
-        // auf/absteigend aus ComboBox übernehmen
         int idx = cbSortierReihenfolge.getSelectionModel().getSelectedIndex();
         ascending = (idx == 0);
 
@@ -258,7 +265,6 @@ public class AusweisDruckenController extends Thread
 
         if (rbAktuellerKunde.isSelected())
         {
-            // Safety: familymember muss gesetzt sein
             if (familymember == null)
             {
                 Benachrichtigung.warnungBenachrichtigung("Kein Kunde ausgewählt",
@@ -270,7 +276,6 @@ public class AusweisDruckenController extends Thread
         } else
         {
             distributionPoint = cbVerteilstelle.getValue();
-            // explizit für „Alle Kunden“ keine einzelne Person
             familymember = null;
         }
 
@@ -283,7 +288,6 @@ public class AusweisDruckenController extends Thread
      */
     public void chooseIdType() throws IOException
     {
-        // Zusätzliche Guard: aktueller Kunde gewählt, aber keiner gesetzt
         if (rbAktuellerKunde.isSelected() && familymember == null)
         {
             Benachrichtigung.warnungBenachrichtigung("Kein Kunde ausgewählt",
@@ -364,13 +368,10 @@ public class AusweisDruckenController extends Thread
                         BufferedWriter bufferedWriter =
                                 new BufferedWriter(new FileWriter(tempReadyHtml));
 
-                        int tempCountRow = 1;
-                        int findPlaceholder;
                         String row = null;
                         while ((row = bufferedReader.readLine()) != null)
                         {
-                            findPlaceholder = row.indexOf(PLACEHOLDER_FOR_FUNCTIONS);
-                            if (findPlaceholder > -1)
+                            if (row.contains(PLACEHOLDER_FOR_FUNCTIONS))
                             {
                                 row = row.replace(PLACEHOLDER_END_OF_FILE, "");
                                 row = row.replace(PLACEHOLDER_FOR_FUNCTIONS, createSingleIdCard());
@@ -382,8 +383,6 @@ public class AusweisDruckenController extends Thread
                             }
 
                             bufferedWriter.write(row);
-                            System.out.println(tempCountRow + ": " + row);
-                            tempCountRow++;
                         }
                         bufferedWriter.close();
                         bufferedReader.close();
@@ -440,13 +439,10 @@ public class AusweisDruckenController extends Thread
                         BufferedWriter bufferedWriter =
                                 new BufferedWriter(new FileWriter(tempReadyHtml));
 
-                        int tempCountRow = 1;
-                        int findPlaceholder;
                         String row = null;
                         while ((row = bufferedReader.readLine()) != null)
                         {
-                            findPlaceholder = row.indexOf(PLACEHOLDER_FOR_FUNCTIONS);
-                            if (findPlaceholder > -1)
+                            if (row.contains(PLACEHOLDER_FOR_FUNCTIONS))
                             {
                                 row = row.replace(PLACEHOLDER_END_OF_FILE, "");
                                 row = row.replace(PLACEHOLDER_FOR_FUNCTIONS, createTableIdCard());
@@ -458,8 +454,6 @@ public class AusweisDruckenController extends Thread
                             }
 
                             bufferedWriter.write(row);
-                            System.out.println(tempCountRow + ": " + row);
-                            tempCountRow++;
                         }
                         bufferedWriter.close();
                         bufferedReader.close();
@@ -493,55 +487,63 @@ public class AusweisDruckenController extends Thread
      */
     private String createTableIdCard()
     {
-        String resultString = null;
+        StringBuilder js = new StringBuilder();
 
         customerArrayList = haushaltDAOimpl
                 .createCustomerList(distributionPoint, productType, orderBy, ascending,
                         showArchivedCustomer, showBlockedCustomer);
 
+        // 1. Konfiguration setzen (anhand der Checkboxen)
+        // JS Signatur: setConfig(showMarker, showGroup, showBarcode2)
+        js.append(FUNCTION_SET_CONFIG)
+          .append(cbxShowMarker.isSelected()).append(SEPERATOR)
+          .append(cbxShowGroup.isSelected()).append(SEPERATOR)
+          .append(cbxShowBarcodeGroup.isSelected())
+          .append(FUNCTION_END);
+
         for (Haushalt element : customerArrayList)
         {
-            String city = (element.getHaushaltsvorstand(
-                    familienmitgliedDAOimpl.getAllFamilienmitglieder(
-                            element.getKundennummer())).getPlz()) + " "
-                    + replaceGermanCharacters.replaceGermanUmlauts(element
-                    .getHaushaltsvorstand(familienmitgliedDAOimpl.getAllFamilienmitglieder(
-                            element.getKundennummer())).getWohnort());
+            Familienmitglied vorstand = element.getHaushaltsvorstand(
+                    familienmitgliedDAOimpl.getAllFamilienmitglieder(element.getKundennummer()));
+            
+            if(vorstand == null) continue;
 
-            String fullName = (replaceGermanCharacters.replaceGermanUmlauts(
-                    element.getHaushaltsvorstand(familienmitgliedDAOimpl
-                            .getAllFamilienmitglieder(
-                                    element.getKundennummer())).getvName())
-                    + " " + replaceGermanCharacters.replaceGermanUmlauts(element
-                    .getHaushaltsvorstand(familienmitgliedDAOimpl.getAllFamilienmitglieder(
-                            element.getKundennummer())).getNachname()));
+            String city = element.getPlz().getPlz() + " " + replaceGermanCharacters.replaceGermanUmlauts(element.getPlz().getOrt());
+            String fullName = replaceGermanCharacters.replaceGermanUmlauts(vorstand.getvName()) + " " + replaceGermanCharacters.replaceGermanUmlauts(vorstand.getnName());
+            String address = replaceGermanCharacters.replaceGermanUmlauts(element.getStrasse() + " " + element.getHausnummer());
 
-            // BUGFIX 4: Nutzung der Kundennummer (Haushalt) statt der PersonID für Barcode
+            // Barcode 1: Haushalt
             barCodeUtil.createBarCode128(String.valueOf(element.getKundennummer()));
-            String barcodePath = barCodeUtil.getPathToTemp().replaceAll(ESCAPE, ESCAPED);
+            String bc1 = barCodeUtil.getPathToTemp().replaceAll(ESCAPE, ESCAPED);
 
-            resultString += FUNCTION_CREATE_TABLE
-                    // BUGFIX 4: Nutzung der Kundennummer (Haushalt) statt der PersonID für Anzeige
-                    + getFinishedValueForJavaScriptFunction(
-                    String.valueOf(element.getKundennummer()), false)
-                    + getFinishedValueForJavaScriptFunction(fullName, false)
-                    + getFinishedValueForJavaScriptFunction(changeDateFormat
-                    .changeDateToDefaultString(element.getHaushaltsvorstand(
-                            familienmitgliedDAOimpl.getAllFamilienmitglieder(
-                                    element.getKundennummer())).getGeburtsdatum()), false)
-                    + getFinishedValueForJavaScriptFunction(replaceGermanCharacters
-                    .replaceGermanUmlauts(element.getHaushaltsvorstand(
-                            familienmitgliedDAOimpl.getAllFamilienmitglieder(
-                                    element.getKundennummer())).getAdresse()), false)
-                    + getFinishedValueForJavaScriptFunction(city, false)
-                    + getFinishedValueForJavaScriptFunction(replaceGermanCharacters
-                    .replaceGermanUmlauts(String.valueOf(element.getanzahlErwachsene())), false)
-                    + getFinishedValueForJavaScriptFunction(replaceGermanCharacters
-                    .replaceGermanUmlauts(String.valueOf(element.getanzahlKinder())), false)
-                    + getFinishedValueForJavaScriptFunction(barcodePath, true)
-                    + FUNCTION_END;
+            // Barcode 2: Gruppe (falls gewünscht, sonst leer)
+            String bc2 = "";
+            String groupName = "";
+            if (element.getAusgabegruppe() != null) {
+                groupName = replaceGermanCharacters.replaceGermanUmlauts(element.getAusgabegruppe().getName());
+                if(cbxShowBarcodeGroup.isSelected()) {
+                    // Erstelle Barcode für Gruppe (Hier Beispiel: ID der Gruppe)
+                    barCodeUtil.createBarCode128(String.valueOf(element.getAusgabegruppe().getAusgabegruppeId()));
+                    bc2 = barCodeUtil.getPathToTemp().replaceAll(ESCAPE, ESCAPED);
+                }
+            }
+
+            // JS Aufruf bauen
+            js.append(FUNCTION_CREATE_TABLE)
+              .append(getFinishedValueForJavaScriptFunction(String.valueOf(element.getKundennummer()), false))
+              .append(getFinishedValueForJavaScriptFunction(fullName, false))
+              .append(getFinishedValueForJavaScriptFunction(changeDateFormat.changeDateToDefaultString(vorstand.getGeburtsdatum()), false))
+              .append(getFinishedValueForJavaScriptFunction(address, false))
+              .append(getFinishedValueForJavaScriptFunction(city, false))
+              .append(getFinishedValueForJavaScriptFunction(groupName, false))
+              .append(getFinishedValueForJavaScriptFunction(String.valueOf(element.getanzahlErwachsene()), false))
+              .append(getFinishedValueForJavaScriptFunction(String.valueOf(element.getanzahlKinder()), false))
+              .append(getFinishedValueForJavaScriptFunction(bc1, false)) // Barcode 1
+              .append(getFinishedValueForJavaScriptFunction(bc2, true))  // Barcode 2 (letzter)
+              .append(FUNCTION_END);
         }
-        return (SCRIPT_TAG_OPEN + resultString + SCRIPT_TAG_CLOSE);
+        
+        return SCRIPT_TAG_OPEN + js.toString() + SCRIPT_TAG_CLOSE;
     }
 
     /**
@@ -549,35 +551,47 @@ public class AusweisDruckenController extends Thread
      */
     private String createSingleIdCard()
     {
-        String resultString = null;
+        StringBuilder js = new StringBuilder();
 
-        String city = (familymember.getPlz()) + " "
-                + replaceGermanCharacters.replaceGermanUmlauts(familymember.getWohnort());
-        String fullName =
-                (replaceGermanCharacters.replaceGermanUmlauts(familymember.getvName())) + " "
-                        + (replaceGermanCharacters.replaceGermanUmlauts(familymember.getnName()));
+        // Config setzen
+        js.append(FUNCTION_SET_CONFIG)
+          .append(cbxShowMarker.isSelected()).append(SEPERATOR)
+          .append(cbxShowGroup.isSelected()).append(SEPERATOR)
+          .append(cbxShowBarcodeGroup.isSelected())
+          .append(FUNCTION_END);
 
-        // BUGFIX 4: Nutzung der Kundennummer (Haushalt) statt der PersonID für Barcode
-        barCodeUtil.createBarCode128(String.valueOf(familymember.getHaushalt().getKundennummer()));
-        String barcodePath = barCodeUtil.getPathToTemp().replaceAll(ESCAPE, ESCAPED);
+        Haushalt hh = familymember.getHaushalt();
+        String city = hh.getPlz().getPlz() + " " + replaceGermanCharacters.replaceGermanUmlauts(hh.getPlz().getOrt());
+        String fullName = replaceGermanCharacters.replaceGermanUmlauts(familymember.getvName()) + " " + replaceGermanCharacters.replaceGermanUmlauts(familymember.getnName());
+        String address = replaceGermanCharacters.replaceGermanUmlauts(hh.getStrasse() + " " + hh.getHausnummer());
 
-        resultString += FUNCTION_CREATE_TABLE
-                // BUGFIX 4: Nutzung der Kundennummer (Haushalt) statt der PersonID für Anzeige
-                + getFinishedValueForJavaScriptFunction(String.valueOf(familymember.getHaushalt().getKundennummer()), false)
-                + getFinishedValueForJavaScriptFunction(fullName, false)
-                + getFinishedValueForJavaScriptFunction(
-                changeDateFormat.changeDateToDefaultString(familymember.getGeburtsdatum()), false)
-                + getFinishedValueForJavaScriptFunction(
-                replaceGermanCharacters.replaceGermanUmlauts(familymember.getAdresse()), false)
-                + getFinishedValueForJavaScriptFunction(city, false)
-                + getFinishedValueForJavaScriptFunction(replaceGermanCharacters.replaceGermanUmlauts(
-                String.valueOf(familymember.getHaushalt().getanzahlErwachsene())), false)
-                + getFinishedValueForJavaScriptFunction(replaceGermanCharacters.replaceGermanUmlauts(
-                String.valueOf(familymember.getHaushalt().getanzahlKinder())), false)
-                + getFinishedValueForJavaScriptFunction(barcodePath, true)
-                + FUNCTION_END;
+        barCodeUtil.createBarCode128(String.valueOf(hh.getKundennummer()));
+        String bc1 = barCodeUtil.getPathToTemp().replaceAll(ESCAPE, ESCAPED);
 
-        return (SCRIPT_TAG_OPEN + resultString + SCRIPT_TAG_CLOSE);
+        String bc2 = "";
+        String groupName = "";
+        if (hh.getAusgabegruppe() != null) {
+            groupName = replaceGermanCharacters.replaceGermanUmlauts(hh.getAusgabegruppe().getName());
+            if(cbxShowBarcodeGroup.isSelected()) {
+                barCodeUtil.createBarCode128(String.valueOf(hh.getAusgabegruppe().getAusgabegruppeId()));
+                bc2 = barCodeUtil.getPathToTemp().replaceAll(ESCAPE, ESCAPED);
+            }
+        }
+
+        js.append(FUNCTION_CREATE_TABLE)
+          .append(getFinishedValueForJavaScriptFunction(String.valueOf(hh.getKundennummer()), false))
+          .append(getFinishedValueForJavaScriptFunction(fullName, false))
+          .append(getFinishedValueForJavaScriptFunction(changeDateFormat.changeDateToDefaultString(familymember.getGeburtsdatum()), false))
+          .append(getFinishedValueForJavaScriptFunction(address, false))
+          .append(getFinishedValueForJavaScriptFunction(city, false))
+          .append(getFinishedValueForJavaScriptFunction(groupName, false))
+          .append(getFinishedValueForJavaScriptFunction(String.valueOf(hh.getanzahlErwachsene()), false))
+          .append(getFinishedValueForJavaScriptFunction(String.valueOf(hh.getanzahlKinder()), false))
+          .append(getFinishedValueForJavaScriptFunction(bc1, false))
+          .append(getFinishedValueForJavaScriptFunction(bc2, true))
+          .append(FUNCTION_END);
+
+        return (SCRIPT_TAG_OPEN + js.toString() + SCRIPT_TAG_CLOSE);
     }
 
     /**

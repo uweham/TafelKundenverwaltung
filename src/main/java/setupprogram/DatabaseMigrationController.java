@@ -384,7 +384,10 @@ public class DatabaseMigrationController
       haushaltMapping.put("ausgabeGruppeId", null);
       haushaltMapping.put("belieferung", 15);
       haushaltMapping.put("datenschutzerklaerung", 16);
-      migrateTable(conOldDb, conNewDb, "lita_kundenstamm", "haushalt", haushaltMapping, "kundennummer", List.of("verteilstellenId", "verteilstelle", "verteilstellenId"));
+      
+      // FIX: PLZ hinzugefügt zur Prüfung, um Abstürze bei ungültigen PLZs zu verhindern
+      migrateTable(conOldDb, conNewDb, "lita_kundenstamm", "haushalt", haushaltMapping, "kundennummer", 
+                   List.of("verteilstellenId", "verteilstelle", "verteilstellenId", "plz", "plz", "plzId"));
 
       migrateFamilienmitglieder(conOldDb, conNewDb);
 
@@ -410,8 +413,14 @@ public class DatabaseMigrationController
       einkaufMapping.put("beiVerteilstelle", 12);
       einkaufMapping.put("anzahlKinder", 13);
       einkaufMapping.put("anzahlErwachsene", 14);
+      
+      // FIX: Warentyp hinzugefügt, damit ungültige Warentypen übersprungen werden.
+      // FIX: 'Person' entfernt aus dieser Liste, damit 0-Werte nicht zum Überspringen führen, 
+      //      sondern in migrateTable zu NULL konvertiert werden.
       migrateTable(conOldDb, conNewDb, "lita_kunden_einkaeufe", "einkauf", einkaufMapping, "einkaufId",
-              List.of("kunde", "haushalt", "kundennummer", "person", "familienmitglied", "personId", "beiVerteilstelle", "verteilstelle", "verteilstellenId"));
+              List.of("kunde", "haushalt", "kundennummer", 
+                      "beiVerteilstelle", "verteilstelle", "verteilstellenId",
+                      "warentyp", "warentyp", "warentypId"));
 
       Map<String, Integer> rechtMapping = createColumnMapping(
           Map.of("rechtId", 1, "Name", 2, "Beschreibung", 3)
@@ -504,6 +513,14 @@ public class DatabaseMigrationController
                 }
 
                 int berechtigungId = getIntByMap(rs, colIndexMap, "Berechtigung", 1);
+                
+                // FIX: Prüfung, ob Berechtigung-ID existiert. Wenn nicht, Default auf 1.
+                if (!checkForeignKeyConstraint(conNewDb, "berechtigung", "berechtigungId", berechtigungId))
+                {
+                    LOGGER.warning("Berechtigung ID " + berechtigungId + " nicht in Zieltabelle gefunden (Person " + personId + "). Setze Default auf 1.");
+                    berechtigungId = 1;
+                }
+
                 boolean dseSubmitted = false;
 
                 Timestamp hinzugefuegt = null;
@@ -852,6 +869,13 @@ public class DatabaseMigrationController
                         {
                             value = 1;
                         }
+                        
+                        // FIX: special-case für Person ID 0 -> NULL (verhindert FK-Error bei Einkäufen)
+                        if ("person".equals(entry.getKey()) && (value instanceof Number) && ((Number) value).intValue() == 0)
+                        {
+                            value = null;
+                        }
+                        
                         insertStmt.setObject(parameterIndex++, value);
                     }
 

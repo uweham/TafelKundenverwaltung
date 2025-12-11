@@ -14,24 +14,23 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="500.0" prefWidth="455.0" xmlns="http://javafx.com/javafx/8"
+<AnchorPane prefHeight="550.0" prefWidth="455.0" xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="kundenverwaltung.controller.AusweisDruckenController">
     <children>
         <Label fx:id="labelHeader" alignment="CENTER" prefHeight="84.0" prefWidth="455.0"
                text="Drucken Sie alle Ausweise aller Kunden als Liste aus.&#10;Diese können Sie dann im zugehörigen Programm &#10;speichern oder drucken."
-               textFill="#ee6f00" AnchorPane.bottomAnchor="416.0" AnchorPane.leftAnchor="0.0"
+               textFill="#ee6f00" AnchorPane.bottomAnchor="466.0" AnchorPane.leftAnchor="0.0"
                AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
-        <Pane layoutY="82.0" prefHeight="418.0" prefWidth="455.0" AnchorPane.bottomAnchor="0.0"
+        
+        <Pane layoutY="82.0" prefHeight="468.0" prefWidth="455.0" AnchorPane.bottomAnchor="0.0"
               AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="82.0">
             <children>
                 <Label fx:id="labelTemplate" layoutX="14.0" text="Vorlage:"/>
-                <CheckBox fx:id="cbxGesperrteKunden" disable="true" layoutX="14.0" layoutY="283.0"
-                          mnemonicParsing="false"
-                          text="Ausweise auch für gesperrte Kunden erstellen"/>
-                <Separator layoutX="3.0" layoutY="192.0" prefHeight="17.0" prefWidth="449.0"
-                           AnchorPane.leftAnchor="19.0" AnchorPane.rightAnchor="38.0"
-                           AnchorPane.topAnchor="192.0"/>
+                
+                <ComboBox fx:id="cbVorlage" layoutX="14.0" layoutY="21.0" prefHeight="31.0"
+                          prefWidth="423.0"/>
+                          
                 <RadioButton fx:id="rbAktuellerKunde"  disable="true" layoutX="14.0" layoutY="69.0"
                              mnemonicParsing="false" onAction="#checkClientsFromDistributionPoints"
                              text="Aktuellen Kunden">
@@ -39,41 +38,61 @@
                         <ToggleGroup fx:id="waehleKunde"/>
                     </toggleGroup>
                 </RadioButton>
+         
                 <RadioButton fx:id="rbAlleKunden" layoutX="14.0" layoutY="96.0"
                              mnemonicParsing="false" onAction="#checkClientsFromDistributionPoints"
                              text="Alle Kunden folgender Verteilstelle" toggleGroup="$waehleKunde"/>
-                <ComboBox fx:id="cbVerteilstelle" disable="true" layoutX="15.0" layoutY="146.0"
-                          prefHeight="10.0" prefWidth="218.0"/>
-                <ComboBox fx:id="cbVorlage" layoutX="14.0" layoutY="21.0" prefHeight="31.0"
-                          prefWidth="423.0"/>
+                             
                 <Label fx:id="lbVerteilstelle" disable="true" layoutX="16.0" layoutY="124.0"
                        text="Verteilstelle:"/>
-                <ComboBox fx:id="cbWarentyp" layoutY="140.0" prefHeight="31.0" prefWidth="404.0" visible="false" />
-                <ComboBox fx:id="cbSortierReihenfolge" layoutX="274.0" layoutY="201.0" prefHeight="3.0" prefWidth="166.0" visible="false"/>
-                <ComboBox fx:id="cbSortierenNach" layoutY="201.0" prefHeight="3.0" prefWidth="253.0" visible="false" />
-                <CheckBox fx:id="cbxArchivierteKunden" disable="true" layoutX="14.0" layoutY="253.0"
-                          mnemonicParsing="false"
-                          text="Ausweise auch für archivierte Kunden erstellen"/>
-                <Button fx:id="buttonCreate" layoutX="15.0" layoutY="373.0" mnemonicParsing="false"
-                        onAction="#chooseIdType" prefHeight="31.0" prefWidth="82.0"
-                        text="Erstellen"/>
+                       
+                <ComboBox fx:id="cbVerteilstelle" disable="true" layoutX="15.0" layoutY="146.0"
+                          prefHeight="10.0" prefWidth="218.0"/>
+                          
                 <CheckBox fx:id="cbxAutomatischEinstellen" disable="true" layoutX="259.0"
                           layoutY="148.0" mnemonicParsing="false" prefHeight="21.0"
                           prefWidth="167.0" text="automatisch einstellen"/>
+
+                <ComboBox fx:id="cbWarentyp" layoutY="140.0" prefHeight="31.0" prefWidth="404.0" visible="false" />
+                <ComboBox fx:id="cbSortierReihenfolge" layoutX="274.0" layoutY="201.0" prefHeight="3.0" prefWidth="166.0" visible="false"/>
+                <ComboBox fx:id="cbSortierenNach" layoutY="201.0" prefHeight="3.0" prefWidth="253.0" visible="false" />
+
+                <Separator layoutX="3.0" layoutY="192.0" prefHeight="17.0" prefWidth="449.0"
+                           AnchorPane.leftAnchor="19.0" AnchorPane.rightAnchor="38.0"
+                           AnchorPane.topAnchor="192.0"/>
+
                 <CheckBox fx:id="cbxEinkaufsberechtigte" disable="true" layoutX="14.0"
                           layoutY="224.0" mnemonicParsing="false"
                           text="Ausweise auch für einkaufberechtigte Personen erstellen"/>
-                <!--<CheckBox fx:id="cbxEinstellungenAlsStandard" layoutX="15.0" layoutY="341.0" mnemonicParsing="false" text="Diese Einstellungen als Standard speichern">
-                   <font>
-                      <Font size="11.0" />
-                   </font>
-                </CheckBox>-->
-                <!-- <Separator layoutX="-6.0" layoutY="319.0" prefHeight="17.0" prefWidth="461.0" />-->
-                <Button fx:id="buttonCancel" layoutX="359.0" layoutY="373.0" mnemonicParsing="false"
+
+                <CheckBox fx:id="cbxArchivierteKunden" disable="true" layoutX="14.0" layoutY="253.0"
+                          mnemonicParsing="false"
+                          text="Ausweise auch für archivierte Kunden erstellen"/>
+                          
+                <CheckBox fx:id="cbxGesperrteKunden" disable="true" layoutX="14.0" layoutY="283.0"
+                          mnemonicParsing="false"
+                          text="Ausweise auch für gesperrte Kunden erstellen"/>
+
+                <Separator layoutX="19.0" layoutY="315.0" prefHeight="3.0" prefWidth="418.0" />
+
+                <Label layoutX="14.0" layoutY="325.0" text="Layout Optionen (Modern):" textFill="#666666">
+                    <font>
+                        <Font name="System Bold" size="12.0" />
+                    </font>
+                </Label>
+
+                <CheckBox fx:id="cbxShowGroup" layoutX="14.0" layoutY="350.0" mnemonicParsing="false" selected="false" text="Ausgabegruppe (A/B) anzeigen" />
+                <CheckBox fx:id="cbxShowBarcodeGroup" layoutX="230.0" layoutY="350.0" mnemonicParsing="false" selected="false" text="Gruppen-Barcode" />
+                <CheckBox fx:id="cbxShowMarker" layoutX="14.0" layoutY="375.0" mnemonicParsing="false" selected="false" text="Lochmarker anzeigen" />
+
+                <Button fx:id="buttonCreate" layoutX="15.0" layoutY="410.0" mnemonicParsing="false"
+                        onAction="#chooseIdType" prefHeight="31.0" prefWidth="82.0"
+                        text="Erstellen"/>
+
+                <Button fx:id="buttonCancel" layoutX="359.0" layoutY="410.0" mnemonicParsing="false"
                         onAction="#terminateIDCreation" prefHeight="31.0" prefWidth="82.0"
                         text="Abbrechen"/>
             </children>
         </Pane>
     </children>
 </AnchorPane>
-
