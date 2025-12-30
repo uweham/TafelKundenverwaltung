@@ -2,6 +2,7 @@ package kundenverwaltung.controller;
 
 //import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.nio.file.FileSystems;
 //import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -94,6 +95,7 @@ public class DatabaseConnectionController
     {
         try
         {
+            String fileSeparator = FileSystems.getDefault().getSeparator();
             String dbHostname = txtServername.getText();
             String dbName = txtDatenbank.getText();
             String dbPort = txtPort.getText();
@@ -129,7 +131,7 @@ public class DatabaseConnectionController
                         prop.setProperty("jdbc.password", BlowfishEncryption.encrypt(dbPassword));
 
                         String homeDir = System.getProperty("user.home");
-                        try (FileOutputStream output = new FileOutputStream(homeDir + "\\Tafel Kundenverwaltung\\DatabaseInfo.properties"))
+                        try (FileOutputStream output = new FileOutputStream(homeDir + fileSeparator+"Tafel Kundenverwaltung"+fileSeparator+"DatabaseInfo.properties"))
                         {
                             prop.store(output, "MySQL database information");
                         }

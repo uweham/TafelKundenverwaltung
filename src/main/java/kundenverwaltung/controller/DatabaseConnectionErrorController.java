@@ -2,6 +2,7 @@ package kundenverwaltung.controller;
 
 //import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.nio.file.FileSystems;
 //import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -67,6 +68,7 @@ public class DatabaseConnectionErrorController
 
         try
         {
+            String fileSeparator = FileSystems.getDefault().getSeparator();
             String dbHostname = txtServername.getText();
             String dbName = txtDatenbank.getText();
             String dbPort = txtPort.getText();
@@ -103,7 +105,7 @@ public class DatabaseConnectionErrorController
 
                         String homeDir = System.getProperty("user.home");
                         FileOutputStream output =
-                                new FileOutputStream(homeDir + "\\Tafel Kundenverwaltung\\DatabaseInfo.properties");
+                                new FileOutputStream(homeDir + fileSeparator+"Tafel Kundenverwaltung"+fileSeparator+"DatabaseInfo.properties");
                         prop.store(output, "MySQL database information");
                         output.close();
 
