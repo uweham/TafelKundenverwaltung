@@ -121,4 +121,17 @@ public class CheckUserInput
 			return true;
 		}
 	}
+	// In kundenverwaltung.toolsandworkarounds.CheckUserInput
+
+    /**
+     * Prüft, ob ein String genau 5 Zeichen lang ist.
+     * @param plz Der zu prüfende String
+     * @return true, wenn genau 5 Zeichen, sonst false
+     */
+    public static boolean checkPLZLength(String plz) {
+        if (plz == null) {
+            return false;
+        }
+        return plz.trim().length() == 5;
+    }
 }
