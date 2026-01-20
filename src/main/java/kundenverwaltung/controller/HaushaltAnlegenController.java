@@ -276,7 +276,7 @@ public class HaushaltAnlegenController
         setupPlzAutocomplete();
     }
 
-    // --- Autocomplete-Setup ---
+ // --- Autocomplete-Setup ---
     @SuppressWarnings("unchecked")
     private void setupPlzAutocomplete()
     {

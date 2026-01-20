@@ -75,7 +75,7 @@
 
                 <Separator layoutX="19.0" layoutY="315.0" prefHeight="3.0" prefWidth="418.0" />
 
-                <Label layoutX="14.0" layoutY="325.0" text="Layout Optionen (Modern):" textFill="#666666">
+                <Label layoutX="14.0" layoutY="325.0" text="Layout Optionen:" textFill="#666666">
                     <font>
                         <Font name="System Bold" size="12.0" />
                     </font>

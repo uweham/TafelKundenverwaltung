@@ -77,8 +77,15 @@ public class KontaktdatenBearbeitenController
 
         if (pruefeFelderHaushalt())
         {
-
-            haushalt.setStrasse(txtKDStrasse.getText().trim());     // inihibit first letter Uppercase
+          if (!kundenverwaltung.toolsandworkarounds.CheckUserInput.checkPLZLength(txtKDPostleitzahl.getText())) 
+          {
+              Benachrichtigung.warnungBenachrichtigung(
+                  "Ungültige Postleitzahl", 
+                  "Die Postleitzahl muss genau 5 Stellen haben."
+              );
+              return;
+          }
+            haushalt.setStrasse(ersteBuchstabenGross(txtKDStrasse.getText()));
             haushalt.setHausnummer(txtKDHausnummer.getText().trim());
             haushalt.setMobilnummer(txtKDMobiltelefon.getText().trim());
             haushalt.setTelefonnummer(txtKDTelefonnummer.getText().trim());

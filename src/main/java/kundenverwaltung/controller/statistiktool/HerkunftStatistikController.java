@@ -5,6 +5,7 @@ import kundenverwaltung.dao.PLZDAO;
 import kundenverwaltung.dao.PLZDaoImpl;
 import kundenverwaltung.model.PLZ;
 import kundenverwaltung.model.statistiktool.Herkunft;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
