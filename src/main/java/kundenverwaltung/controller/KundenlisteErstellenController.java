@@ -448,7 +448,7 @@ public class KundenlisteErstellenController extends Thread
                                 ?
                                     CUMSTEMER_IS_BLOCKED_STRING : ""), false)
                     +
-                    getFinishedValueForJavaScriptFunction(
+                   getFinishedValueForJavaScriptFunction(
                             replaceGermanCharacters.replaceGermanUmlauts(decisionString), false)
                     +
                     getFinishedValueForJavaScriptFunction(replaceGermanCharacters

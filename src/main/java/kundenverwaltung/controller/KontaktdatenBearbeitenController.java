@@ -187,6 +187,10 @@ public class KontaktdatenBearbeitenController
      * @return The string with the first letters of each word converted to uppercase.
      */
 
+    /**
+     * Wandelt den ersten Buchstaben jedes Wortes in Großbuchstaben um.
+     * Berücksichtigt Leerzeichen, Bindestriche und Punkte als Trenner.
+     */
     public String ersteBuchstabenGross(String string)
     {
 

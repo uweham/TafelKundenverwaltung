@@ -344,6 +344,12 @@ public class MainWindowController
 
 
         cbErfassungsVerteilstelle.setItems(verteilstellenOL);
+        cbErfassungsVerteilstelle.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+          if (newValue != null) {
+              refreshCustomerTableView();
+          }
+     });
+      
         cbErfassungsVerteilstelle.getSelectionModel().selectFirst();
         fuelleKassenFelder();
         cbSucheFilter.getSelectionModel().selectFirst();
