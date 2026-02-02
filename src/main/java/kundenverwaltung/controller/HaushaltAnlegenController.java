@@ -661,7 +661,7 @@ public class HaushaltAnlegenController
 
             if (plzEinfuegen)
             {
-                String strasse = ersteBuchstabenGross(txtStrasse.getText());
+                String strasse =  txtStrasse.getText().trim();  // inhibit uppercase first letter
                 String hausnummmer = txtHausnummer.getText().trim();
 
                 String bemerkung = "";
@@ -703,8 +703,8 @@ public class HaushaltAnlegenController
     {
         if (pruefeFelderVorstand())
         {
-            String vname = ersteBuchstabenGross(txtVorname.getText());
-            String nname = ersteBuchstabenGross(txtNachname.getText());
+            String vname = txtVorname.getText().trim(); // inhibit uppercase first letter
+            String nname = txtNachname.getText().trim(); // inhibit uppercase first letter
             Anrede anrede = null;
             Gender gender = null;
 
@@ -855,9 +855,9 @@ public class HaushaltAnlegenController
      */
     @FXML protected void firstToUppercase()
     {
-        firstLetterToUppercase.firstLetterUppercase(txtVorname);
-        firstLetterToUppercase.firstLetterUppercase(txtNachname);
-        firstLetterToUppercase.firstLetterUppercase(txtWohnort);
+        //firstLetterToUppercase.firstLetterUppercase(txtVorname);
+        //firstLetterToUppercase.firstLetterUppercase(txtNachname);
+        //firstLetterToUppercase.firstLetterUppercase(txtWohnort);
     }
     /**
      *.

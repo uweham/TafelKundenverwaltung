@@ -190,8 +190,8 @@ public class PersonAendernController
 		datePAGeburtsdatum.setConverter(changeDateFormat.convertDatePickerFormat());
 		changeDateFormat.checkUserInputDate(datePAGeburtsdatum);
 
-		firstLetterToUppercase.firstLetterUppercase(txtPANachname);
-		firstLetterToUppercase.firstLetterUppercase(txtPAVorname);
+		//firstLetterToUppercase.firstLetterUppercase(txtPANachname) // inhibit uppercase first letter;
+		//firstLetterToUppercase.firstLetterUppercase(txtPAVorname) // inhibit uppercase first letter;
 
 		cbPAGender.setOnAction(new EventHandler<ActionEvent>()
 		{
@@ -248,8 +248,8 @@ public class PersonAendernController
 				haushaltsvorstandVorher = true;
 			}
 
-		String vname = ersteBuchstabenGross(txtPAVorname.getText());
-		String nname = ersteBuchstabenGross(txtPANachname.getText());
+		String vname = txtPAVorname.getText().trim(); // inhibit uppercase first letter
+		String nname = txtPANachname.getText().trim(); // inhibit uppercase first letter
 		String bemerkung = txtPABemerkungen.getText();
 		LocalDate gDatum = datePAGeburtsdatum.getValue();
 		Boolean gebuehren = cbxGebuehren.isSelected();
