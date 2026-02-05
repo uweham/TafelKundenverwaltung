@@ -89,9 +89,9 @@ public class KundenlisteErstellenController extends Thread
     private static final int SECOND_POSITION = 1;
     private static final int ITEM_POSITION_SORT_ASCENDING = 0;
     @SuppressWarnings("unused")
-	private static final int ITEM_POSITION_MORNING = 1;
+    private static final int ITEM_POSITION_MORNING = 1;
     @SuppressWarnings("unused")
-	private static final int ITEM_POSITION_AFTERNOON = 2;
+    private static final int ITEM_POSITION_AFTERNOON = 2;
     private static final int INT_TRUE = 1;
     private static final int INT_FALSE = 0;
 
@@ -140,7 +140,7 @@ public class KundenlisteErstellenController extends Thread
     private Warentyp invalidProductType = new Warentyp(-1, "Alle", 0, 0, false);
     private ArrayList<Haushalt> customerArrayList;
     @SuppressWarnings("unused")
-	private Vorlage template;
+    private Vorlage template;
     private Verteilstelle distributionPoint;
     private Warentyp productType;
     private OrderBy orderBy;
@@ -250,13 +250,13 @@ public class KundenlisteErstellenController extends Thread
      * @Date 14.09.2018
      */
     @SuppressWarnings("unchecked")
-	@FXML public void createCustomerList()
+    @FXML public void createCustomerList()
     {
         Stage taskUpdateStage = new Stage();
         indeterminateProgressBar.start(taskUpdateStage);
 
         @SuppressWarnings("rawtypes")
-		Task creatingCashSettlement = new Task<Void>()
+        Task creatingCashSettlement = new Task<Void>()
         {
             @Override protected Void call() throws Exception
             {
@@ -451,9 +451,15 @@ public class KundenlisteErstellenController extends Thread
                    getFinishedValueForJavaScriptFunction(
                             replaceGermanCharacters.replaceGermanUmlauts(decisionString), false)
                     +
+                    
                     getFinishedValueForJavaScriptFunction(replaceGermanCharacters
-                                    .replaceGermanUmlauts(element.getBemerkungen()),
+                                    .replaceGermanUmlauts(
+                                            element.getBemerkungen() != null 
+                                            ? element.getBemerkungen().replaceAll("\\R", " ") 
+                                            : ""
+                                    ),
                             true) + FUNCTION_END;
+                   
 
         }
 
@@ -540,7 +546,7 @@ public class KundenlisteErstellenController extends Thread
         changeFontSize.changeFontSizeFromCheckBoxArrayList(checkBoxArrayList, newFontSize);
 
         @SuppressWarnings("rawtypes")
-		ArrayList<ComboBox> comboBoxArrayList = new ArrayList<>(
+        ArrayList<ComboBox> comboBoxArrayList = new ArrayList<>(
                 Arrays.asList(cbWarentyp, cbVerteilstelle, cbSortierenNach, cbVorlage));
         changeFontSize.changeFontSizeFromComboBoxArrayList(comboBoxArrayList, newFontSize);
 
