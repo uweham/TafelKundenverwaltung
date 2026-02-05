@@ -71,7 +71,7 @@ public class BuchungController
     private Einkauf buchungResults = new Einkauf(0, null, null, null, null, null, null, null, 0, 0, null, 0, 0);
     private Boolean buchungsTextErforderlich = false;
     private Boolean einkkaufDurchErforderlich = false; // zur Überprüfung ob erforderlich
-
+    private Boolean abort=false;
     /**
      * Initializes the controller with the necessary settings.
      *
@@ -138,7 +138,9 @@ public class BuchungController
     @FXML
     public void btnBuchungAbbrechen()
     {
-        Stage stage = (Stage) btnBuchungOK.getScene().getWindow();
+        abort=true;
+        
+        Stage stage = (Stage) btnBuchungAbbrechen.getScene().getWindow();
         stage.close();
     }
 
@@ -149,6 +151,10 @@ public class BuchungController
      */
     public Einkauf getBuchungResults()
     {
+        if (abort)
+        {
+          return null;
+        }
         return buchungResults;
     }
 

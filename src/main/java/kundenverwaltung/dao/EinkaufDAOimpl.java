@@ -361,7 +361,7 @@ public class EinkaufDAOimpl implements EinkaufDAO
     @Override
     public boolean boughtHouseholdThisProductType(int householdId, Warentyp productType)
     {
-        String sql = "SELECT warentyp, kunde FROM einkauf WHERE warentyp = ? AND kunde = ? LIMIT 1";
+        String sql = "SELECT warentyp, kunde FROM einkauf WHERE warentyp = ? AND kunde = ? AND storniertAm IS NULL LIMIT 1";
         try
         {
             Connection connection = SQLConnection.getCon();
@@ -391,7 +391,7 @@ public class EinkaufDAOimpl implements EinkaufDAO
     @Override
     public LocalDateTime getLetzerEinkauf(Haushalt haushalt)
     {
-        String sql = "Select MAX(erfassungsZeit) AS letzterEinkauf FROM einkauf WHERE kunde = ?";
+        String sql = "Select MAX(erfassungsZeit) AS letzterEinkauf FROM einkauf WHERE kunde = ? AND storniertAm IS NULL";
         try
         {
             Connection con = SQLConnection.getCon();

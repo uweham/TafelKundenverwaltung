@@ -898,28 +898,30 @@ public class MainWindowController
                             .oeffneBuchungErstellen(haushalt, warentyp.getZuordnungBuchungstext(),
                                     warentyp.getZuordnungPerson(), currentFontSize);
                 }
-
-                saldo = saldo + (summeZahlung - summEinkauf);
-
-                haushalt.setSaldo(saldo);
-
-                @SuppressWarnings("unused")
-                Einkauf einkauf =
-                        new Einkauf(warentyp, null, null, result.getBuchungstext(), haushalt,
-                                familienmitglied, erfassungszeit, summEinkauf, summeZahlung,
-                                cbErfassungsVerteilstelle.getSelectionModel().getSelectedItem(),
-                                anzahlKinder, anzahlErwachsene);
-                Boolean updateCheck = new HaushaltDAOimpl().update(haushalt);
-
-                if (!updateCheck)
+                if (result != null) 
                 {
-                    Benachrichtigung.warnungBenachrichtigung("",
-                            "Der Einkauf konnte nicht gebucht werden. Bitt prüfen sie die "
-                    +
-                                    "Datenbank verbindung.");
+                  saldo = saldo + (summeZahlung - summEinkauf);
+  
+                  haushalt.setSaldo(saldo);
+  
+                  @SuppressWarnings("unused")
+                  Einkauf einkauf =
+                          new Einkauf(warentyp, null, null, result.getBuchungstext(), haushalt,
+                                  familienmitglied, erfassungszeit, summEinkauf, summeZahlung,
+                                  cbErfassungsVerteilstelle.getSelectionModel().getSelectedItem(),
+                                  anzahlKinder, anzahlErwachsene);
+                  Boolean updateCheck = new HaushaltDAOimpl().update(haushalt);
+  
+                  if (!updateCheck)
+                  {
+                      Benachrichtigung.warnungBenachrichtigung("",
+                              "Der Einkauf konnte nicht gebucht werden. Bitt prüfen sie die "
+                      +
+                                      "Datenbank verbindung.");
+                  }
+  
+                  fuelleKassenFelder();
                 }
-
-                fuelleKassenFelder();
             } catch (NullPointerException e)
             {
                 System.out.println("kein Objekt gewählt (Zeile 722)");
