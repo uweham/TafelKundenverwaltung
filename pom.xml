@@ -177,7 +177,7 @@
 	    <profile>
 	        <id>windows</id>
 	            <build>
-	            	<finalName>${project.artifactId}-$ ${project.version}-win</finalName>
+	            	<finalName>${project.artifactId}-${project.version}-win</finalName>
 	            	<directory>${dir}</directory>
 	            </build>
 	        <properties>
@@ -235,7 +235,7 @@
 	    <profile>
 	        <id>linux</id>
 	            <build>
-	            	<finalName>${project.artifactId}-$ ${project.version}-linux</finalName>
+	            	<finalName>${project.artifactId}-${project.version}-linux</finalName>
 	            	<directory>${dir}</directory>
 	            </build>
 	        <properties>
