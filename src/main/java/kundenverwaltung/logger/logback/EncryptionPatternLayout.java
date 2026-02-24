@@ -16,7 +16,8 @@ public class EncryptionPatternLayout extends PatternLayout
     public String doLayout(ILoggingEvent event)
     {
         String originalMessage = super.doLayout(event);
-        String encryptedMessage = LogMessageCipher.encryptMessage(originalMessage);
-        return encryptedMessage + System.lineSeparator();
+//        String encryptedMessage = LogMessageCipher.encryptMessage(originalMessage);
+//        return encryptedMessage + System.lineSeparator();
+        return originalMessage + System.lineSeparator();
     }
 }
