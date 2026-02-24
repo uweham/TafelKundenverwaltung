@@ -121,6 +121,7 @@ public class AnmeldungController
 
 				UserEntityService.getInstance().setUser(user);
 
+				/*
 				ServerClient.setupServerClient();
 
 				int pingHTTPStatus = -1;
@@ -175,7 +176,7 @@ public class AnmeldungController
 				}
 
 				checkForUpdates();
-
+                */
 				userDAO.updateNumberOfMistrials(user, false);
 
 				MainController.getInstance().mainWindow(user);
