@@ -44,6 +44,7 @@ public final class NewMain
         {
             LOGGER.error("Unbehandelter Fehler im Thread '{}'", thread.getName(), throwable);
 
+            /*
             try
             {
                 FXMLLoader fxmlLoader = new FXMLLoader(WindowService.class.getResource("/kundenverwaltung/fxml/errorreport/ErrorReportSubmit.fxml"));
@@ -69,6 +70,8 @@ public final class NewMain
             {
                 LOGGER.error("Fehler beim öffnen des Fehlerbericht dialogs!", exception);
             }
+            */
+            
         });
 
         try
