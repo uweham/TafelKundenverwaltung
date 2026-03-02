@@ -31,7 +31,6 @@ public class GetVersionProperties {
     
   public boolean isNoInternetEnvironment() {
     String v = System.getProperty("app.nointernet");
-    System.out.println(v);
     return v != null && v.startsWith("${"); 
     
     
