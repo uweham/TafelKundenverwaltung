@@ -41,7 +41,7 @@ import kundenverwaltung.service.WindowService;
 import kundenverwaltung.toolsandworkarounds.ChangeDateFormat;
 import kundenverwaltung.toolsandworkarounds.ExitProgramBackupWarning;
 import javafx.scene.layout.AnchorPane;
-
+import kundenverwaltung.service.GetVersionProperties;   // add U.P. 02.03.2026
 
 /**
  * @Author Gruppe_1
@@ -296,7 +296,9 @@ public class MainWindowController
     private boolean genaueSuche;
 
     private TablePreferenceServiceImpl tablePreferenceService = new TablePreferenceServiceImpl();
-
+    
+    private GetVersionProperties getversionproperties = new GetVersionProperties()   ;
+    
     /**
      *.
      */
@@ -377,7 +379,9 @@ public class MainWindowController
         loadVersion();
         
         if (!isDevEnvironment()) {
-          new kundenverwaltung.service.UpdateService().checkForUpdates();
+          if (!getversionproperties.isNoInternetEnvironment()) {
+                  new kundenverwaltung.service.UpdateService().checkForUpdates();
+          }        
       }
     }
     
