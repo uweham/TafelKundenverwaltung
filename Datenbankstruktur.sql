@@ -213,10 +213,10 @@ INSERT INTO `bescheidstatistik` (`id`, `bescheidartName`, `anzahlPersonen`) VALU
 -- --------------------------------------------------------
 
 --
--- Table structure for table `deleted_memberofthefamily`
+-- Table structure for table `deleted_MemberOfTheFamily`
 --
 
-CREATE TABLE `deleted_memberofthefamily` (
+CREATE TABLE `deleted_MemberOfTheFamily` (
   `Id` int(11) NOT NULL,
   `householdId` int(11) DEFAULT NULL,
   `firstName` varchar(30) DEFAULT NULL,
@@ -693,7 +693,7 @@ INSERT INTO `saved_queries` (`id`, `query`) VALUES
 (4, 'SELECT * FROM berechtigung'),
 (5, 'SELECT * FROM bescheid'),
 (6, 'SELECT * FROM bescheidart'),
-(7, 'SELECT * FROM deleted_memberofthefamily'),
+(7, 'SELECT * FROM deleted_MemberOfTheFamily'),
 (8, 'SELECT * FROM einkauf'),
 (9, 'SELECT * FROM einstellungen'),
 (10, 'SELECT * FROM familienmitglied'),
@@ -717,7 +717,7 @@ INSERT INTO `saved_queries` (`id`, `query`) VALUES
 (28, 'DELETE FROM berechtigung WHERE condition'),
 (29, 'CREATE TABLE neue_tabelle (column1 datatype, column2 datatype)'),
 (30, 'ALTER TABLE einkauf ADD column_name datatype'),
-(31, 'DROP TABLE deleted_memberofthefamily'),
+(31, 'DROP TABLE deleted_MemberOfTheFamily),
 (32, ''),
 (33, 'select * from altersgruppen'),
 (34, 'select * from altersgruppen'),
@@ -1255,7 +1255,7 @@ ALTER TABLE `bescheidstatistik`
 --
 -- Indexes for table `deleted_memberofthefamily`
 --
-ALTER TABLE `deleted_memberofthefamily`
+ALTER TABLE `deleted_MemberOfTheFamily`
   ADD PRIMARY KEY (`Id`);
 
 --
@@ -1455,9 +1455,9 @@ ALTER TABLE `bescheidstatistik`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=152;
 
 --
--- AUTO_INCREMENT for table `deleted_memberofthefamily`
+-- AUTO_INCREMENT for table `deleted_MemberOfTheFamily`
 --
-ALTER TABLE `deleted_memberofthefamily`
+ALTER TABLE `deleted_MemberOfTheFamily`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
