@@ -24,6 +24,10 @@ public interface HaushaltDAO
     ArrayList<Haushalt> createCustomerList(Verteilstelle distributionPoint, Warentyp productType, OrderBy orderBy,
                                                   Boolean ascending, Boolean showArchivedCustomer,
                                                   Boolean showBlockedCustomer);
+    ArrayList<Haushalt> createCustomerLastList(Verteilstelle distributionPoint, Warentyp productType, OrderBy orderBy,
+        Boolean ascending, Boolean showArchivedCustomer,
+        Boolean showBlockedCustomer);
+
     boolean migrate(Connection alteDbCon, Connection conNewdDb);
 
     List<Herkunft> getHouseholdsWithLocation(String selectedStatus, boolean isPerson, LocalDate startDatum, LocalDate endDatum);

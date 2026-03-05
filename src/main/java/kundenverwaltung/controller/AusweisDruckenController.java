@@ -102,6 +102,9 @@ public class AusweisDruckenController extends Thread
     private static final String NEW_ID_CARD = "%Ausweis_Neu%";
     private static final String NULL = "null";
 
+    private static final int LIST_ALL = 0;
+    private static final int LIST_LAST = 1;
+        
     private Familienmitglied familymember;
 
     @FXML private CheckBox cbxArchivierteKunden;
@@ -116,6 +119,7 @@ public class AusweisDruckenController extends Thread
 
     @FXML private RadioButton rbAktuellerKunde;
     @FXML private RadioButton rbAlleKunden;
+    @FXML private RadioButton rbletzteKunden;
     @FXML private ComboBox<Verteilstelle> cbVerteilstelle;
     @FXML private ComboBox<Vorlage> cbVorlage;
     @FXML private ComboBox<Warentyp> cbWarentyp;
@@ -221,7 +225,8 @@ public class AusweisDruckenController extends Thread
         waehleKunde = new ToggleGroup();
         rbAktuellerKunde.setToggleGroup(waehleKunde);
         rbAlleKunden.setToggleGroup(waehleKunde);
-
+        rbletzteKunden.setToggleGroup(waehleKunde);
+        
         buttonCreate.setDisable(true);
 
         waehleKunde.selectedToggleProperty().addListener((obs, oldT, newT) ->
@@ -238,13 +243,14 @@ public class AusweisDruckenController extends Thread
                 {
                     buttonCreate.setDisable(false);
                 }
-            } else if (newT == rbAlleKunden)
+            } else if (newT == rbAlleKunden || newT == rbletzteKunden)
             {
                 buttonCreate.setDisable(false);
-            } else
+            }  else
             {
                 buttonCreate.setDisable(true);
             }
+           
             checkClientsFromDistributionPoints();
         });
 
@@ -302,11 +308,16 @@ public class AusweisDruckenController extends Thread
         {
             createAllIDCards();
         }
+        if (rbletzteKunden.isSelected())
+        {
+          System.out.println("Letzte Kunden Not implement !");
+          createAllLastIDCards();
+        }
     }
 
     private Boolean checkUserInput()
     {
-        if (rbAktuellerKunde.isSelected() || rbAlleKunden.isSelected())
+        if (rbAktuellerKunde.isSelected() || rbAlleKunden.isSelected() || rbletzteKunden.isSelected())
         {
             return true;
         } else
@@ -445,7 +456,7 @@ public class AusweisDruckenController extends Thread
                             if (row.contains(PLACEHOLDER_FOR_FUNCTIONS))
                             {
                                 row = row.replace(PLACEHOLDER_END_OF_FILE, "");
-                                row = row.replace(PLACEHOLDER_FOR_FUNCTIONS, createTableIdCard());
+                                row = row.replace(PLACEHOLDER_FOR_FUNCTIONS, createTableIdCard(LIST_ALL));
                                 row = row.replace(NEW_ID_CARD, "");
                                 row = row.replace(NULL, "");
                                 row = row.replace(ID_CARD_STOP, "");
@@ -468,6 +479,8 @@ public class AusweisDruckenController extends Thread
                 }
             };
 
+            
+            
             creatingCashSettlement.setOnSucceeded(new EventHandler<WorkerStateEvent>()
             {
                 @Override
@@ -482,17 +495,94 @@ public class AusweisDruckenController extends Thread
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public void createAllLastIDCards()
+    {
+        if (readUserInput())
+        {
+            Stage taskUpdateStage = new Stage();
+            indeterminateProgressBar.start(taskUpdateStage);
+
+            @SuppressWarnings("rawtypes")
+            Task creatingCashSettlement = new Task<Void>()
+            {
+                @Override
+                protected Void call() throws Exception
+                {
+                    try
+                    {
+                        Blob blobFile = cbVorlage.getSelectionModel().getSelectedItem().getDaten();
+                        blobToTemplate.convertBlobToTemplate(blobFile);
+
+                        BufferedReader bufferedReader =
+                                new BufferedReader(new FileReader(blobToTemplate.getBlobTempFileOut()));
+                        File tempReadyHtml = File.createTempFile("readyHtml", ".html");
+                        BufferedWriter bufferedWriter =
+                                new BufferedWriter(new FileWriter(tempReadyHtml));
+
+                        String row = null;
+                        while ((row = bufferedReader.readLine()) != null)
+                        {
+                            if (row.contains(PLACEHOLDER_FOR_FUNCTIONS))
+                            {
+                                row = row.replace(PLACEHOLDER_END_OF_FILE, "");
+                                row = row.replace(PLACEHOLDER_FOR_FUNCTIONS, createTableIdCard(LIST_LAST));
+                                row = row.replace(NEW_ID_CARD, "");
+                                row = row.replace(NULL, "");
+                                row = row.replace(ID_CARD_STOP, "");
+                                bufferedWriter.write(row);
+                                break;
+                            }
+
+                            bufferedWriter.write(row);
+                        }
+                        bufferedWriter.close();
+                        bufferedReader.close();
+                        Desktop.getDesktop().open(tempReadyHtml);
+                        tempReadyHtml.deleteOnExit();
+
+                    } catch (IOException ioException)
+                    {
+                        ioException.printStackTrace();
+                    }
+                    return null;
+                }
+            };
+
+            
+            
+            creatingCashSettlement.setOnSucceeded(new EventHandler<WorkerStateEvent>()
+            {
+                @Override
+                public void handle(WorkerStateEvent t)
+                {
+                    taskUpdateStage.hide();
+                }
+            });
+
+            taskUpdateStage.show();
+            new Thread(creatingCashSettlement).start();
+        }
+    }
     /**
      * Baut JS-Aufrufe für alle Kunden.
      */
-    private String createTableIdCard()
+    private String createTableIdCard(int list_filter )
     {
         StringBuilder js = new StringBuilder();
 
-        customerArrayList = haushaltDAOimpl
+        if (list_filter == LIST_ALL) {
+          customerArrayList = haushaltDAOimpl
                 .createCustomerList(distributionPoint, productType, orderBy, ascending,
                         showArchivedCustomer, showBlockedCustomer);
-
+        }
+        if (list_filter == LIST_LAST) {
+          customerArrayList = haushaltDAOimpl
+              .createCustomerLastList(distributionPoint, productType, orderBy, ascending,
+                      showArchivedCustomer, showBlockedCustomer);
+          
+        }
+        
         // 1. Konfiguration setzen (anhand der Checkboxen)
         // JS Signatur: setConfig(showMarker, showGroup, showBarcode2)
         js.append(FUNCTION_SET_CONFIG)
@@ -614,7 +704,7 @@ public class AusweisDruckenController extends Thread
     @FXML
     public void checkClientsFromDistributionPoints()
     {
-        if (rbAlleKunden.isSelected())
+        if (rbAlleKunden.isSelected() || rbletzteKunden.isSelected())
         {
             cbVerteilstelle.setDisable(false);
             cbxAutomatischEinstellen.setDisable(false);
@@ -659,7 +749,7 @@ public class AusweisDruckenController extends Thread
         changeFontSize.changeFontSizeFromComboBoxArrayList(comboBoxArrayList, newFontSize);
 
         ArrayList<RadioButton> radioButtonArrayList =
-                new ArrayList<>(Arrays.asList(rbAktuellerKunde, rbAlleKunden));
+                new ArrayList<>(Arrays.asList(rbAktuellerKunde, rbAlleKunden, rbletzteKunden));
         changeFontSize.changeFontSizeFromRadioButtonArrayList(radioButtonArrayList, newFontSize);
 
         ArrayList<CheckBox> checkBoxArrayList = new ArrayList<>(

@@ -428,6 +428,81 @@ public class HaushaltDAOimpl implements HaushaltDAO
     }
     /**
      */
+ 
+    /**
+     * Create customer list for the last kundeSeit Date.
+     *
+     * @return
+     * @Author Richard Kromm modified U.P.
+     */
+    @Override
+    public ArrayList<Haushalt> createCustomerLastList(Verteilstelle distributionPoint, Warentyp productType, OrderBy orderBy, Boolean ascending,
+                                                  Boolean showArchivedCustomer, Boolean showBlockedCustomer)
+    {
+        ArrayList<Haushalt> resultArrayList = new ArrayList<>();
+
+        String sql = "SELECT kundennummer, nName, vName, strasse, hausnummer, haushalt.plz, plz.plz AS plzTemp, plz.ort "
+                + "telefonnummer, mobilnummer, haushalt.bemerkung, kundeSeit, saldo, haushalt.verteilstellenId, "
+                + "verteilstelle.bezeichnung, istArchiviert, istGesperrt, haushalt.ausgabeGruppeId, ausgabegruppe.name, "
+                + "belieferung, datenschutzerklaerung "
+                + "FROM haushalt, familienmitglied, plz, verteilstelle, ausgabegruppe "
+                + "WHERE kundennummer = haushaltId AND haushaltsVorstand = true AND haushalt.plz = plz.plzId "
+                + "AND haushalt.verteilstellenId = verteilstelle.verteilstellenId "
+                + "AND haushalt.ausgabeGruppeId = ausgabegruppe.ausgabegruppeId "
+                + "AND haushalt.verteilstellenId = ? ";
+
+        sql += (!showArchivedCustomer) ? "AND istArchiviert = false " : "";
+        sql += (!showBlockedCustomer) ? "AND istGesperrt = false " : "";
+        sql += "AND kundeSeit in (SELECT max(kundeSeit) as datumlast from haushalt)";
+        sql += "ORDER BY " + orderBy.getDbColumn() + (ascending ? " ASC" : " DESC");
+
+        try
+        {
+            Connection connection = SQLConnection.getCon();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, distributionPoint.getVerteilstellenId());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next())
+            {
+                int customerId = resultSet.getInt("kundennummer");
+                if (productType.getWarentypId() == ILLEGAL_PRODUCT_TYPE_ID
+                        | new EinkaufDAOimpl().boughtHouseholdThisProductType(customerId, productType))
+                {
+                    String street = resultSet.getString("strasse");
+                    String houseNumber = resultSet.getString("hausnummer");
+                    PLZ plz = new PLZDaoImpl().read(resultSet.getInt("plz"));
+                    // Korrektur: Spaltenname "telefonnummer" statt "hausnummer"
+                    String phoneNumber = resultSet.getString("telefonnummer");
+                    String mobileNumber = resultSet.getString("mobilnummer");
+                    String comment = resultSet.getString("bemerkung");
+                    Date customerSinceSQLDate = resultSet.getDate("kundeSeit");
+                    LocalDate customerSince = null;
+                    if (customerSinceSQLDate != null)
+                    {
+                        customerSince = customerSinceSQLDate.toLocalDate();
+                    }
+                    float saldo = resultSet.getFloat("saldo");
+                    Verteilstelle distributionPointResult = new VerteilstelleDAOimpl().read(resultSet.getInt("verteilstellenId"));
+                    boolean isArchieved = resultSet.getBoolean("istArchiviert");
+                    boolean isBlocked = resultSet.getBoolean("istGesperrt");
+                    Ausgabegruppe outputGroupe = new AusgabegruppeDAOimpl().read(resultSet.getInt("ausgabegruppeId"));
+                    boolean supply = resultSet.getBoolean("belieferung");
+                    boolean gdpr = resultSet.getBoolean("datenschutzerklaerung");
+
+                    resultArrayList.add(new Haushalt(customerId, street, houseNumber, plz, phoneNumber, mobileNumber,
+                            comment, customerSince, saldo, distributionPointResult, isArchieved, isBlocked, outputGroupe, supply, gdpr));
+                }
+            }
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return resultArrayList;
+    }
+    /**
+     */    
+    
     @Override
     public boolean migrate(Connection conOldDb, Connection conNewdDb)
     {

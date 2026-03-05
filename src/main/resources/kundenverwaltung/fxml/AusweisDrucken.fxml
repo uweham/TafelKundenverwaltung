@@ -42,11 +42,14 @@
                 <RadioButton fx:id="rbAlleKunden" layoutX="14.0" layoutY="96.0"
                              mnemonicParsing="false" onAction="#checkClientsFromDistributionPoints"
                              text="Alle Kunden folgender Verteilstelle" toggleGroup="$waehleKunde"/>
+                 <RadioButton fx:id="rbletzteKunden" layoutX="14.0" layoutY="126.0"
+                             mnemonicParsing="false" onAction="#checkClientsFromDistributionPoints"
+                             text="Alle letzten Kunden folgender Verteilstelle" toggleGroup="$waehleKunde"/>               
                              
-                <Label fx:id="lbVerteilstelle" disable="true" layoutX="16.0" layoutY="124.0"
+                <Label fx:id="lbVerteilstelle" disable="true" layoutX="16.0" layoutY="144.0"
                        text="Verteilstelle:"/>
                        
-                <ComboBox fx:id="cbVerteilstelle" disable="true" layoutX="15.0" layoutY="146.0"
+                <ComboBox fx:id="cbVerteilstelle" disable="true" layoutX="15.0" layoutY="166.0"
                           prefHeight="10.0" prefWidth="218.0"/>
                           
                 <CheckBox fx:id="cbxAutomatischEinstellen" disable="true" layoutX="259.0"
