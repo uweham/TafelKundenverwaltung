@@ -31,6 +31,7 @@ import kundenverwaltung.server.service.ErrorReportService;
 import kundenverwaltung.server.service.TrackingTafelService;
 import kundenverwaltung.server.service.UserEntityService;
 import kundenverwaltung.server.service.WishRequestService;
+import kundenverwaltung.service.GetVersionProperties;
 import kundenverwaltung.service.WindowService;
 import kundenverwaltung.toolsandworkarounds.PasswordEncoding;
 import org.slf4j.Logger;
@@ -85,6 +86,8 @@ public class AnmeldungController
 	private UserDAO userDAO = new UserDAOimpl();
 	private User user;
 
+   private GetVersionProperties getversionproperties = new GetVersionProperties()   ;
+
 	public final void initialize()
 	{
 		textfieldUserName.setOnKeyPressed(event ->
@@ -121,62 +124,62 @@ public class AnmeldungController
 
 				UserEntityService.getInstance().setUser(user);
 
-				/*
-				ServerClient.setupServerClient();
-
-				int pingHTTPStatus = -1;
-
-				try
-				{
-					pingHTTPStatus = TRACKING_TAFEL_SERVICE.ping();
+				if (!getversionproperties.isNoInternetEnvironment()) {
+    				ServerClient.setupServerClient();
+    
+    				int pingHTTPStatus = -1;
+    
+    				try
+    				{
+    					pingHTTPStatus = TRACKING_TAFEL_SERVICE.ping();
+    				}
+    				catch (Exception exception)
+    				{
+    					LOGGER.error(exception.getMessage());
+    				}
+    
+    				int uploadedErrorReports = 0;
+    				int uploadedWishRequests = 0;
+    
+    				if (pingHTTPStatus == HttpURLConnection.HTTP_OK)
+    				{
+    					uploadedErrorReports = ERROR_REPORT_SERVICE.uploadOfflineReports();
+    					uploadedWishRequests = WISH_REQUEST_SERVICE.uploadOfflineWishes();
+    				}
+    
+    				if (uploadedErrorReports != 0 || uploadedWishRequests != 0)
+    				{
+    					try
+    					{
+    						FXMLLoader fxmlLoader = new FXMLLoader(WindowService.class.getResource("/kundenverwaltung/fxml/server/ServerSynchronizationNotification.fxml"));
+    						Parent parent = fxmlLoader.load();
+    
+    						Scene scene = new Scene(parent);
+    						Stage stage = new Stage();
+    
+    						GlobalEventLogger.attachTo("ServerSynchronizationNotification", scene);
+    
+    						stage.setTitle("Tafel-Server Synchronisation");
+    						stage.setScene(scene);
+    						stage.initStyle(StageStyle.DECORATED);
+    						stage.initModality(Modality.APPLICATION_MODAL);
+    						stage.centerOnScreen();
+    
+    						ServerSynchronizationNotificationController controller = fxmlLoader.getController();
+    
+    						controller.setSyncInfo(uploadedErrorReports,uploadedWishRequests);
+    
+    
+    						stage.showAndWait();
+    					}
+    					catch (Exception exception)
+    					{
+    						LOGGER.error(exception.getMessage());
+    					}
+    				}
+    
+    				checkForUpdates();
 				}
-				catch (Exception exception)
-				{
-					LOGGER.error(exception.getMessage());
-				}
-
-				int uploadedErrorReports = 0;
-				int uploadedWishRequests = 0;
-
-				if (pingHTTPStatus == HttpURLConnection.HTTP_OK)
-				{
-					uploadedErrorReports = ERROR_REPORT_SERVICE.uploadOfflineReports();
-					uploadedWishRequests = WISH_REQUEST_SERVICE.uploadOfflineWishes();
-				}
-
-				if (uploadedErrorReports != 0 || uploadedWishRequests != 0)
-				{
-					try
-					{
-						FXMLLoader fxmlLoader = new FXMLLoader(WindowService.class.getResource("/kundenverwaltung/fxml/server/ServerSynchronizationNotification.fxml"));
-						Parent parent = fxmlLoader.load();
-
-						Scene scene = new Scene(parent);
-						Stage stage = new Stage();
-
-						GlobalEventLogger.attachTo("ServerSynchronizationNotification", scene);
-
-						stage.setTitle("Tafel-Server Synchronisation");
-						stage.setScene(scene);
-						stage.initStyle(StageStyle.DECORATED);
-						stage.initModality(Modality.APPLICATION_MODAL);
-						stage.centerOnScreen();
-
-						ServerSynchronizationNotificationController controller = fxmlLoader.getController();
-
-						controller.setSyncInfo(uploadedErrorReports,uploadedWishRequests);
-
-
-						stage.showAndWait();
-					}
-					catch (Exception exception)
-					{
-						LOGGER.error(exception.getMessage());
-					}
-				}
-
-				checkForUpdates();
-                */
 				userDAO.updateNumberOfMistrials(user, false);
 
 				MainController.getInstance().mainWindow(user);

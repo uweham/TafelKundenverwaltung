@@ -3,9 +3,11 @@ package kundenverwaltung.logger.logback;
 import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import kundenverwaltung.logger.file.LogMessageCipher;
+import kundenverwaltung.service.GetVersionProperties;
 
 public class EncryptionPatternLayout extends PatternLayout
 {
+  private GetVersionProperties getversionproperties = new GetVersionProperties()   ;
     /**
      * Formats the logging event and then encrypts the resulting string.
      *
@@ -16,8 +18,11 @@ public class EncryptionPatternLayout extends PatternLayout
     public String doLayout(ILoggingEvent event)
     {
         String originalMessage = super.doLayout(event);
-//        String encryptedMessage = LogMessageCipher.encryptMessage(originalMessage);
-//        return encryptedMessage + System.lineSeparator();
+        if (!getversionproperties.isNoErrorReport()) 
+        {
+            String encryptedMessage = LogMessageCipher.encryptMessage(originalMessage);
+            return encryptedMessage + System.lineSeparator();
+        } 
         return originalMessage + System.lineSeparator();
     }
 }
