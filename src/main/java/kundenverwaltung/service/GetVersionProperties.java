@@ -16,6 +16,11 @@ public class GetVersionProperties {
             if (nointernet != null) {
               System.setProperty("app.nointernet", nointernet);
             }
+            String noerrorreport = props.getProperty("app.noerrorreport", null);
+            if (nointernet != null) {
+              System.setProperty("app.noerrorreport", noerrorreport);
+            }
+            
         }
       } catch (IOException ex) {
           System.err.println("Version konnte nicht geladen werden.");
@@ -31,8 +36,21 @@ public class GetVersionProperties {
     
   public boolean isNoInternetEnvironment() {
     String v = System.getProperty("app.nointernet");
-    return v != null && v.startsWith("${"); 
+    return v != null && v.startsWith("true"); 
     
     
   }
+  /**
+   * checks in version.properties the key app.nointernet 
+   * Returns true when app.nointernet set otherwise false 
+   *
+   * @return      true when app.nointerent set otherwise false 
+   */   
+   
+ public boolean isNoErrorReport() {
+   String v = System.getProperty("app.noerrorreport");
+   return v != null && v.startsWith("true"); 
+   
+   
+ }
 }
