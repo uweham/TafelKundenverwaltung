@@ -10,6 +10,7 @@ import kundenverwaltung.model.Haushalt;
 import kundenverwaltung.model.OrderBy;
 import kundenverwaltung.model.statistiktool.ArchivierteKunden;
 import kundenverwaltung.model.statistiktool.Herkunft;
+import kundenverwaltung.service.Id_FilterRecord;
 import kundenverwaltung.model.Verteilstelle;
 import kundenverwaltung.model.Warentyp;
 import javafx.collections.ObservableList;
@@ -26,7 +27,8 @@ public interface HaushaltDAO
                                                   Boolean showBlockedCustomer);
     ArrayList<Haushalt> createCustomerLastList(Verteilstelle distributionPoint, Warentyp productType, OrderBy orderBy,
         Boolean ascending, Boolean showArchivedCustomer,
-        Boolean showBlockedCustomer);
+        Boolean showBlockedCustomer,
+        ArrayList<Id_FilterRecord> ausweisIdArrayList);
 
     boolean migrate(Connection alteDbCon, Connection conNewdDb);
 

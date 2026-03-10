@@ -16,6 +16,7 @@ import kundenverwaltung.model.Warentyp;
 import kundenverwaltung.toolsandworkarounds.PropertiesFileController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import kundenverwaltung.service.Id_FilterRecord;
 
 /**
  * Created by Florian-PC on 02.11.2017.
@@ -437,10 +438,18 @@ public class HaushaltDAOimpl implements HaushaltDAO
      */
     @Override
     public ArrayList<Haushalt> createCustomerLastList(Verteilstelle distributionPoint, Warentyp productType, OrderBy orderBy, Boolean ascending,
-                                                  Boolean showArchivedCustomer, Boolean showBlockedCustomer)
+                                                  Boolean showArchivedCustomer, Boolean showBlockedCustomer, 
+                                                  ArrayList<Id_FilterRecord> ausweisIdArrayList)
     {
         ArrayList<Haushalt> resultArrayList = new ArrayList<>();
-
+        
+        
+        String sql_intervall="";
+        int cnt_intervall=0;
+        String sql_single="";
+        int cnt_single=0;
+        int index_sql_parameter=0;
+        
         String sql = "SELECT kundennummer, nName, vName, strasse, hausnummer, haushalt.plz, plz.plz AS plzTemp, plz.ort "
                 + "telefonnummer, mobilnummer, haushalt.bemerkung, kundeSeit, saldo, haushalt.verteilstellenId, "
                 + "verteilstelle.bezeichnung, istArchiviert, istGesperrt, haushalt.ausgabeGruppeId, ausgabegruppe.name, "
@@ -453,14 +462,84 @@ public class HaushaltDAOimpl implements HaushaltDAO
 
         sql += (!showArchivedCustomer) ? "AND istArchiviert = false " : "";
         sql += (!showBlockedCustomer) ? "AND istGesperrt = false " : "";
-        sql += "AND kundeSeit in (SELECT max(kundeSeit) as datumlast from haushalt)";
-        sql += "ORDER BY " + orderBy.getDbColumn() + (ascending ? " ASC" : " DESC");
-
+        //
+        // AND ([kundennummer in (? ,? ..) OR ] [([(kundenummer BETWEEN ? AND ?) ] [OR (kundenummer BETWEEN ? AND ?) ] ..)] 
+        if (ausweisIdArrayList.size()>0)
+        {
+          for (int i=0; i< ausweisIdArrayList.size();i++)
+          {
+            if (ausweisIdArrayList.get(i).getFilt_type()==Id_FilterRecord.ENTRY_SINGLE) 
+            {
+              sql_single += (cnt_single == 0 ? "?" : ", ?");
+              cnt_single++;
+            }
+            if (ausweisIdArrayList.get(i).getFilt_type()==Id_FilterRecord.ENTRY_INTERVALL) 
+            {
+              sql_intervall += (cnt_intervall == 0 ? "(kundennummer BETWEEN ? AND ? )" : " OR (kundennummer BETWEEN ? AND ? )");
+              cnt_intervall++;
+            }
+          }
+          if (cnt_single>0 || cnt_intervall>0)
+          { sql +=" AND ("; 
+            // single filter id 
+            if (cnt_single>0) 
+            {
+              sql += " kundennummer in (";
+              sql += sql_single;
+              sql += ") ";
+            }
+            // intervall filter id
+            if (cnt_intervall>0)
+            {
+              sql +=  (cnt_single > 0 ?" OR (":"" );
+              sql += sql_intervall;
+              sql +=  (cnt_single > 0 ?" )":"" );
+            }
+            sql +=")";
+          }
+          
+        } else
+        {
+          sql += "AND kundeSeit in ( SELECT max(kundeSeit) as datumlast from haushalt  )";
+        }
+        
+          sql += "ORDER BY " + orderBy.getDbColumn() + (ascending ? " ASC" : " DESC");
+          System.out.println(sql);
+     
         try
         {
             Connection connection = SQLConnection.getCon();
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1, distributionPoint.getVerteilstellenId());
+            index_sql_parameter=1;  // first SQL Parameter
+            preparedStatement.setInt(index_sql_parameter, distributionPoint.getVerteilstellenId());
+            index_sql_parameter++;
+            
+            if (ausweisIdArrayList.size()>0)
+            {
+              // loop for single values  02
+              for (int i=0; i< ausweisIdArrayList.size();i++)
+              {
+                if (ausweisIdArrayList.get(i).getFilt_type()==Id_FilterRecord.ENTRY_SINGLE) 
+                { 
+                  preparedStatement.setInt(index_sql_parameter,ausweisIdArrayList.get(i).getId_from());
+                  index_sql_parameter++;
+                }
+              }
+              // loop for intervall values  
+              for (int i=0; i< ausweisIdArrayList.size();i++)
+              {
+                if (ausweisIdArrayList.get(i).getFilt_type()==Id_FilterRecord.ENTRY_INTERVALL) 
+                { 
+                  preparedStatement.setInt(index_sql_parameter,ausweisIdArrayList.get(i).getId_from());
+                  index_sql_parameter++;
+                  preparedStatement.setInt(index_sql_parameter,ausweisIdArrayList.get(i).getId_to());
+                  index_sql_parameter++;
+                }
+              }
+              
+            }           
+  
+            // System.out.println( ((JDBC4PreparedStatement)stmt).asSql());
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next())
             {
@@ -500,6 +579,8 @@ public class HaushaltDAOimpl implements HaushaltDAO
 
         return resultArrayList;
     }
+
+          
     /**
      */    
     

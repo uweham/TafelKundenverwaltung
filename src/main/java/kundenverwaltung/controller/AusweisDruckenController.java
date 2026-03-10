@@ -42,6 +42,8 @@ import kundenverwaltung.toolsandworkarounds.ChangeDateFormat;
 import kundenverwaltung.toolsandworkarounds.ChangeFontSize;
 import kundenverwaltung.toolsandworkarounds.IndeterminateProgressBar;
 import kundenverwaltung.toolsandworkarounds.ReplaceGermanCharacters;
+import kundenverwaltung.service.Id_FilterRecord;
+import kundenverwaltung.service.FilterString2FilterRecord;
 
 public class AusweisDruckenController extends Thread
 {
@@ -131,7 +133,8 @@ public class AusweisDruckenController extends Thread
     @FXML private Button buttonCancel;
     @FXML private ComboBox<OrderBy> cbSortierenNach;
 
-
+    @FXML private TextField textfieldKdIdList;
+    
     @FXML private ToggleGroup waehleKunde;
 
     private ChangeFontSize changeFontSize = new ChangeFontSize();
@@ -169,6 +172,8 @@ public class AusweisDruckenController extends Thread
     private BlobToTemplate blobToTemplate = new BlobToTemplate();
     private BarcodeGenerator barCodeUtil = new BarcodeGenerator();
 
+    private ArrayList<Id_FilterRecord> ausweisIdArrayList =new ArrayList<>() ;
+    
     /**
      * Initialisiert Elemente für die Ausweiserstellung.
      */
@@ -310,8 +315,7 @@ public class AusweisDruckenController extends Thread
         }
         if (rbletzteKunden.isSelected())
         {
-          System.out.println("Letzte Kunden Not implement !");
-          createAllLastIDCards();
+           createAllLastIDCards();
         }
     }
 
@@ -571,15 +575,20 @@ public class AusweisDruckenController extends Thread
     {
         StringBuilder js = new StringBuilder();
 
+        FilterString2FilterRecord filterstring2filterrecord  = new FilterString2FilterRecord();
+        
         if (list_filter == LIST_ALL) {
           customerArrayList = haushaltDAOimpl
                 .createCustomerList(distributionPoint, productType, orderBy, ascending,
                         showArchivedCustomer, showBlockedCustomer);
         }
         if (list_filter == LIST_LAST) {
+          
+          ausweisIdArrayList = filterstring2filterrecord.convertString2ArrayList(textfieldKdIdList.getText());
+          
           customerArrayList = haushaltDAOimpl
               .createCustomerLastList(distributionPoint, productType, orderBy, ascending,
-                      showArchivedCustomer, showBlockedCustomer);
+                      showArchivedCustomer, showBlockedCustomer, ausweisIdArrayList);
           
         }
         
@@ -712,6 +721,12 @@ public class AusweisDruckenController extends Thread
             cbxArchivierteKunden.setDisable(false);
             cbxEinkaufsberechtigte.setDisable(false);
             cbxGesperrteKunden.setDisable(false);
+            if (rbletzteKunden.isSelected())
+            {
+              textfieldKdIdList.setDisable(false);
+            } else {
+              textfieldKdIdList.setDisable(true);
+            }
         } else
         {
             cbVerteilstelle.setDisable(true);
@@ -720,6 +735,7 @@ public class AusweisDruckenController extends Thread
             cbxArchivierteKunden.setDisable(true);
             cbxEinkaufsberechtigte.setDisable(true);
             cbxGesperrteKunden.setDisable(true);
+            textfieldKdIdList.setDisable(true);
         }
     }
     /**
