@@ -212,9 +212,10 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
         List<Familienmitglied> familienMitglieder = new ArrayList<>();
         
         // KORREKTUR: Wir verbinden (JOIN) die Tabellen, um die Verteilstelle des Haushalts zu prüfen
+        // Select nur einkaufsberechtigte Personen U.P.
         String sql = "SELECT familienmitglied.* FROM familienmitglied " +
                      "INNER JOIN haushalt ON familienmitglied.haushaltId = haushalt.kundennummer " +
-                     "WHERE haushalt.verteilstellenId = ?";
+                     "WHERE haushalt.verteilstellenId = ? AND familienmitglied.einkaufsBerechtigt = true";
 
         try (Connection con = SQLConnection.getCon();
              PreparedStatement pstmt = con.prepareStatement(sql))
