@@ -205,15 +205,23 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
 	/**
      */
 	// Neue Methode: Liest Familienmitglieder, die zu einer bestimmten Verteilstelle gehören
+	// Neue Methode: Liest Familienmitglieder, die zu einer bestimmten Verteilstelle gehören
     @Override
     public List<Familienmitglied> readByVerteilstelle(Verteilstelle verteilstelle)
     {
         List<Familienmitglied> familienMitglieder = new ArrayList<>();
-        String sql = "SELECT * FROM familienmitglied WHERE verteilstellenId = ?"; // Passen Sie den Spaltennamen ggf. an
+        
+        // KORREKTUR: Wir verbinden (JOIN) die Tabellen, um die Verteilstelle des Haushalts zu prüfen
+        String sql = "SELECT familienmitglied.* FROM familienmitglied " +
+                     "INNER JOIN haushalt ON familienmitglied.haushaltId = haushalt.kundennummer " +
+                     "WHERE haushalt.verteilstellenId = ?";
+
         try (Connection con = SQLConnection.getCon();
              PreparedStatement pstmt = con.prepareStatement(sql))
         {
+            // Setzt die ID der ausgewählten Verteilstelle in das SQL
             pstmt.setInt(1, verteilstelle.getVerteilstellenId());
+            
             try (ResultSet rs = pstmt.executeQuery())
             {
                 while (rs.next())
@@ -225,6 +233,7 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
         } catch (SQLException e)
         {
             e.printStackTrace();
+            System.out.println("Fehler beim Laden der gefilterten Liste: " + e.getMessage());
         }
         return familienMitglieder;
     }
