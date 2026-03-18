@@ -711,12 +711,11 @@ public class MainController
      *
      * @param fontSize the font size to set in the creation window.
      */
-    public void oeffneHaushaltHinzufuegen(Double fontSize)
+    public Familienmitglied oeffneHaushaltHinzufuegen(Double fontSize)
     {
         try
         {
-
-        	FXMLLoader loader = new FXMLLoader(getClass().getResource("/kundenverwaltung/fxml/HaushaltAnlegen.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/kundenverwaltung/fxml/HaushaltAnlegen.fxml"));
             AnchorPane pane = loader.load();
             Stage haushaltAnlegenStage = new Stage();
 
@@ -733,11 +732,17 @@ public class MainController
             haushaltAnlegenStage.initStyle(StageStyle.DECORATED);
             haushaltAnlegenStage.initModality(Modality.APPLICATION_MODAL);
             haushaltAnlegenStage.centerOnScreen();
+            
+            // Blockiert, bis das Fenster geschlossen wird
             haushaltAnlegenStage.showAndWait();
+
+            // NEU: Den neu erstellten Kunden an den MainWindowController zurückgeben!
+            return haushaltAnlegenController.getNeuAngelegterVorstand();
 
         } catch (IOException e)
         {
             e.printStackTrace();
+            return null;
         }
     }
  // Private Variable

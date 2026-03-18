@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn.SortType;
 import kundenverwaltung.service.UpdateService;
 import java.io.IOException;
 import java.io.InputStream;
@@ -552,8 +552,19 @@ public class MainWindowController
      */
     @FXML public void oeffneHaushaltHinzufuegen()
     {
-        MainController.getInstance().oeffneHaushaltHinzufuegen(currentFontSize);
-        refreshCustomerTableView();
+        Familienmitglied neuerVorstand = MainController.getInstance().oeffneHaushaltHinzufuegen(currentFontSize);
+        
+        if (neuerVorstand != null) 
+        {
+           
+            familienmitglieder.add(neuerVorstand);
+            searchCustomer(); 
+            
+            
+            kundensucheOutput.getSelectionModel().select(neuerVorstand);
+            kundensucheOutput.scrollTo(neuerVorstand);
+            waehleKunde();
+        }
     }
     /**
      *.
@@ -564,7 +575,12 @@ public class MainWindowController
         {
 
             haushalt = MainController.getInstance().oeffneHaushaltVerwalten(haushalt, currentFontSize);
-            refreshCustomerTableView();
+            
+            
+            if (haushalt != null) {
+                refreshSingleHousehold(haushalt.getKundennummer());
+                waehleKunde();
+            }
 
         } catch (NullPointerException e)
         {
@@ -582,14 +598,13 @@ public class MainWindowController
      */
     @FXML public void oeffneBemerkungenBearbeiten()
     {
-
         if (haushalt != null)
         {
             haushalt = MainController.getInstance().oeffneBemerkungenBearbeiten(haushalt, currentFontSize);
             txtBemerkungen.setText(haushalt.getBemerkungen());
-            familienmitgliederOL.clear();
-            familienmitgliederOL.addAll(new FamilienmitgliedDAOimpl()
-                    .getAllFamilienmitglieder(suche, filter, genaueSuche));
+            
+           
+            refreshSingleHousehold(haushalt.getKundennummer());
         } else
         {
             System.out.println("Kein Objekt gewählt");
@@ -692,6 +707,15 @@ public class MainWindowController
     @FXML
     public void searchCustomer()
     {
+       // save order 
+        List<TableColumn<Familienmitglied, ? >> sortOrder=null;
+        
+        int anzsort=kundensucheOutput.getSortOrder().size();
+        if (anzsort>0)
+        {
+          sortOrder = new ArrayList<>(kundensucheOutput.getSortOrder());
+        }   
+    
         changedFamiliyMemberObservableList.clear();
         changedFamiliyMemberObservableList = FXCollections.observableArrayList(familienmitglieder);
         int selectedSearchIndex = cbSucheFilter.getSelectionModel().getSelectedIndex();
@@ -772,6 +796,19 @@ public class MainWindowController
             }
         }
         kundensucheOutput.setItems(changedFamiliyMemberObservableList);
+        if (anzsort>0)
+        {
+            kundensucheOutput.getSortOrder().clear();
+            kundensucheOutput.getSortOrder().addAll(sortOrder);
+            kundensucheOutput.sort();
+        }
+        else 
+        { // Default sort Kundennummer
+          columnKundennummer.setSortable(true);
+          columnKundennummer.setSortType(TableColumn.SortType.ASCENDING);
+          kundensucheOutput.getSortOrder().add(columnKundennummer);
+          kundensucheOutput.sort();
+        }
     }
 
 
@@ -785,7 +822,8 @@ public class MainWindowController
      * fixed "save in DB"
      */
 
-    @FXML public void umsatzBezahlt()
+    @FXML
+    public void umsatzBezahlt()
     {
         Warentyp warentyp = cbWarentyp.getSelectionModel().getSelectedItem();
         LocalDateTime erfassungszeit = LocalDateTime.now();
@@ -852,7 +890,6 @@ public class MainWindowController
 
             txtSucheInput.requestFocus();
     }
-
 
 
     /**
@@ -1149,23 +1186,18 @@ public class MainWindowController
     @FXML public void btnWeitereInformationen()
     {
         Boolean einkaufsberechtigt;
-        ObservableList<Haushaltsinformationen> informationenHaushaltOL =
-                FXCollections.observableArrayList();
+        ObservableList<Haushaltsinformationen> informationenHaushaltOL = FXCollections.observableArrayList();
 
         switch (btnWeitereInformationen.getText())
         {
             case "Einstellungen ändern":
                 haushalt = MainController.getInstance().oeffneKundenstammBearbeiten(haushalt, currentFontSize);
-                familienmitgliederOL.clear();
-                familienmitgliederOL.addAll(new FamilienmitgliedDAOimpl()
-                        .getAllFamilienmitglieder(suche, filter, genaueSuche));
+                if (haushalt != null) refreshSingleHousehold(haushalt.getKundennummer());
                 fuelleKundendaten();
                 break;
             case "Personendaten ändern":
                 MainController.getInstance().oeffnePersonAendern(familienmitglied, haushalt, currentFontSize);
-                familienmitgliederOL.clear();
-                familienmitgliederOL.addAll(new FamilienmitgliedDAOimpl()
-                        .getAllFamilienmitglieder(suche, filter, genaueSuche));
+                if (haushalt != null) refreshSingleHousehold(haushalt.getKundennummer());
                 fuelleKundendaten();
 
                 familienmitliederAkt = new FamilienmitgliedDAOimpl()
@@ -1217,9 +1249,7 @@ public class MainWindowController
             case "Bemerkung bearbeiten":
                 haushalt = MainController.getInstance().oeffneBemerkungenBearbeiten(haushalt, currentFontSize);
                 txtBemerkungen.setText(haushalt.getBemerkungen());
-                familienmitgliederOL.clear();
-                familienmitgliederOL.addAll(new FamilienmitgliedDAOimpl()
-                        .getAllFamilienmitglieder(suche, filter, genaueSuche));
+                if (haushalt != null) refreshSingleHousehold(haushalt.getKundennummer());
                 break;
           default:
             break;
@@ -1261,16 +1291,31 @@ public class MainWindowController
     }
 
     /**
-     * This function refresh householdArraylist, householdObservablelist and householdtableview.
-     *
-     * @Author Richard Kromm
-     * @Date 19.09.2018
+     * Aktualisiert die Kunden-Tabelle basierend auf der ausgewählten Verteilstelle.
      */
     public void refreshCustomerTableView()
     {
-        familienmitglieder = new FamilienmitgliedDAOimpl().getAllFamilienmitglieder();
+        // Hole die aktuell ausgewählte Verteilstelle aus dem Dropdown
+        Verteilstelle selectedVerteilstelle = cbErfassungsVerteilstelle.getSelectionModel().getSelectedItem();
+
+        if (selectedVerteilstelle != null)
+        {
+            // Lade nur Kunden, die zu dieser Verteilstelle gehören
+            List<Familienmitglied> gefilterteListe = new FamilienmitgliedDAOimpl().readByVerteilstelle(selectedVerteilstelle);
+            familienmitglieder = new ArrayList<>(gefilterteListe);
+        }
+        else
+        {
+            // Fallback: Alle laden, falls nichts ausgewählt ist (sollte durch selectFirst() nicht passieren)
+            familienmitglieder = new FamilienmitgliedDAOimpl().getAllFamilienmitglieder();
+        }
+
+        // Aktualisiere die Listen für die Tabelle
         familienmitgliederOL = FXCollections.observableArrayList(familienmitglieder);
         kundensucheOutput.setItems(familienmitgliederOL);
+
+        // WICHTIG: Auch die Liste für die Suchfunktion zurücksetzen, damit die Suche im gefilterten Bereich funktioniert
+        changedFamiliyMemberObservableList = FXCollections.observableArrayList(familienmitglieder);
     }
 
     @FXML
@@ -1348,7 +1393,61 @@ public class MainWindowController
             info.showAndWait();
         }
     }
+  
 
+   
+    private void refreshSingleHousehold(int kundennummer)
+    {
+ 
+      List<TableColumn<Familienmitglied, ? >> sortOrder=null;
+      
+      int anzsort=kundensucheOutput.getSortOrder().size();
+      if (anzsort>0)
+      {
+        sortOrder = new ArrayList<>(kundensucheOutput.getSortOrder());
+      }   
+      
+        // 1. Merken, wer gerade ausgewählt war, damit die Anzeige nicht wegspringt
+        int selectedPersonId = -1;
+        if (familienmitglied != null) {
+            selectedPersonId = familienmitglied.getPersonId();
+        }
+
+        // 2. Alte Einträge dieses Haushalts aus der Hauptliste entfernen
+        familienmitglieder.removeIf(f -> f.getHaushalt().getKundennummer() == kundennummer);
+        
+        // 3. Nur die Mitglieder DIESES EINEN Haushalts blitzschnell aus der DB laden
+        ArrayList<Familienmitglied> aktualisiert = new FamilienmitgliedDAOimpl().getAllFamilienmitglieder(kundennummer,true);
+        
+        // 4. Zur Liste hinzufügen
+        familienmitglieder.addAll(aktualisiert);
+        
+        // 5. Tabelle aktualisieren lassen (nutzt die bereits bestehende Methode)
+        searchCustomer(); 
+  
+        // 6. Auswahl wiederherstellen
+        if (selectedPersonId != -1) {
+            for (Familienmitglied fm : changedFamiliyMemberObservableList) {
+                if (fm.getPersonId() == selectedPersonId) {
+                    kundensucheOutput.getSelectionModel().select(fm);
+                    break;
+                }
+            }
+        }
+        if (anzsort>0)
+        {
+            kundensucheOutput.getSortOrder().clear();
+            kundensucheOutput.getSortOrder().addAll(sortOrder);
+            kundensucheOutput.sort();
+        }
+        else 
+        { // Default sort Kundennummer
+          columnKundennummer.setSortable(true);
+          columnKundennummer.setSortType(TableColumn.SortType.ASCENDING);
+          kundensucheOutput.getSortOrder().add(columnKundennummer);
+          kundensucheOutput.sort();
+        }
+    }
     
     public User getUser()
     {

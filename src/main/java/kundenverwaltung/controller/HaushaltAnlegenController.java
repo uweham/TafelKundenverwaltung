@@ -191,6 +191,11 @@ public class HaushaltAnlegenController
     private PLZ plz;
     private String wohnortAlt = "";
 
+    private Familienmitglied neuAngelegterVorstand;
+
+    public Familienmitglied getNeuAngelegterVorstand() {
+        return neuAngelegterVorstand;
+    }
     // --- Autocomplete-Struktur ---
     private ContextMenu plzSuggestMenu;
     private TableView<PLZ> plzTable;
@@ -280,9 +285,17 @@ public class HaushaltAnlegenController
     @SuppressWarnings("unchecked")
     private void setupPlzAutocomplete()
     {
-        if (plzListe == null) plzListe = new PLZDaoImpl().readAll();
+        if (plzListe == null) plzListe = new kundenverwaltung.dao.PLZDaoImpl().readAll();
 
-        // Nur Ziffern, max. 5
+        // 1. Definiere den roten "Fehler-Rahmen" als Effekt (Trick, um setStyle zu umgehen)
+        javafx.scene.effect.InnerShadow errorShadow = new javafx.scene.effect.InnerShadow(javafx.scene.effect.BlurType.THREE_PASS_BOX, javafx.scene.paint.Color.RED, 10, 0, 0, 0);
+
+        // 2. Initial prüfen: Ist das Feld leer/falsch? Dann roten Rahmen setzen.
+        if (!kundenverwaltung.toolsandworkarounds.CheckUserInput.checkPLZLength(txtPostleitzahl.getText())) {
+            txtPostleitzahl.setEffect(errorShadow);
+        }
+
+        // Nur Ziffern, max. 5 (Dein alter Code)
         txtPostleitzahl.setTextFormatter(new TextFormatter<>(change ->
         {
             String t = change.getControlNewText();
@@ -291,6 +304,7 @@ public class HaushaltAnlegenController
             return change;
         }));
 
+        // --- Dein Tabellen-Setup (unverändert) ---
         plzTable = new TableView<>();
         plzTable.setPrefWidth(260);
         plzTable.setPrefHeight(200);
@@ -322,43 +336,43 @@ public class HaushaltAnlegenController
             {
                 case ENTER -> applySelectedPlz();
                 case ESCAPE -> plzSuggestMenu.hide();
-                default ->
-                {
-
-                }
+                default -> {}
             }
         });
 
         plzDebounce.setOnFinished(e -> filterAndShowPlz());
 
-        txtPostleitzahl.textProperty().addListener((obs, oldV, newV) ->
-        {
+        // --- NEU: Listener für visuellen Check (Nutzt .setEffect statt .setStyle) ---
+        txtPostleitzahl.textProperty().addListener((observable, oldValue, newValue) -> {
+            
+            // Logik für Autocomplete (Dein alter Code)
             selectedPlz = null;
-            if (newV != null && newV.length() >= 2)
-            {
+            if (newValue != null && newValue.length() >= 2) {
                 plzDebounce.playFromStart();
-            } else
-            {
+            } else {
                 plzSuggestMenu.hide();
             }
+
+            // Logik für roten Rahmen (Neuer Code)
+            if (!kundenverwaltung.toolsandworkarounds.CheckUserInput.checkPLZLength(newValue)) {
+                txtPostleitzahl.setEffect(errorShadow); // Rot
+            } else {
+                txtPostleitzahl.setEffect(null); // Normal
+            }
         });
+        // -----------------------------------------------------------------
 
         txtPostleitzahl.addEventFilter(KeyEvent.KEY_PRESSED, ev ->
         {
-            if (plzSuggestMenu.isShowing())
-            {
-                switch (ev.getCode())
-                {
-                    case DOWN ->
-                    {
+            if (plzSuggestMenu.isShowing()) {
+                switch (ev.getCode()) {
+                    case DOWN -> {
                         plzTable.requestFocus();
                         plzTable.getSelectionModel().selectFirst();
                         ev.consume();
                     }
                     case ESCAPE -> plzSuggestMenu.hide();
-                    default ->
-                    {
-                    }
+                    default -> {}
                 }
             }
         });
@@ -616,6 +630,12 @@ public class HaushaltAnlegenController
                     if (checkInsert)
                     {
                         Benachrichtigung.infoBenachrichtigung("Anlegen erfolgreich.", "Der Haushalt wurde erfolgreich hinzugefügt.");
+                       
+                        ArrayList<Familienmitglied> fms = new FamilienmitgliedDAOimpl().getAllFamilienmitglieder(haushaltID);
+                        if(fms != null && !fms.isEmpty()) {
+                            neuAngelegterVorstand = fms.get(0);
+                        }
+                        
                         Stage stage = (Stage) btnAendern.getScene().getWindow();
                         stage.close();
                     } else
@@ -657,6 +677,14 @@ public class HaushaltAnlegenController
 
         if (pruefeFelderHaushalt())
         {
+          if (!kundenverwaltung.toolsandworkarounds.CheckUserInput.checkPLZLength(txtPostleitzahl.getText())) 
+          {
+              Benachrichtigung.warnungBenachrichtigung(
+                  "Ungültige Postleitzahl", 
+                  "Die Postleitzahl muss genau 5 Stellen haben."
+              );
+              return null; // Abbruch
+          }
             Boolean plzEinfuegen = plzEinfuegen();
 
             if (plzEinfuegen)
@@ -821,18 +849,44 @@ public class HaushaltAnlegenController
     /**
      *.
      */
+    /**
+     * Wandelt den ersten Buchstaben jedes Wortes in Großbuchstaben um.
+     * Berücksichtigt Leerzeichen, Bindestriche und Punkte als Trenner.
+     */
     public String ersteBuchstabenGross(String string)
     {
-        string = string.toLowerCase();
-        String ergebnisstring = "";
-        @SuppressWarnings("resource")
-        Scanner scanner = new Scanner(string);
-        while (scanner.hasNext())
-        {
-            String word = scanner.next();
-            ergebnisstring += Character.toUpperCase(word.charAt(0)) + word.substring(1) + " ";
+        if (string == null || string.isEmpty()) {
+            return "";
         }
-        return ergebnisstring.trim();
+
+        // 1. Alles klein machen
+        char[] chars = string.toLowerCase().toCharArray();
+        boolean capitalizeNext = true;
+
+        for (int i = 0; i < chars.length; i++)
+        {
+            char c = chars[i];
+            
+            // Wenn es ein Buchstabe ist...
+            if (Character.isLetter(c))
+            {
+                if (capitalizeNext)
+                {
+                    chars[i] = Character.toUpperCase(c);
+                    capitalizeNext = false; // Nächster Buchstabe wieder klein, bis Trenner kommt
+                }
+            } 
+            else
+            {
+                // Wenn das Zeichen ein Trenner ist (Leerzeichen, Bindestrich, Punkt)
+                // dann muss das darauf folgende Zeichen groß geschrieben werden.
+              if (c == ' ' || c == '-' || c == '.' || c == '_')
+              {
+                  capitalizeNext = true;
+              }
+            }
+        }
+        return new String(chars);
     }
 
     private FirstLetterToUppercase firstLetterToUppercase = new FirstLetterToUppercase();
