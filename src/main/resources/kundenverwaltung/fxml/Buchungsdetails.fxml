@@ -24,7 +24,7 @@
                <children>
                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <Button fx:id="btnBuchungOK" mnemonicParsing="false" onAction="#btnBuchungOK" prefWidth="121.0" text="OK">
+                        <Button fx:id="btnBuchungOK" defaultButton="true" mnemonicParsing="false" onAction="#btnBuchungOK" prefWidth="121.0" text="OK">
                            <HBox.margin>
                               <Insets left="5.0" />
                            </HBox.margin>
@@ -84,7 +84,7 @@
                      </VBox.margin>
                   </Label>
                   <Label fx:id="lblBuchungstext1erforderlich" text="erforderlich" textFill="RED" />
-                  <TextField fx:id="txtBuchungstext">
+                  <TextField fx:id="txtBuchungstext" onAction="#btnBuchungOK">
                      <opaqueInsets>
                         <Insets />
                      </opaqueInsets>
