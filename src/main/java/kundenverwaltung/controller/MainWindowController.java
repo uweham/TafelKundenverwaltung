@@ -21,7 +21,10 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -299,6 +302,7 @@ public class MainWindowController
     
     private GetVersionProperties getversionproperties = new GetVersionProperties()   ;
     
+    private boolean tableKeyPress = false;
     /**
      *.
      */
@@ -425,7 +429,34 @@ public class MainWindowController
         }
     }
 
-
+    /**
+     * Handling cursor keys from the table
+     * refresh customer details 
+     */
+    @FXML public void tableOnKeyPressed()
+    {
+      
+      kundensucheOutput.setOnKeyPressed(e -> {
+             KeyCode code=e.getCode();
+            if (code.isArrowKey() == true ||
+                code.isNavigationKey() == true)
+              {
+                tableKeyPress=true;
+              }
+        });
+    
+    }
+    
+    @FXML public void tableOnKeyRelased()
+    {
+      if (tableKeyPress == true)
+      {
+        tableKeyPress = false;
+        waehleKunde();
+      }
+    }
+      
+   
     /**
      *.
      */
@@ -809,9 +840,42 @@ public class MainWindowController
           kundensucheOutput.getSortOrder().add(columnKundennummer);
           kundensucheOutput.sort();
         }
+        clearKundendaten();
     }
 
+    public void clearKundendaten()
+    {
+        haushalt = null;
+        
+        haushaltHintergrund.setStyle("-fx-background-color: gray ");
 
+        ckbxDSE.setSelected(false);
+
+        ckbxNation.setSelected(false);
+
+        txtHaushaltsvorstand.setText("");
+
+        txtAnzahlFamilienmitglieder.setText("");
+        txtVerteilstelle.setText("");
+        txtKundennummer.setText("Keine Auswahl erfolgt !");
+        txtAusgabegruppe.setText("");
+        gruppenfarbe.setFill(Color.WHITE);
+        
+        txtBemerkungen.setText("");
+        
+        float zuZahlen = 0.0F;
+        // Nur diesen einen Wert anbieten (kein 0.0 mehr)
+        ObservableList<Float> zuZahlenWerte =
+            FXCollections.observableArrayList(zuZahlen);
+        cbZuZahlen.setItems(zuZahlenWerte);
+        cbZuZahlen.getSelectionModel().selectFirst();
+               
+        // Und im Textfeld vorfüllen
+        txtKassiert.setText(Float.toString(zuZahlen));
+        // Kontosaldo aktualisieren;
+        txtKontosaldo.setText("");
+        listWeitereInformationen.getItems().clear();
+    }
 
     /**
      * @Author Adam Starobrzanski
@@ -903,73 +967,76 @@ public class MainWindowController
 
     @FXML public void diesesBezahlt()
     {
-        Warentyp warentyp = cbWarentyp.getSelectionModel().getSelectedItem();
-        LocalDateTime erfassungszeit = LocalDateTime.now();
-        Float summEinkauf = haushalt.getZuZahlen(warentyp);
-        Float summeZahlung = 0.0F;
-        try
-        {
-            summeZahlung = Float.valueOf(txtKassiert.getText());
-        } catch (Exception e)
-        {
-            Benachrichtigung.warnungBenachrichtigung("Falsche Eingabe",
-                    "Bitte geben sie den Betrag im richtigen Format an.");
-            return;
-        }
-        int anzahlKinder = haushalt.getanzahlKinder();
-        int anzahlErwachsene = haushalt.getanzahlErwachsene();
-        Boolean warnung = true;
-
-        if (haushalt.getBuchungswarnungen(warentyp).size() != 0)
-        {
-            warnung = MainController.getInstance()
-                    .zeigeBuchungswarnungen(haushalt.getBuchungswarnungen(warentyp));
-        }
-
-        if (warnung)
-        {
-            try
-            {
-                Einkauf result = null;       //Fuer Buchungstext und Familienmitglied auswahl
-                if (warentyp.getZuordnungPerson() != 0 || warentyp.getZuordnungBuchungstext()
-                    !=
-                        0)
-                {                     //0 = nicht erforderlich
-                    result = MainController.getInstance()
-                            .oeffneBuchungErstellen(haushalt, warentyp.getZuordnungBuchungstext(),
-                                    warentyp.getZuordnungPerson(), currentFontSize);
-                }
-                if (result != null) 
-                {
-                  saldo = saldo + (summeZahlung - summEinkauf);
+        if (haushalt!=null)
+        {  
+          Warentyp warentyp = cbWarentyp.getSelectionModel().getSelectedItem();
+          LocalDateTime erfassungszeit = LocalDateTime.now();
+          Float summEinkauf = haushalt.getZuZahlen(warentyp);
+          Float summeZahlung = 0.0F;
+          try
+          {
+              summeZahlung = Float.valueOf(txtKassiert.getText());
+          } catch (Exception e)
+          {
+              Benachrichtigung.warnungBenachrichtigung("Falsche Eingabe",
+                      "Bitte geben sie den Betrag im richtigen Format an.");
+              return;
+          }
+          int anzahlKinder = haushalt.getanzahlKinder();
+          int anzahlErwachsene = haushalt.getanzahlErwachsene();
+          Boolean warnung = true;
   
-                  haushalt.setSaldo(saldo);
+          if (haushalt.getBuchungswarnungen(warentyp).size() != 0)
+          {
+              warnung = MainController.getInstance()
+                      .zeigeBuchungswarnungen(haushalt.getBuchungswarnungen(warentyp));
+          }
   
-                  @SuppressWarnings("unused")
-                  Einkauf einkauf =
-                          new Einkauf(warentyp, null, null, result.getBuchungstext(), haushalt,
-                                  familienmitglied, erfassungszeit, summEinkauf, summeZahlung,
-                                  cbErfassungsVerteilstelle.getSelectionModel().getSelectedItem(),
-                                  anzahlKinder, anzahlErwachsene);
-                  Boolean updateCheck = new HaushaltDAOimpl().update(haushalt);
-  
-                  if (!updateCheck)
-                  {
-                      Benachrichtigung.warnungBenachrichtigung("",
-                              "Der Einkauf konnte nicht gebucht werden. Bitt prüfen sie die "
-                      +
-                                      "Datenbank verbindung.");
+          if (warnung)
+          {
+              try
+              {
+                  Einkauf result = null;       //Fuer Buchungstext und Familienmitglied auswahl
+                  if (warentyp.getZuordnungPerson() != 0 || warentyp.getZuordnungBuchungstext()
+                      !=
+                          0)
+                  {                     //0 = nicht erforderlich
+                      result = MainController.getInstance()
+                              .oeffneBuchungErstellen(haushalt, warentyp.getZuordnungBuchungstext(),
+                                      warentyp.getZuordnungPerson(), currentFontSize);
                   }
+                  if (result != null) 
+                  {
+                    saldo = saldo + (summeZahlung - summEinkauf);
+    
+                    haushalt.setSaldo(saldo);
+    
+                    @SuppressWarnings("unused")
+                    Einkauf einkauf =
+                            new Einkauf(warentyp, null, null, result.getBuchungstext(), haushalt,
+                                    familienmitglied, erfassungszeit, summEinkauf, summeZahlung,
+                                    cbErfassungsVerteilstelle.getSelectionModel().getSelectedItem(),
+                                    anzahlKinder, anzahlErwachsene);
+                    Boolean updateCheck = new HaushaltDAOimpl().update(haushalt);
+    
+                    if (!updateCheck)
+                    {
+                        Benachrichtigung.warnungBenachrichtigung("",
+                                "Der Einkauf konnte nicht gebucht werden. Bitt prüfen sie die "
+                        +
+                                        "Datenbank verbindung.");
+                    }
+    
+                    fuelleKassenFelder();
+                  }
+              } catch (NullPointerException e)
+              {
+                  System.out.println("kein Objekt gewählt (Zeile 722)");
+              }
+          }
   
-                  fuelleKassenFelder();
-                }
-            } catch (NullPointerException e)
-            {
-                System.out.println("kein Objekt gewählt (Zeile 722)");
-            }
+          txtSucheInput.requestFocus();
         }
-
-        txtSucheInput.requestFocus();
     }
 
 
@@ -978,7 +1045,10 @@ public class MainWindowController
      */
     @FXML public void infosAendern()
     {
-        MainController.getInstance().oeffneBuchungenBearbeiten(haushalt, currentFontSize);
+        if (haushalt!=null)
+        {
+          MainController.getInstance().oeffneBuchungenBearbeiten(haushalt, currentFontSize);
+        }
     }
 
     /**
@@ -1185,74 +1255,77 @@ public class MainWindowController
      */
     @FXML public void btnWeitereInformationen()
     {
-        Boolean einkaufsberechtigt;
-        ObservableList<Haushaltsinformationen> informationenHaushaltOL = FXCollections.observableArrayList();
-
-        switch (btnWeitereInformationen.getText())
+        if (haushalt != null)
         {
-            case "Einstellungen ändern":
-                haushalt = MainController.getInstance().oeffneKundenstammBearbeiten(haushalt, currentFontSize);
-                if (haushalt != null) refreshSingleHousehold(haushalt.getKundennummer());
-                fuelleKundendaten();
-                break;
-            case "Personendaten ändern":
-                MainController.getInstance().oeffnePersonAendern(familienmitglied, haushalt, currentFontSize);
-                if (haushalt != null) refreshSingleHousehold(haushalt.getKundennummer());
-                fuelleKundendaten();
-
-                familienmitliederAkt = new FamilienmitgliedDAOimpl()
-                        .getAllFamilienmitglieder(haushalt.getKundennummer());
-                informationenHaushaltOL.clear();
-                informationenHaushaltOL
-                        .addAll(haushalt.getHaushaltsinformationen(familienmitliederAkt));
-                listWeitereInformationen.setItems(informationenHaushaltOL);
-                einkaufsberechtigt = haushalt.getEinkaufsberechtigt();
-
-                if (einkaufsberechtigt)
-                {
-                    haushaltHintergrund.setStyle("-fx-background-color: greenyellow");
-                } else
-                {
-                    haushaltHintergrund.setStyle("-fx-background-color: red");
-                }
-                break;
-            case "Bescheide bearbeiten":
-                MainController.getInstance().oeffneBescheideBearbeiten(haushalt, currentFontSize);
-
-                familienmitliederAkt = new FamilienmitgliedDAOimpl()
-                        .getAllFamilienmitglieder(haushalt.getKundennummer());
-                informationenHaushaltOL.clear();
-                informationenHaushaltOL
-                        .addAll(haushalt.getHaushaltsinformationen(familienmitliederAkt));
-                einkaufsberechtigt = haushalt.getEinkaufsberechtigt();
-
-                if (einkaufsberechtigt)
-                {
-                    haushaltHintergrund.setStyle("-fx-background-color: greenyellow");
-                } else
-                {
-                    haushaltHintergrund.setStyle("-fx-background-color: red");
-                }
-                break;
-            case "Einkäufe anzeigen":
-                MainController.getInstance().oeffneBuchungenBearbeiten(haushalt, currentFontSize);
-                break;
-            case "Vollmachten bearbeiten":
-                MainController.getInstance().oeffneVollmachtenAnzeigen(haushalt, currentFontSize);
-
-                familienmitliederAkt = new FamilienmitgliedDAOimpl()
-                        .getAllFamilienmitglieder(haushalt.getKundennummer());
-                informationenHaushaltOL.clear();
-                informationenHaushaltOL
-                        .addAll(haushalt.getHaushaltsinformationen(familienmitliederAkt));
-                break;
-            case "Bemerkung bearbeiten":
-                haushalt = MainController.getInstance().oeffneBemerkungenBearbeiten(haushalt, currentFontSize);
-                txtBemerkungen.setText(haushalt.getBemerkungen());
-                if (haushalt != null) refreshSingleHousehold(haushalt.getKundennummer());
-                break;
-          default:
-            break;
+          Boolean einkaufsberechtigt;
+          ObservableList<Haushaltsinformationen> informationenHaushaltOL = FXCollections.observableArrayList();
+  
+          switch (btnWeitereInformationen.getText())
+          {
+              case "Einstellungen ändern":
+                  haushalt = MainController.getInstance().oeffneKundenstammBearbeiten(haushalt, currentFontSize);
+                  if (haushalt != null) refreshSingleHousehold(haushalt.getKundennummer());
+                  fuelleKundendaten();
+                  break;
+              case "Personendaten ändern":
+                  MainController.getInstance().oeffnePersonAendern(familienmitglied, haushalt, currentFontSize);
+                  if (haushalt != null) refreshSingleHousehold(haushalt.getKundennummer());
+                  fuelleKundendaten();
+  
+                  familienmitliederAkt = new FamilienmitgliedDAOimpl()
+                          .getAllFamilienmitglieder(haushalt.getKundennummer());
+                  informationenHaushaltOL.clear();
+                  informationenHaushaltOL
+                          .addAll(haushalt.getHaushaltsinformationen(familienmitliederAkt));
+                  listWeitereInformationen.setItems(informationenHaushaltOL);
+                  einkaufsberechtigt = haushalt.getEinkaufsberechtigt();
+  
+                  if (einkaufsberechtigt)
+                  {
+                      haushaltHintergrund.setStyle("-fx-background-color: greenyellow");
+                  } else
+                  {
+                      haushaltHintergrund.setStyle("-fx-background-color: red");
+                  }
+                  break;
+              case "Bescheide bearbeiten":
+                  MainController.getInstance().oeffneBescheideBearbeiten(haushalt, currentFontSize);
+  
+                  familienmitliederAkt = new FamilienmitgliedDAOimpl()
+                          .getAllFamilienmitglieder(haushalt.getKundennummer());
+                  informationenHaushaltOL.clear();
+                  informationenHaushaltOL
+                          .addAll(haushalt.getHaushaltsinformationen(familienmitliederAkt));
+                  einkaufsberechtigt = haushalt.getEinkaufsberechtigt();
+  
+                  if (einkaufsberechtigt)
+                  {
+                      haushaltHintergrund.setStyle("-fx-background-color: greenyellow");
+                  } else
+                  {
+                      haushaltHintergrund.setStyle("-fx-background-color: red");
+                  }
+                  break;
+              case "Einkäufe anzeigen":
+                  MainController.getInstance().oeffneBuchungenBearbeiten(haushalt, currentFontSize);
+                  break;
+              case "Vollmachten bearbeiten":
+                  MainController.getInstance().oeffneVollmachtenAnzeigen(haushalt, currentFontSize);
+  
+                  familienmitliederAkt = new FamilienmitgliedDAOimpl()
+                          .getAllFamilienmitglieder(haushalt.getKundennummer());
+                  informationenHaushaltOL.clear();
+                  informationenHaushaltOL
+                          .addAll(haushalt.getHaushaltsinformationen(familienmitliederAkt));
+                  break;
+              case "Bemerkung bearbeiten":
+                  haushalt = MainController.getInstance().oeffneBemerkungenBearbeiten(haushalt, currentFontSize);
+                  txtBemerkungen.setText(haushalt.getBemerkungen());
+                  if (haushalt != null) refreshSingleHousehold(haushalt.getKundennummer());
+                  break;
+            default:
+              break;
+          }
         }
     }
 
