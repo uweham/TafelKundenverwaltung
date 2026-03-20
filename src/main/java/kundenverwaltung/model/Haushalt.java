@@ -227,17 +227,20 @@ public class Haushalt
 
     public ArrayList<String> getBuchungswarnungen(Warentyp warentyp)
     {
+        
         ArrayList<String> warnungen = new ArrayList<>();
         if (this.saldo < 0.0)
         {
             warnungen.add("Das Kundenkonto hat derzeit einen Sollsaldo von " + this.saldo + "EUR.");
         }
         LocalDateTime letzerEinkauf = new EinkaufDAOimpl().getLetzerEinkauf(this);
+        long datediff = ChronoUnit.DAYS.between(letzerEinkauf.toLocalDate(), LocalDate.now());
         if (letzerEinkauf != null)
         {
-            if ((LocalDateTime.now().getDayOfMonth() - letzerEinkauf.getDayOfMonth())
+            // bugfix datecompare
+            if (datediff
                 <=
-                    warentyp.getWarentyplimitabstand() && warentyp.getWarentyplimitabstand() != 0)
+                    (long) warentyp.getWarentyplimitabstand() && warentyp.getWarentyplimitabstand() != 0)
             {
                 warnungen.add("Der letzte Einkauf (" + letzerEinkauf
                     +
@@ -247,7 +250,7 @@ public class Haushalt
             }
         }
 
-        if (letzerEinkauf != null && LocalDateTime.now().getDayOfMonth() == letzerEinkauf.getDayOfMonth() && warentyp.getWarentypId() != 3)
+        if (letzerEinkauf != null && datediff == 0L && warentyp.getWarentypId() != 3)
         {
             warnungen.add("Der Kunde hat heute bereits eingekauft!");
         }
