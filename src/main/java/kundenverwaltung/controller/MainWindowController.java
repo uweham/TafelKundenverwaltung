@@ -45,6 +45,7 @@ import kundenverwaltung.toolsandworkarounds.ChangeDateFormat;
 import kundenverwaltung.toolsandworkarounds.ExitProgramBackupWarning;
 import javafx.scene.layout.AnchorPane;
 import kundenverwaltung.service.GetVersionProperties;   // add U.P. 02.03.2026
+import kundenverwaltung.service.Booking_err_warn_list;
 
 /**
  * @Author Gruppe_1

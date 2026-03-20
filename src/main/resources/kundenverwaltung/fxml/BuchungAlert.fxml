@@ -10,11 +10,11 @@
 <?import javafx.scene.text.Text?>
 <?scenebuilder-stylesheet stylesheet.css?>
 
-<DialogPane fx:id="dialogPane" contentText="In der Datenbank ist bereits ein Kunde mit dem angegebenen Namen und/oder der Adresse vorhanden. Möchten Sie trotzdem den neuen Kunden anlegen?" headerText="Achtung!" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="230.0" prefWidth="709.0" scaleShape="false" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.BuchungController">
+<DialogPane fx:id="dialogPane" contentText="In der Datenbank ist bereits ein Kunde mit dem angegebenen Namen und/oder der Adresse vorhanden. Möchten Sie trotzdem den neuen Kunden anlegen?" headerText="Achtung!" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="230.0" prefWidth="709.0" scaleShape="false" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.BuchungController">
     <header>
       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="60.0" prefWidth="807.0" scaleShape="false">
          <children>
-            <Text layoutX="22.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Achtung: Es liegen Warnungen vor!" wrappingWidth="784.59375">
+            <Text fx:id="" layoutX="22.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Achtung: Es liegen Warnungen/Fehler vor!" wrappingWidth="784.59375">
                <font>
                   <Font size="16.0" />
                </font>
