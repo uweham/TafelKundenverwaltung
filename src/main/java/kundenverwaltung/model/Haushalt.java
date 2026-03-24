@@ -234,7 +234,11 @@ public class Haushalt
             warnungen.add("Das Kundenkonto hat derzeit einen Sollsaldo von " + this.saldo + "EUR.");
         }
         LocalDateTime letzerEinkauf = new EinkaufDAOimpl().getLetzerEinkauf(this);
-        long datediff = ChronoUnit.DAYS.between(letzerEinkauf.toLocalDate(), LocalDate.now());
+        long datediff=0L;
+        if (letzerEinkauf != null)
+        {
+          datediff = ChronoUnit.DAYS.between(letzerEinkauf.toLocalDate(), LocalDate.now());
+        }
         if (letzerEinkauf != null)
         {
             // bugfix datecompare
