@@ -18,10 +18,14 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -43,6 +47,7 @@ import kundenverwaltung.service.TablePreferenceServiceImpl;
 import kundenverwaltung.service.WindowService;
 import kundenverwaltung.toolsandworkarounds.ChangeDateFormat;
 import kundenverwaltung.toolsandworkarounds.ExitProgramBackupWarning;
+import kundenverwaltung.toolsandworkarounds.IndeterminateProgressBar;
 import javafx.scene.layout.AnchorPane;
 import kundenverwaltung.service.GetVersionProperties;   // add U.P. 02.03.2026
 import kundenverwaltung.service.Booking_err_warn_list;
@@ -263,7 +268,6 @@ public class MainWindowController
     private Label labelKontosaldo;
     @FXML private AnchorPane root;
 
-
     private ChangeDateFormat changeDateFormat = new ChangeDateFormat();
     private ArrayList<Warentyp> warentypListe = new WarentypDAOimpl().readAllAktiv();
     private ObservableList<Warentyp> warentypen = FXCollections.observableArrayList(warentypListe);
@@ -282,14 +286,20 @@ public class MainWindowController
     private Familienmitglied familienmitglied;
 
 
-    private ArrayList<Familienmitglied> familienmitglieder =
+   /* private ArrayList<Familienmitglied> familienmitglieder =
             new FamilienmitgliedDAOimpl().getAllFamilienmitglieder();
     private ObservableList<Familienmitglied> familienmitgliederOL =
             FXCollections.observableArrayList(familienmitglieder);
     private ObservableList<Familienmitglied> changedFamiliyMemberObservableList
             = FXCollections.observableArrayList(familienmitglieder);
+  */
+    
+    // remove ArrayList familienmitglieder
+    // use only ObservableList<Familienmitglied> familienmitgliederOL for ListView
+    private ObservableList<Familienmitglied> familienmitgliederOL =
+        FXCollections.observableArrayList(new FamilienmitgliedDAOimpl().getAllFamilienmitglieder());
 
-
+    
     private ArrayList<Familienmitglied> familienmitliederAkt = new ArrayList<>();
     private ArrayList<Verteilstelle> verteilstellen = new VerteilstelleDAOimpl().readAll();
     private ObservableList<Verteilstelle> verteilstellenOL =
@@ -304,6 +314,8 @@ public class MainWindowController
     private GetVersionProperties getversionproperties = new GetVersionProperties()   ;
     
     private boolean tableKeyPress = false;
+    private boolean tablereload =false;
+    private IndeterminateProgressBar indeterminateProgressBar = new IndeterminateProgressBar();
     /**
      *.
      */
@@ -363,8 +375,24 @@ public class MainWindowController
 
         dateLetzterEinkauf.setConverter(CHANGE_DATE_FORMAT.convertDatePickerFormat());
 
-
+  /*      txtSucheInput.setOnKeyPressed(e ->  {
+           KeyCode code=e.getCode();
+           if (code== KeyCode.F5)
+             {
+               tablereload=true;
+             }
+            }
+        );
         txtSucheInput.setOnKeyReleased(event -> searchCustomer());
+        */
+        txtSucheInput.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+          if (! isNowFocused) {
+              // text field has lost focus...
+              System.out.println(txtSucheInput.getText());
+              searchCustomer();
+          }
+      });
+
         cbSucheFilter.setOnHiding(event ->
         {
             txtSucheInput.setText("");
@@ -419,14 +447,17 @@ public class MainWindowController
         if (kundensucheOutput.getSelectionModel().getSelectedItem() != null)
         {
             familienmitglied = kundensucheOutput.getSelectionModel().getSelectedItem();
-            if ((haushalt == null
-                    || haushalt.getKundennummer() != familienmitglied.getHaushalt().getKundennummer()))
-            {
-                haushalt = familienmitglied.getHaushalt();
-                familienmitliederAkt = new FamilienmitgliedDAOimpl().getAllFamilienmitglieder(haushalt.getKundennummer());
+  //          if ((haushalt == null
+  //                  || haushalt.getKundennummer() != familienmitglied.getHaushalt().getKundennummer()))
+  //          {
+                // Read every time from database
+                // 
+                int haushaltId=familienmitglied.getHaushalt().getKundennummer();
+                familienmitliederAkt = new FamilienmitgliedDAOimpl().getAllFamilienmitglieder(haushaltId);
+                haushalt = familienmitliederAkt.get(0).getHaushalt();
                 fuelleKundendaten();
                 fuelleKassenFelder();
-            }
+   //         }
         }
     }
 
@@ -589,10 +620,8 @@ public class MainWindowController
         if (neuerVorstand != null) 
         {
            
-            familienmitglieder.add(neuerVorstand);
-            searchCustomer(); 
-            
-            
+            familienmitgliederOL.add(neuerVorstand);
+           // searchCustomer(); 
             kundensucheOutput.getSelectionModel().select(neuerVorstand);
             kundensucheOutput.scrollTo(neuerVorstand);
             waehleKunde();
@@ -739,6 +768,13 @@ public class MainWindowController
     @FXML
     public void searchCustomer()
     {
+
+        String userInput = txtSucheInput.getText();
+        if (userInput.isBlank())
+        {
+          return;
+        }
+     
        // save order 
         List<TableColumn<Familienmitglied, ? >> sortOrder=null;
         
@@ -746,8 +782,25 @@ public class MainWindowController
         if (anzsort>0)
         {
           sortOrder = new ArrayList<>(kundensucheOutput.getSortOrder());
-        }   
-    
+        }  
+        familienmitgliederOL.clear();
+        //changedFamiliyMemberObservableList.clear();
+        int kundennummer=0;
+        if (!userInput.isBlank())
+        {
+          kundennummer=Integer.parseInt(userInput);
+        }
+        ArrayList<Familienmitglied> aktualisiert = new FamilienmitgliedDAOimpl().getAllFamilienmitglieder(kundennummer,true);
+        //changedFamiliyMemberObservableList = FXCollections.observableArrayList(aktualisiert);
+        familienmitgliederOL= FXCollections.observableArrayList(aktualisiert);
+        kundensucheOutput.setItems(familienmitgliederOL);
+        
+        
+  /*      if (tablereload)
+        {
+          refreshCustomerTableView();
+          tablereload=false;
+        }
         changedFamiliyMemberObservableList.clear();
         changedFamiliyMemberObservableList = FXCollections.observableArrayList(familienmitglieder);
         int selectedSearchIndex = cbSucheFilter.getSelectionModel().getSelectedIndex();
@@ -828,6 +881,7 @@ public class MainWindowController
             }
         }
         kundensucheOutput.setItems(changedFamiliyMemberObservableList);
+        */
         if (anzsort>0)
         {
             kundensucheOutput.getSortOrder().clear();
@@ -1369,6 +1423,7 @@ public class MainWindowController
      */
     public void refreshCustomerTableView()
     {
+        
         // Hole die aktuell ausgewählte Verteilstelle aus dem Dropdown
         Verteilstelle selectedVerteilstelle = cbErfassungsVerteilstelle.getSelectionModel().getSelectedItem();
 
@@ -1376,21 +1431,27 @@ public class MainWindowController
         {
             // Lade nur Kunden, die zu dieser Verteilstelle gehören
             List<Familienmitglied> gefilterteListe = new FamilienmitgliedDAOimpl().readByVerteilstelle(selectedVerteilstelle);
-            familienmitglieder = new ArrayList<>(gefilterteListe);
+            familienmitgliederOL = FXCollections.observableArrayList(new ArrayList<>(gefilterteListe));
+
+            //familienmitglieder = new ArrayList<>(gefilterteListe);
         }
         else
         {
             // Fallback: Alle laden, falls nichts ausgewählt ist (sollte durch selectFirst() nicht passieren)
-            familienmitglieder = new FamilienmitgliedDAOimpl().getAllFamilienmitglieder();
+          familienmitgliederOL = FXCollections.observableArrayList(new FamilienmitgliedDAOimpl().getAllFamilienmitglieder());
+          
+          // familienmitglieder = new FamilienmitgliedDAOimpl().getAllFamilienmitglieder();
         }
-
         // Aktualisiere die Listen für die Tabelle
-        familienmitgliederOL = FXCollections.observableArrayList(familienmitglieder);
+        // familienmitgliederOL = FXCollections.observableArrayList(familienmitglieder);
         kundensucheOutput.setItems(familienmitgliederOL);
 
         // WICHTIG: Auch die Liste für die Suchfunktion zurücksetzen, damit die Suche im gefilterten Bereich funktioniert
-        changedFamiliyMemberObservableList = FXCollections.observableArrayList(familienmitglieder);
-    }
+        //changedFamiliyMemberObservableList = FXCollections.observableArrayList(familienmitglieder);
+        
+       
+      }
+    
 
     @FXML
     public void changeFontSize(javafx.event.ActionEvent e)
@@ -1488,20 +1549,20 @@ public class MainWindowController
         }
 
         // 2. Alte Einträge dieses Haushalts aus der Hauptliste entfernen
-        familienmitglieder.removeIf(f -> f.getHaushalt().getKundennummer() == kundennummer);
+        familienmitgliederOL.removeIf(f -> f.getHaushalt().getKundennummer() == kundennummer);
         
         // 3. Nur die Mitglieder DIESES EINEN Haushalts blitzschnell aus der DB laden
         ArrayList<Familienmitglied> aktualisiert = new FamilienmitgliedDAOimpl().getAllFamilienmitglieder(kundennummer,true);
         
         // 4. Zur Liste hinzufügen
-        familienmitglieder.addAll(aktualisiert);
+        familienmitgliederOL.addAll(aktualisiert);
         
         // 5. Tabelle aktualisieren lassen (nutzt die bereits bestehende Methode)
-        searchCustomer(); 
+        // searchCustomer(); 
   
         // 6. Auswahl wiederherstellen
         if (selectedPersonId != -1) {
-            for (Familienmitglied fm : changedFamiliyMemberObservableList) {
+            for (Familienmitglied fm : familienmitgliederOL) {
                 if (fm.getPersonId() == selectedPersonId) {
                     kundensucheOutput.getSelectionModel().select(fm);
                     break;

@@ -44,7 +44,7 @@
             </font>
         </Label>
 
-        <TextField fx:id="txtSucheInput" layoutX="8.0" layoutY="53.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="21.0" minWidth="321.0" prefHeight="21.0" prefWidth="321.0" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="53.0" />
+        <TextField fx:id="txtSucheInput" layoutX="8.0" layoutY="53.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="21.0" minWidth="321.0" onAction="#searchCustomer" prefHeight="21.0" prefWidth="321.0" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="53.0" />
         <Label fx:id="labelFolgendesDurchsuchen" layoutX="14.0" layoutY="80.0" maxHeight="21.0" maxWidth="169.0" minHeight="15.0" minWidth="160.0" prefHeight="21.0" prefWidth="169.0" text="Dabei folgendes durchsuchen:" AnchorPane.leftAnchor="11.0" AnchorPane.topAnchor="78.0">
             <font>
                 <Font size="11.0" />
@@ -177,7 +177,7 @@
         </Button>
         <HBox layoutX="8.0" layoutY="476.0" prefHeight="289.0" prefWidth="996.0" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="476.0">
             <children>
-                <TableView fx:id="kundensucheOutput"  onKeyPressed="#tableOnKeyPressed" onKeyReleased="#tableOnKeyRelased" onMouseClicked="#waehleKunde" prefHeight="232.0" prefWidth="996.0" HBox.hgrow="ALWAYS">
+                <TableView fx:id="kundensucheOutput" onKeyPressed="#tableOnKeyPressed" onKeyReleased="#tableOnKeyRelased" onMouseClicked="#waehleKunde" prefHeight="232.0" prefWidth="996.0" HBox.hgrow="ALWAYS">
                     <columns>
                         <TableColumn fx:id="columnKundennummer" prefWidth="55.0" text="Kd.-Nr." />
                         <TableColumn fx:id="columnNachname" prefWidth="79.0" text="Nachname" />
