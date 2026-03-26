@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<database name="tafelprod" schema="tafelprod" type="MySQL - 11.8.3-MariaDB-0+deb13u1 from Debian">
+   <tables>
+      <table catalog="tafelprod" name="altersgruppen" numRows="0" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="year" nullable="false" remarks="" size="10" type="INT" typeCode="4">
+            <parent catalog="tafelprod" column="year" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" table="jahresergebnisse"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="startAlter" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="endAlter" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="ergebnis" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="5" name="jahresergebnis" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="year" unique="true">
+            <column ascending="true" name="year"/>
+            <column ascending="true" name="startAlter"/>
+            <column ascending="true" name="endAlter"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="ausgabegruppe" numRows="24" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="ausgabegruppeId" nullable="false" remarks="" size="10" type="INT" typeCode="4">
+            <child catalog="tafelprod" column="ausgabegruppeId" foreignKey="fk_link_grp" implied="false" onDeleteCascade="true" table="ausgabegruppe_ausgabetagzeit"/>
+            <child catalog="tafelprod" column="ausgabeGruppeId" foreignKey="haushalt_ibfk_2" implied="false" onDeleteCascade="false" table="haushalt"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="name" nullable="true" remarks="" size="50" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="2" name="aktiv" nullable="true" remarks="" size="1" type="BIT" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="3" name="anzeigeFarbe" nullable="true" remarks="" size="7" type="VARCHAR" typeCode="12"/>
+         <primaryKey column="ausgabegruppeId" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="ausgabegruppeId"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="ausgabegruppe_ausgabetagzeit" numRows="0" remarks="" type="TABLE">
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="0" name="ausgabeTagZeitId" nullable="true" remarks="" size="10" type="INT" typeCode="4">
+            <parent catalog="tafelprod" column="ausgabeTagZeitId" foreignKey="fk_link_tagzeit" implied="false" onDeleteCascade="true" table="ausgabetagzeit"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="ausgabegruppeId" nullable="true" remarks="" size="10" type="INT" typeCode="4">
+            <parent catalog="tafelprod" column="ausgabegruppeId" foreignKey="fk_link_grp" implied="false" onDeleteCascade="true" table="ausgabegruppe"/>
+         </column>
+         <index name="ausgabegruppeId" unique="false">
+            <column ascending="true" name="ausgabegruppeId"/>
+         </index>
+         <index name="ausgabeTagZeitId" unique="false">
+            <column ascending="true" name="ausgabeTagZeitId"/>
+         </index>
+         <index name="idx_link_grp" unique="false">
+            <column ascending="true" name="ausgabegruppeId"/>
+         </index>
+         <index name="idx_link_tagzeit" unique="false">
+            <column ascending="true" name="ausgabeTagZeitId"/>
+         </index>
+         <index name="uq_grp_tagzeit" unique="true">
+            <column ascending="true" name="ausgabegruppeId"/>
+            <column ascending="true" name="ausgabeTagZeitId"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="ausgabetagzeit" numRows="0" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="ausgabeTagZeitId" nullable="false" remarks="" size="10" type="INT" typeCode="4">
+            <child catalog="tafelprod" column="ausgabeTagZeitId" foreignKey="fk_link_tagzeit" implied="false" onDeleteCascade="true" table="ausgabegruppe_ausgabetagzeit"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="ausgabeTag" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="2" name="startZeit" nullable="true" remarks="" size="8" type="TIME" typeCode="92"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="3" name="endZeit" nullable="true" remarks="" size="8" type="TIME" typeCode="92"/>
+         <primaryKey column="ausgabeTagZeitId" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="ausgabeTagZeitId"/>
+         </index>
+         <index name="uq_ausgabetagzeit" unique="true">
+            <column ascending="true" name="ausgabeTag"/>
+            <column ascending="true" name="startZeit"/>
+            <column ascending="true" name="endZeit"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="berechtigung" numRows="5" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="berechtigungId" nullable="false" remarks="" size="10" type="INT" typeCode="4">
+            <child catalog="tafelprod" column="berechtigungId" foreignKey="familienmitglied_ibfk_2" implied="false" onDeleteCascade="false" table="familienmitglied"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="name" nullable="true" remarks="" size="100" type="VARCHAR" typeCode="12"/>
+         <primaryKey column="berechtigungId" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="berechtigungId"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="bescheid" numRows="1280" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="bescheidId" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="personId" nullable="true" remarks="" size="10" type="INT" typeCode="4">
+            <parent catalog="tafelprod" column="personId" foreignKey="bescheid_ibfk_1" implied="false" onDeleteCascade="true" table="familienmitglied"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="2" name="bescheidartId" nullable="true" remarks="" size="10" type="INT" typeCode="4">
+            <parent catalog="tafelprod" column="bescheidArtId" foreignKey="bescheid_ibfk_11" implied="false" onDeleteCascade="true" table="bescheidart"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="3" name="gueltigAb" nullable="true" remarks="" size="10" type="DATE" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="4" name="gueltigBis" nullable="true" remarks="" size="10" type="DATE" typeCode="91"/>
+         <primaryKey column="bescheidId" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="bescheidId"/>
+         </index>
+         <index name="bescheid_ibfk_1" unique="false">
+            <column ascending="true" name="personId"/>
+         </index>
+         <index name="bescheidartId" unique="false">
+            <column ascending="true" name="bescheidartId"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="bescheidart" numRows="18" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="bescheidArtId" nullable="false" remarks="" size="10" type="INT" typeCode="4">
+            <child catalog="tafelprod" column="bescheidartId" foreignKey="bescheid_ibfk_11" implied="false" onDeleteCascade="true" table="bescheid"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="name" nullable="true" remarks="" size="50" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="2" name="aktiv" nullable="true" remarks="" size="1" type="BIT" typeCode="-7"/>
+         <primaryKey column="bescheidArtId" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="bescheidArtId"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="bescheidstatistik" numRows="8" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="bescheidartName" nullable="false" remarks="" size="255" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="anzahlPersonen" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="bescheidartName" unique="true">
+            <column ascending="true" name="bescheidartName"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="deleted_MemberOfTheFamily" numRows="49" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="Id" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="householdId" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="2" name="firstName" nullable="true" remarks="" size="30" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="3" name="surname" nullable="true" remarks="" size="30" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="4" name="birthday" nullable="true" remarks="" size="10" type="DATE" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="5" name="reasonDelete" nullable="true" remarks="" size="255" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="6" name="deletedOn" nullable="true" remarks="" size="10" type="DATE" typeCode="91"/>
+         <primaryKey column="Id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="Id"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="einkauf" numRows="3276" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="einkaufId" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="warentyp" nullable="true" remarks="" size="10" type="INT" typeCode="4">
+            <parent catalog="tafelprod" column="warentypId" foreignKey="einkauf_ibfk_1" implied="false" onDeleteCascade="false" table="warentyp"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="2" name="storniertAm" nullable="true" remarks="" size="19" type="TIMESTAMP" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="3" name="stornoText" nullable="true" remarks="" size="65535" type="TEXT" typeCode="-1"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="4" name="buchungstext" nullable="true" remarks="" size="65535" type="TEXT" typeCode="-1"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="5" name="kunde" nullable="true" remarks="" size="10" type="INT" typeCode="4">
+            <parent catalog="tafelprod" column="kundennummer" foreignKey="einkauf_ibfk_2" implied="false" onDeleteCascade="true" table="haushalt"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="6" name="person" nullable="true" remarks="" size="10" type="INT" typeCode="4">
+            <parent catalog="tafelprod" column="personId" foreignKey="einkauf_ibfk_3" implied="false" onDeleteCascade="false" table="familienmitglied"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="7" name="erfassungsZeit" nullable="true" remarks="" size="19" type="TIMESTAMP" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="8" name="summeEinkauf" nullable="true" remarks="" size="12" type="FLOAT" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="9" name="summeZahlung" nullable="true" remarks="" size="12" type="FLOAT" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="10" name="beiVerteilstelle" nullable="true" remarks="" size="10" type="INT" typeCode="4">
+            <parent catalog="tafelprod" column="verteilstellenId" foreignKey="einkauf_ibfk_4" implied="false" onDeleteCascade="false" table="verteilstelle"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="11" name="anzahlKinder" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="12" name="anzahlErwachsene" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <primaryKey column="einkaufId" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="einkaufId"/>
+         </index>
+         <index name="beiVerteilstelle" unique="false">
+            <column ascending="true" name="beiVerteilstelle"/>
+         </index>
+         <index name="einkauf_ibfk_2" unique="false">
+            <column ascending="true" name="kunde"/>
+         </index>
+         <index name="einkauf_ibfk_3" unique="false">
+            <column ascending="true" name="person"/>
+         </index>
+         <index name="warentyp" unique="false">
+            <column ascending="true" name="warentyp"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="einstellungen" numRows="0" remarks="" type="TABLE">
+         <column autoUpdated="false" defaultValue="0" digits="0" id="0" name="initialID" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="kundenarchivieren" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="2" name="gebuehrErwachsener" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="3" name="alterErwachsener" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="4" name="alterBescheid" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="5" name="bescheidBenoetigt" nullable="true" remarks="" size="1" type="BIT" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="6" name="datenschutzerklaerung" nullable="true" remarks="" size="1" type="BIT" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="7" name="verteilstellenzugehoerigkeit" nullable="true" remarks="" size="1" type="BIT" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="tafel_server_host" nullable="false" remarks="" size="255" type="VARCHAR" typeCode="12"/>
+         <primaryKey column="initialID" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="initialID"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="familienmitglied" numRows="1525" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="personId" nullable="false" remarks="" size="10" type="INT" typeCode="4">
+            <child catalog="tafelprod" column="personId" foreignKey="bescheid_ibfk_1" implied="false" onDeleteCascade="true" table="bescheid"/>
+            <child catalog="tafelprod" column="person" foreignKey="einkauf_ibfk_3" implied="false" onDeleteCascade="false" table="einkauf"/>
+            <child catalog="tafelprod" column="bevollmaechtigtePersonId" foreignKey="vollmacht_ibfk_2" implied="false" onDeleteCascade="true" table="vollmacht"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="haushaltId" nullable="true" remarks="" size="10" type="INT" typeCode="4">
+            <parent catalog="tafelprod" column="kundennummer" foreignKey="familienmitglied_ibfk_1" implied="false" onDeleteCascade="true" table="haushalt"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="2" name="anredeId" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="3" name="genderId" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="4" name="vName" nullable="true" remarks="" size="30" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="5" name="nName" nullable="true" remarks="" size="30" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="6" name="gDatum" nullable="true" remarks="" size="10" type="DATE" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="7" name="bemerkung" nullable="true" remarks="" size="65535" type="TEXT" typeCode="-1"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="8" name="haushaltsVorstand" nullable="true" remarks="" size="1" type="BIT" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="9" name="einkaufsBerechtigt" nullable="true" remarks="" size="1" type="BIT" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="10" name="gebuehrenBefreiung" nullable="true" remarks="" size="1" type="BIT" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="11" name="nation" nullable="true" remarks="" size="10" type="INT" typeCode="4">
+            <parent catalog="tafelprod" column="nationId" foreignKey="familienmitglied_ibfk_3" implied="false" onDeleteCascade="false" table="nation"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="12" name="berechtigungId" nullable="true" remarks="" size="10" type="INT" typeCode="4">
+            <parent catalog="tafelprod" column="berechtigungId" foreignKey="familienmitglied_ibfk_2" implied="false" onDeleteCascade="false" table="berechtigung"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="13" name="aufAusweis" nullable="true" remarks="" size="1" type="BIT" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="14" name="dseSubmitted" nullable="true" remarks="" size="1" type="BIT" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="current_timestamp()" digits="0" id="15" name="hinzugefuegtAm" nullable="true" remarks="" size="19" type="TIMESTAMP" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="16" name="geaendertAm" nullable="true" remarks="" size="19" type="TIMESTAMP" typeCode="93"/>
+         <primaryKey column="personId" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="personId"/>
+         </index>
+         <index name="berechtigungId" unique="false">
+            <column ascending="true" name="berechtigungId"/>
+         </index>
+         <index name="familienmitglied_ibfk_1" unique="false">
+            <column ascending="true" name="haushaltId"/>
+         </index>
+         <index name="nation" unique="false">
+            <column ascending="true" name="nation"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="guthabenstatistik" numRows="165" remarks="" type="TABLE">
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="0" name="kunde" nullable="true" remarks="" size="255" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="einkaufId" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="warentyp" nullable="false" remarks="" size="255" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="saldo" nullable="false" remarks="" size="22" type="DOUBLE" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="summeEinkauf" nullable="false" remarks="" size="22" type="DOUBLE" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="summeZahlung" nullable="false" remarks="" size="22" type="DOUBLE" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="anzahlKinder" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="anzahlErwachsene" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <primaryKey column="einkaufId" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="einkaufId"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="haushalt" numRows="639" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="kundennummer" nullable="false" remarks="" size="10" type="INT" typeCode="4">
+            <child catalog="tafelprod" column="kunde" foreignKey="einkauf_ibfk_2" implied="false" onDeleteCascade="true" table="einkauf"/>
+            <child catalog="tafelprod" column="haushaltId" foreignKey="familienmitglied_ibfk_1" implied="false" onDeleteCascade="true" table="familienmitglied"/>
+            <child catalog="tafelprod" column="haushaltId" foreignKey="vollmacht_ibfk_1" implied="false" onDeleteCascade="true" table="vollmacht"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="strasse" nullable="true" remarks="" size="30" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="2" name="hausnummer" nullable="true" remarks="" size="10" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="3" name="plz" nullable="true" remarks="" size="10" type="INT" typeCode="4">
+            <parent catalog="tafelprod" column="plzId" foreignKey="haushalt_ibfk_3" implied="false" onDeleteCascade="false" table="plz"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="4" name="telefonnummer" nullable="true" remarks="" size="20" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="5" name="mobilnummer" nullable="true" remarks="" size="15" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="6" name="bemerkung" nullable="true" remarks="" size="65535" type="TEXT" typeCode="-1"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="7" name="kundeSeit" nullable="true" remarks="" size="10" type="DATE" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="8" name="saldo" nullable="true" remarks="" size="12" type="FLOAT" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="9" name="verteilstellenId" nullable="true" remarks="" size="10" type="INT" typeCode="4">
+            <parent catalog="tafelprod" column="verteilstellenId" foreignKey="haushalt_ibfk_1" implied="false" onDeleteCascade="false" table="verteilstelle"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="10" name="istArchiviert" nullable="true" remarks="" size="1" type="BIT" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="11" name="istGesperrt" nullable="true" remarks="" size="1" type="BIT" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="12" name="ausgabeGruppeId" nullable="true" remarks="" size="10" type="INT" typeCode="4">
+            <parent catalog="tafelprod" column="ausgabegruppeId" foreignKey="haushalt_ibfk_2" implied="false" onDeleteCascade="false" table="ausgabegruppe"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="13" name="belieferung" nullable="true" remarks="" size="1" type="BIT" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="14" name="datenschutzerklaerung" nullable="true" remarks="" size="1" type="BIT" typeCode="-7"/>
+         <primaryKey column="kundennummer" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="kundennummer"/>
+         </index>
+         <index name="ausgabeGruppeId" unique="false">
+            <column ascending="true" name="ausgabeGruppeId"/>
+         </index>
+         <index name="plz" unique="false">
+            <column ascending="true" name="plz"/>
+         </index>
+         <index name="verteilstellenId" unique="false">
+            <column ascending="true" name="verteilstellenId"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="herkunftstatistik" numRows="0" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="20" type="BIGINT UNSIGNED" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="ort" nullable="false" remarks="" size="255" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="hausnummer" nullable="false" remarks="" size="50" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="plz" nullable="false" remarks="" size="10" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="anzahlHaushalte" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="ort" unique="true">
+            <column ascending="true" name="ort"/>
+            <column ascending="true" name="hausnummer"/>
+            <column ascending="true" name="plz"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="jahresergebnisse" numRows="0" remarks="" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="year" nullable="false" remarks="" size="10" type="INT" typeCode="4">
+            <child catalog="tafelprod" column="year" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" table="altersgruppen"/>
+         </column>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="1" name="jahresergebnis" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <primaryKey column="year" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="year"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="jahresuebersichtstatistik" numRows="14" remarks="" type="TABLE">
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="0" name="monat" nullable="true" remarks="" size="20" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="anzahlPersonen" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="2" id="2" name="gesamtUmsatzHaushalt" nullable="true" remarks="" size="10" type="DECIMAL" typeCode="3"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="2" id="3" name="gesamtUmsatzEinkauf" nullable="true" remarks="" size="10" type="DECIMAL" typeCode="3"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="4" name="neuzugaenge" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+      </table>
+      <table catalog="tafelprod" name="kundeninfos" numRows="0" remarks="" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="kdNr" nullable="false" remarks="" size="20" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="name" nullable="true" remarks="" size="100" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="2" name="strasse" nullable="true" remarks="" size="100" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="3" name="plz" nullable="true" remarks="" size="10" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="4" name="ort" nullable="true" remarks="" size="100" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="5" name="status" nullable="true" remarks="" size="3" type="TINYINT" typeCode="-6"/>
+         <primaryKey column="kdNr" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="kdNr"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="nation" numRows="190" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="nationId" nullable="false" remarks="" size="10" type="INT" typeCode="4">
+            <child catalog="tafelprod" column="nation" foreignKey="familienmitglied_ibfk_3" implied="false" onDeleteCascade="false" table="familienmitglied"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="name" nullable="true" remarks="" size="100" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="2" name="nationalitaet" nullable="true" remarks="" size="50" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="1" digits="0" id="3" name="aktiv" nullable="true" remarks="" size="1" type="BIT" typeCode="-7"/>
+         <primaryKey column="nationId" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="nationId"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="nationstatistik" numRows="54" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="nationalität" nullable="true" remarks="" size="255" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="2" name="anzahlPersonen" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="ortsteil" numRows="0" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="ortsteilId" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="name" nullable="true" remarks="" size="50" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="2" name="plz" nullable="true" remarks="" size="10" type="INT" typeCode="4">
+            <parent catalog="tafelprod" column="plzId" foreignKey="ortsteil_ibfk_1" implied="false" onDeleteCascade="false" table="plz"/>
+         </column>
+         <primaryKey column="ortsteilId" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="ortsteilId"/>
+         </index>
+         <index name="plz" unique="false">
+            <column ascending="true" name="plz"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="plz" numRows="29" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="plzId" nullable="false" remarks="" size="10" type="INT" typeCode="4">
+            <child catalog="tafelprod" column="plz" foreignKey="haushalt_ibfk_3" implied="false" onDeleteCascade="false" table="haushalt"/>
+            <child catalog="tafelprod" column="plz" foreignKey="ortsteil_ibfk_1" implied="false" onDeleteCascade="false" table="ortsteil"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="plz" nullable="true" remarks="" size="5" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="2" name="ort" nullable="true" remarks="" size="40" type="VARCHAR" typeCode="12"/>
+         <primaryKey column="plzId" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="plzId"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="recht" numRows="0" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="rechtId" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="Name" nullable="true" remarks="" size="100" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="2" name="Beschreibung" nullable="true" remarks="" size="255" type="VARCHAR" typeCode="12"/>
+         <primaryKey column="rechtId" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="rechtId"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="saved_queries" numRows="287" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="query" nullable="false" remarks="" size="65535" type="TEXT" typeCode="-1"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="statistiktool" numRows="0" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="Nationalitäten" nullable="true" remarks="" size="255" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="2" name="Altersstatistik" nullable="true" remarks="" size="255" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="3" name="Guthaben_und_offene_Beiträge" nullable="true" remarks="" size="22" type="DOUBLE" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="4" name="Herkunft_der_Kunden" nullable="true" remarks="" size="255" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="5" name="Archivierte_Kunden" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="6" name="Gesperrte_Kunden" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="7" name="Anzahl_der_Haushalte" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="8" name="Anzahl_der_Personen" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="9" name="Beschwerde_Art_Statistik" nullable="true" remarks="" size="255" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="10" name="Personen_ohne_Beschwerde" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="11" name="Anzahl_der_Einkäufe" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="12" name="Umsatzauswertung" nullable="true" remarks="" size="22" type="DOUBLE" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="13" name="Tagesstatistik_Warengruppen" nullable="true" remarks="" size="255" type="VARCHAR" typeCode="12"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="table_column_preferences" numRows="139" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="userId" nullable="false" remarks="" size="10" type="INT" typeCode="4">
+            <parent catalog="tafelprod" column="userId" foreignKey="table_column_preferences_ibfk_1" implied="false" onDeleteCascade="false" table="users"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="table_name" nullable="false" remarks="" size="65535" type="TEXT" typeCode="-1"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="column_id" nullable="false" remarks="" size="65535" type="TEXT" typeCode="-1"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="width" nullable="false" remarks="" size="22" type="DOUBLE" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="order_index" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="visible" nullable="false" remarks="" size="1" type="BIT" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="7" name="sort_type" nullable="true" remarks="" size="65535" type="TEXT" typeCode="-1"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="userId" unique="false">
+            <column ascending="true" name="userId"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="tools" numRows="0" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="ID" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="Name" nullable="true" remarks="" size="100" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="2" name="Age" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="3" name="Geschlecht" nullable="true" remarks="" size="10" type="VARCHAR" typeCode="12"/>
+         <primaryKey column="ID" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="ID"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="users" numRows="2" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="userId" nullable="false" remarks="" size="10" type="INT" typeCode="4">
+            <child catalog="tafelprod" column="userId" foreignKey="table_column_preferences_ibfk_1" implied="false" onDeleteCascade="false" table="table_column_preferences"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="userName" nullable="true" remarks="" size="45" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="2" name="firstName" nullable="true" remarks="" size="45" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="3" name="surname" nullable="true" remarks="" size="45" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="4" name="birthday" nullable="true" remarks="" size="10" type="DATE" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="5" name="password" nullable="true" remarks="" size="255" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="6" name="userRights" nullable="true" remarks="" size="45" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="7" name="blockedUntil" nullable="true" remarks="" size="19" type="TIMESTAMP" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="8" name="numberOfMistrials" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <primaryKey column="userId" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="userId"/>
+         </index>
+         <index name="userId_UNIQUE" unique="true">
+            <column ascending="true" name="userId"/>
+         </index>
+         <index name="userName_UNIQUE" unique="true">
+            <column ascending="true" name="userName"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="verteilstelle" numRows="0" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="verteilstellenId" nullable="false" remarks="" size="10" type="INT" typeCode="4">
+            <child catalog="tafelprod" column="beiVerteilstelle" foreignKey="einkauf_ibfk_4" implied="false" onDeleteCascade="false" table="einkauf"/>
+            <child catalog="tafelprod" column="verteilstellenId" foreignKey="haushalt_ibfk_1" implied="false" onDeleteCascade="false" table="haushalt"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="bezeichnung" nullable="true" remarks="" size="50" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="2" name="adresse" nullable="true" remarks="" size="30" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="3" name="listennummer" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <primaryKey column="verteilstellenId" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="verteilstellenId"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="vollmacht" numRows="0" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="vollmachtId" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="haushaltId" nullable="true" remarks="" size="10" type="INT" typeCode="4">
+            <parent catalog="tafelprod" column="kundennummer" foreignKey="vollmacht_ibfk_1" implied="false" onDeleteCascade="true" table="haushalt"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="2" name="bevollmaechtigtePersonId" nullable="true" remarks="" size="10" type="INT" typeCode="4">
+            <parent catalog="tafelprod" column="personId" foreignKey="vollmacht_ibfk_2" implied="false" onDeleteCascade="true" table="familienmitglied"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="3" name="ausgestelltAm" nullable="true" remarks="" size="10" type="DATE" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="4" name="ablaufDatum" nullable="true" remarks="" size="10" type="DATE" typeCode="91"/>
+         <primaryKey column="vollmachtId" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="vollmachtId"/>
+         </index>
+         <index name="vollmacht_ibfk_1" unique="false">
+            <column ascending="true" name="haushaltId"/>
+         </index>
+         <index name="vollmacht_ibfk_2" unique="false">
+            <column ascending="true" name="bevollmaechtigtePersonId"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="vorlage" numRows="10" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="vorlageId" nullable="false" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="templateType" nullable="true" remarks="" size="30" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="2" name="name" nullable="true" remarks="" size="30" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="3" name="autor" nullable="true" remarks="" size="30" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="4" name="fileVersion" nullable="true" remarks="" size="15" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="5" name="fileTypes" nullable="true" remarks="" size="100" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="6" name="defaultText" nullable="true" remarks="" size="255" type="TINYTEXT" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="7" name="passwort" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="8" name="aktiv" nullable="true" remarks="" size="1" type="BIT" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="9" name="daten" nullable="true" remarks="" size="16777215" type="MEDIUMBLOB" typeCode="-4"/>
+         <primaryKey column="vorlageId" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="vorlageId"/>
+         </index>
+      </table>
+      <table catalog="tafelprod" name="warentyp" numRows="2" remarks="" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="warentypId" nullable="false" remarks="" size="10" type="INT" typeCode="4">
+            <child catalog="tafelprod" column="warentyp" foreignKey="einkauf_ibfk_1" implied="false" onDeleteCascade="false" table="einkauf"/>
+            <child catalog="tafelprod" column="naechsterwarentypid" foreignKey="warentyp_ibfk_1" implied="false" onDeleteCascade="false" table="warentyp"/>
+         </column>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="1" name="name" nullable="true" remarks="" size="30" type="VARCHAR" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="2" name="preisErwachsener" nullable="true" remarks="" size="12" type="FLOAT" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="3" name="preisKinder" nullable="true" remarks="" size="12" type="FLOAT" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="4" name="aktiv" nullable="true" remarks="" size="1" type="BIT" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="5" name="haushaltspauschale" nullable="true" remarks="" size="12" type="FLOAT" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="6" name="deckelbetrag" nullable="true" remarks="" size="12" type="FLOAT" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="7" name="minbetrag" nullable="true" remarks="" size="12" type="FLOAT" typeCode="7"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="8" name="manuelleberechnung" nullable="true" remarks="" size="1" type="BIT" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="9" name="zuordnungperson" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="10" name="zuordnungbuchungstext" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="11" name="warentyplimitanzahl" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="12" name="warentyplimitart" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="13" name="warentyplimitabstand" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="14" name="warentyplimitabstandart" nullable="true" remarks="" size="10" type="INT" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="NULL" digits="0" id="15" name="naechsterwarentypid" nullable="true" remarks="" size="10" type="INT" typeCode="4">
+            <parent catalog="tafelprod" column="warentypId" foreignKey="warentyp_ibfk_1" implied="false" onDeleteCascade="false" table="warentyp"/>
+         </column>
+         <primaryKey column="warentypId" sequenceNumberInPK="1"/>
+         <index name="PRIMARY" unique="true">
+            <column ascending="true" name="warentypId"/>
+         </index>
+         <index name="naechsterwarentypid" unique="false">
+            <column ascending="true" name="naechsterwarentypid"/>
+         </index>
+      </table>
+   </tables>
+</database>
