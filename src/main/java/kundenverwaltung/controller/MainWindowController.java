@@ -315,7 +315,7 @@ public class MainWindowController
     
     private boolean tableKeyPress = false;
     private boolean tablereload =false;
-    private IndeterminateProgressBar indeterminateProgressBar = new IndeterminateProgressBar();
+   
     /**
      *.
      */
@@ -783,17 +783,15 @@ public class MainWindowController
         {
           sortOrder = new ArrayList<>(kundensucheOutput.getSortOrder());
         }  
-        familienmitgliederOL.clear();
-        //changedFamiliyMemberObservableList.clear();
-        int kundennummer=0;
         if (!userInput.isBlank())
         {
-          kundennummer=Integer.parseInt(userInput);
-        }
-        ArrayList<Familienmitglied> aktualisiert = new FamilienmitgliedDAOimpl().getAllFamilienmitglieder(kundennummer,true);
+          familienmitgliederOL.clear();
+          ArrayList<Familienmitglied> aktualisiert = new FamilienmitgliedDAOimpl().getAllFamilienmitglieder(userInput,cbSucheFilter.getSelectionModel().getSelectedIndex(),false);
+        
         //changedFamiliyMemberObservableList = FXCollections.observableArrayList(aktualisiert);
-        familienmitgliederOL= FXCollections.observableArrayList(aktualisiert);
-        kundensucheOutput.setItems(familienmitgliederOL);
+          familienmitgliederOL= FXCollections.observableArrayList(aktualisiert);
+          kundensucheOutput.setItems(familienmitgliederOL);
+        }
         
         
   /*      if (tablereload)
