@@ -635,13 +635,20 @@ public class MainWindowController
     {
         try
         {
-
-            haushalt = MainController.getInstance().oeffneHaushaltVerwalten(haushalt, currentFontSize);
-            
-            
-            if (haushalt != null) {
-                refreshSingleHousehold(haushalt.getKundennummer());
-                waehleKunde();
+            if (haushalt!=null)
+            {
+              int kundennr=haushalt.getKundennummer();
+              haushalt = MainController.getInstance().oeffneHaushaltVerwalten(haushalt, currentFontSize);
+              
+              if (haushalt != null) {
+                  refreshSingleHousehold(haushalt.getKundennummer());
+                  waehleKunde();
+              } else 
+              {
+                // * haushalt delete
+                familienmitgliederOL.removeIf(f -> f.getHaushalt().getKundennummer() == kundennr);
+                clearKundendaten();
+              }
             }
 
         } catch (NullPointerException e)

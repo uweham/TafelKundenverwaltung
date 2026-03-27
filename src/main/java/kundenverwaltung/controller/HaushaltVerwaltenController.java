@@ -336,7 +336,8 @@ public class HaushaltVerwaltenController
             Boolean checkDelete = new HaushaltDAOimpl().delete(haushalt);
 
             if (checkDelete)
-            {
+            {   
+                haushalt=null;
                 System.out.println("Haushalt gelöscht");
                 Stage stage = (Stage) txtBemerkungen.getScene().getWindow();
                 stage.close();
