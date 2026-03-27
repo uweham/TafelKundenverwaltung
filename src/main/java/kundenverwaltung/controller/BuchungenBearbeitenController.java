@@ -288,6 +288,7 @@ public class BuchungenBearbeitenController
                 haushalt.setSaldo((float) (haushalt.getSaldo() + repaymentSaldo));
                 haushaltDAOimpl.update(haushalt);
             }
+            
         }
     }
 

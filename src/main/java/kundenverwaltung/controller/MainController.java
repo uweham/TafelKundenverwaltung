@@ -868,7 +868,7 @@ public class MainController
             buchungenBearbeitenStage.initStyle(StageStyle.DECORATED);
             buchungenBearbeitenStage.initModality(Modality.APPLICATION_MODAL);
             buchungenBearbeitenStage.centerOnScreen();
-            buchungenBearbeitenStage.show();
+            buchungenBearbeitenStage.showAndWait();
 
         } catch (IOException e)
         {

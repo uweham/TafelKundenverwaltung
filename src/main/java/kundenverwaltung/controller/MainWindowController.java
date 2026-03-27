@@ -4,6 +4,7 @@ import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Optional;
 import javafx.fxml.FXML;
@@ -215,7 +216,7 @@ public class MainWindowController
     @FXML
     private TableColumn columnBelieferung;
     @FXML
-    private DatePicker dateLetzterEinkauf;
+    private TextField dateLetzterEinkauf;
     @FXML
     private Rectangle gruppenfarbe;
     @FXML
@@ -373,7 +374,7 @@ public class MainWindowController
         fuelleKassenFelder();
         cbSucheFilter.getSelectionModel().selectFirst();
 
-        dateLetzterEinkauf.setConverter(CHANGE_DATE_FORMAT.convertDatePickerFormat());
+        //dateLetzterEinkauf.setConverter(CHANGE_DATE_FORMAT.convertDatePickerFormat());
 
   /*      txtSucheInput.setOnKeyPressed(e ->  {
            KeyCode code=e.getCode();
@@ -711,8 +712,11 @@ public class MainWindowController
      */
     @FXML public void oeffneBuchungenBearbeiten()
     {
-
-        MainController.getInstance().oeffneBuchungenBearbeiten(haushalt, currentFontSize);
+        if (haushalt != null)
+        {
+          MainController.getInstance().oeffneBuchungenBearbeiten(haushalt, currentFontSize);
+          fuelleKassenFelder();
+        }
     }
 
 
@@ -1092,18 +1096,6 @@ public class MainWindowController
         }
     }
 
-
-    /**
-     *.
-     */
-    @FXML public void infosAendern()
-    {
-        if (haushalt!=null)
-        {
-          MainController.getInstance().oeffneBuchungenBearbeiten(haushalt, currentFontSize);
-        }
-    }
-
     /**
      *.
      */
@@ -1177,6 +1169,17 @@ public class MainWindowController
           // Kontosaldo aktualisieren
           saldo = haushalt.getSaldo();
           txtKontosaldo.setText(String.valueOf(saldo));
+          LocalDateTime letzterEinkauf=new EinkaufDAOimpl().getLetzerEinkauf(haushalt);
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+          String TxtletzterEinkauf=(letzterEinkauf==null)?"kein Einkauf erfolgt !":letzterEinkauf.format(formatter);
+          if (letzterEinkauf!=null && letzterEinkauf.toLocalDate().isEqual(LocalDateTime.now().toLocalDate()))
+          {
+            dateLetzterEinkauf.setStyle("-fx-text-fill: red;");
+          } else
+          {
+            dateLetzterEinkauf.setStyle("-fx-text-fill: black;");
+          }
+          dateLetzterEinkauf.setText(TxtletzterEinkauf);
       }
     }
 
