@@ -223,7 +223,7 @@ public class HaushaltAnlegenController
         ArrayList<Berechtigung> berechtigungen = new BerechtigungDAOimpl().getAllBerechtigungen();
         ObservableList<Berechtigung> bliste = FXCollections.observableArrayList(berechtigungen);
         cbBesBerechtigung.setItems(bliste);
-
+               
         cbVerteilstelle.setItems(vliste);
         cbAusgabegruppe.setItems(aliste);
 
@@ -234,7 +234,7 @@ public class HaushaltAnlegenController
         cbAnrede.getSelectionModel().select(0);
         cbGender.getSelectionModel().select(3);
         cbNation.getSelectionModel().select(DEFAULT_SELECTED_NATION_INDEX);
-        cbBesBerechtigung.getSelectionModel().select(3);
+        cbBesBerechtigung.getSelectionModel().select(0);
         cbAusgabegruppe.getSelectionModel().selectFirst();
         setzeAusgabegruppe();
         cbVerteilstelle.getSelectionModel().selectFirst();
@@ -245,7 +245,10 @@ public class HaushaltAnlegenController
             @Override
             public void handle(ActionEvent e)
             {
-                evaluateShowingAnrede();
+                if (evaluateShowingAnrede())
+                  {
+                    setAnredebyDefault();
+                  };
             }
         });
 
@@ -256,6 +259,7 @@ public class HaushaltAnlegenController
         try
         {
             InputStream is = getClass().getResourceAsStream("/Datenschutzerklaerung.txt");
+            
             if (is != null)
             {
                 Scanner read = new Scanner(is, "UTF8");
@@ -420,7 +424,10 @@ public class HaushaltAnlegenController
 
         return true;
     }
-
+    private void setAnredebyDefault()
+    {
+      cbAnrede.getSelectionModel().select(cbGender.getSelectionModel().getSelectedIndex());
+    }
 
     private Gender getGenderByComboBoxIndex(int selectedIndex)
     {

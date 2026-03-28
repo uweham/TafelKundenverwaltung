@@ -669,11 +669,22 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
 			PreparedStatement smt = con.prepareStatement(sql);
 			// smt.setInt(1, haushaltsid);
 			ResultSet familienmitgliedResult = smt.executeQuery();
-
-
-			while (familienmitgliedResult.next())
-			{
-				Haushalt haushalt = haushaltdao.read(familienmitgliedResult.getInt("haushaltId"));
+            Haushalt haushalt = null;
+            if (familienmitgliedResult.next()==false)
+            {
+              // Empty ResultSet
+            } else
+            {
+              int  haushaltsid=0;
+              int  haushaltsidsave=-1;
+              do 
+              { 
+                haushaltsid=familienmitgliedResult.getInt("haushaltId");
+                if (haushaltsid != haushaltsidsave)
+                {
+                  haushalt = haushaltdao.read(haushaltsid);
+                  haushaltsidsave=haushaltsid;
+                }
 				int anredeID = familienmitgliedResult.getInt("anredeId");
 				int genderID = familienmitgliedResult.getInt("genderId");
 				int personId = familienmitgliedResult.getInt("personId");
@@ -696,6 +707,7 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
 				LocalDateTime geandertAm = familienmitgliedResult.getTimestamp("hinzugefuegtAm").toLocalDateTime();
 				Familienmitglied familienMitglied = new Familienmitglied(personId, haushalt, anrede, gender, vName, nName, gDatum, bemerkung, haushaltsVorstand, einkaufsberechtigt, gebuehrenBefreiung, nation, berechtigung, aufAusweis, dseSubmitted, hinzugefuegtAm, geandertAm);
 				familienmitgliedListe.add(familienMitglied);
+              } while (familienmitgliedResult.next());
 			}
 
 			return familienmitgliedListe;
@@ -729,18 +741,29 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
 			HaushaltDAO haushaltdao = new HaushaltDAOimpl();
 			BerechtigungDAO berechtigungDAO = new BerechtigungDAOimpl();
 			@SuppressWarnings("unused")
-      NationDAO nationDAO = new NationDAOimpl();
+            NationDAO nationDAO = new NationDAOimpl();
 
 			Connection con = SQLConnection.getCon();
 			PreparedStatement smt = con.prepareStatement(sql);
 			smt.setString(1, name);
 			ResultSet familienmitgliedResult = smt.executeQuery();
-
-
-			while (familienmitgliedResult.next())
-			{
-				Haushalt haushalt = haushaltdao.read(familienmitgliedResult.getInt("haushaltId"));
-				int anredeID = familienmitgliedResult.getInt("anredeId");
+			Haushalt haushalt = null;
+            if (familienmitgliedResult.next()==false)
+            {
+              // Empty ResultSet
+            } else
+            {
+              int  haushaltsid=0;
+              int  haushaltsidsave=-1;
+              do 
+              { 
+                haushaltsid=familienmitgliedResult.getInt("haushaltId");
+                if (haushaltsid != haushaltsidsave)
+                {
+                  haushalt = haushaltdao.read(haushaltsid);
+                  haushaltsidsave=haushaltsid;
+                }
+                int anredeID = familienmitgliedResult.getInt("anredeId");
 				int genderID = familienmitgliedResult.getInt("genderId");
 				int personId = familienmitgliedResult.getInt("personId");
 				Anrede anrede = new Anrede(anredeID);
@@ -761,6 +784,7 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
 				LocalDateTime geandertAm = familienmitgliedResult.getTimestamp("hinzugefuegtAm").toLocalDateTime();
 				Familienmitglied familienMitglied = new Familienmitglied(personId, haushalt, anrede, gender, vName, nName, gDatum, bemerkung, haushaltsVorstand, einkaufsberechtigt, gebuehrenBefreiung, nation, berechtigung, aufAusweis, dseSubmitted, hinzugefuegtAm, geandertAm);
 				familienmitgliedListe.add(familienMitglied);
+              } while (familienmitgliedResult.next());
 			}
 
 			return familienmitgliedListe;
@@ -896,6 +920,7 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
                 if (haushaltsid != haushaltsidsave)
                 {
                   haushalt = haushaltdao.read(haushaltsid);
+                  haushaltsidsave=haushaltsid;
                 }
                 int anredeID = familienmitgliedResult.getInt("anredeId");
                 int genderID = familienmitgliedResult.getInt("genderId");
