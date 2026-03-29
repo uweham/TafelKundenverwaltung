@@ -101,7 +101,7 @@ public class ExitProgramBackupWarning
         try
         {
             FXMLLoader loader = new FXMLLoader(Main.class
-                    .getResource("/Kundenverwaltung/FXML/Admintool/Datenbanksicherung.fxml"));
+                    .getResource("/kundenverwaltung/fxml/admintool/Datenbanksicherung.fxml"));
             AnchorPane pane = loader.load();
             Stage dbSettingsStage = new Stage();
 
