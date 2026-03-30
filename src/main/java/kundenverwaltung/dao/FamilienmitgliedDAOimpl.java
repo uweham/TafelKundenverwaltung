@@ -815,69 +815,90 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
 	  int sqlcnt=1;
 	  
 	  String sql = "SELECT * FROM familienmitglied";
-		if (genaueSuche)
-		{
-			switch (filter)
-			{
-				case Constants.SEARCH_CUSTOMER_ID_INDEX:
-					sql = "SELECT * FROM familienmitglied WHERE haushaltId = ? and einkaufsBerechtigt = true";
-					break;
-				case Constants.SEARCH_SURNAME_INDEX:
-					sql = "SELECT * FROM familienmitglied WHERE nName = ? and einkaufsBerechtigt = true";
-					break;
-				case Constants.SEARCH_FIRST_NAME_INDEX:
-					sql = "SELECT * FROM familienmitglied WHERE vName = ? and einkaufsBerechtigt = true";
-					break;
-				case Constants.SEARCH_STREET_INDEX:
-					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer Where Strasse = ? and familienmitglied.einkaufsBerechtigt = true";
-					break;
-				case Constants.SEARCH_POSTCODE_OR_LOCATION_INDEX:
-					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join plz on haushalt.plz = plz.plzId Where (plz.plz = ? OR ort = ?) and familienmitglied.einkaufsBerechtigt = true";
-					sqlcnt=2;
-					break;
-				case Constants.SEARCH_DISTRIBUTION_POINT_INDEX:
-					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join verteilstelle on haushalt.verteilstellenId = verteilstelle.verteilstellenId Where verteilstelle.bezeichnung = ? and familienmitglied.einkaufsBerechtigt = true";
-					break;
-				case Constants.SEARCH_OUTPUT_GROUP_INDEX:
-					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join ausgabegruppe on haushalt.ausgabeGruppeId=ausgabegruppe.ausgabegruppeId Where ausgabegruppe.name = ? and familienmitglied.einkaufsBerechtigt = true";
-        default:
-          break;
-			}
-		} else
-		{
-			switch (filter)
-			
-			{
-			    case Constants.SEARCH_ALL_INDEX:
-			        sql = "SELECT * FROM familienmitglied WHERE (haushaltId LIKE ? or  nName LIKE ? OR vName LIKE ?) and einkaufsBerechtigt = true" ;
-			        sqlcnt=3;
-			        break;
-				case Constants.SEARCH_CUSTOMER_ID_INDEX:
-					sql = "SELECT * FROM familienmitglied WHERE haushaltId LIKE ? and einkaufsBerechtigt = true";
-					break;
-				case Constants.SEARCH_SURNAME_INDEX:
-					sql = "SELECT * FROM familienmitglied WHERE nName LIKE ? and einkaufsBerechtigt = true ";
-					break;
-				case Constants.SEARCH_FIRST_NAME_INDEX:
-					sql = "SELECT * FROM familienmitglied WHERE vName LIKE ? and einkaufsBerechtigt = true";
-					break;
-				case Constants.SEARCH_STREET_INDEX:
-					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer Where Strasse LIKE ? and familienmitglied.einkaufsBerechtigt = true";
-					break;
-				case Constants.SEARCH_POSTCODE_OR_LOCATION_INDEX:
-					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join plz on haushalt.plz = plz.plzId Where (plz.plz LIKE ? OR ort LIKE ?) and familienmitglied.einkaufsBerechtigt = true";
-					sqlcnt=2;
-					break;
-				case Constants.SEARCH_DISTRIBUTION_POINT_INDEX:
-					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join verteilstelle on haushalt.verteilstellenId = verteilstelle.verteilstellenId Where verteilstelle.bezeichnung LIKE ? and familienmitglied.einkaufsBerechtigt = true";
-					break;
-				case Constants.SEARCH_OUTPUT_GROUP_INDEX:
-					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join ausgabegruppe on haushalt.ausgabeGruppeId=ausgabegruppe.ausgabegruppeId Where ausgabegruppe.name LIKE ? and familienmitglied.einkaufsBerechtigt = true";
-        default:
-          break;
-			}
-		}
-
+	    if (filter < 0)
+	    {
+	      switch (-filter)
+	      {
+	        case Constants.SPECIAL_FILTER_LAST_HOUSEHOLD_INDEX:
+	          sqlcnt=0;
+	          sql = "Select * FROM familienmitglied WHERE einkaufsBerechtigt = true and haushaltId in ";
+	          sql += "(Select kundennummer from haushalt WHERE kundeSeit in ( SELECT max(kundeSeit) as datumlast from haushalt  ))";
+	          break;
+	        case Constants.SPECIAL_FILTER_HOUSEHOLD_WO_NOTIFICATON_INDEX:
+	          sqlcnt=0;
+	          sql = "Select * FROM familienmitglied WHERE einkaufsBerechtigt = true and personId not in ";
+	          sql += "(Select personId from bescheid where Date(NOW()) between gueltigAb and gueltigBis)"; 
+	          break;
+	        case Constants.SPECIAL_FILTER_ALL_INDEX:
+	          sqlcnt=0;
+	          sql = "Select * FROM familienmitglied WHERE einkaufsBerechtigt = true";
+	          break;
+	      }
+	    } else
+	    {  
+    		if (genaueSuche)
+    		{
+    			switch (filter)
+    			{
+    				case Constants.SEARCH_CUSTOMER_ID_INDEX:
+    					sql = "SELECT * FROM familienmitglied WHERE haushaltId = ? and einkaufsBerechtigt = true";
+    					break;
+    				case Constants.SEARCH_SURNAME_INDEX:
+    					sql = "SELECT * FROM familienmitglied WHERE nName = ? and einkaufsBerechtigt = true";
+    					break;
+    				case Constants.SEARCH_FIRST_NAME_INDEX:
+    					sql = "SELECT * FROM familienmitglied WHERE vName = ? and einkaufsBerechtigt = true";
+    					break;
+    				case Constants.SEARCH_STREET_INDEX:
+    					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer Where Strasse = ? and familienmitglied.einkaufsBerechtigt = true";
+    					break;
+    				case Constants.SEARCH_POSTCODE_OR_LOCATION_INDEX:
+    					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join plz on haushalt.plz = plz.plzId Where (plz.plz = ? OR ort = ?) and familienmitglied.einkaufsBerechtigt = true";
+    					sqlcnt=2;
+    					break;
+    				case Constants.SEARCH_DISTRIBUTION_POINT_INDEX:
+    					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join verteilstelle on haushalt.verteilstellenId = verteilstelle.verteilstellenId Where verteilstelle.bezeichnung = ? and familienmitglied.einkaufsBerechtigt = true";
+    					break;
+    				case Constants.SEARCH_OUTPUT_GROUP_INDEX:
+    					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join ausgabegruppe on haushalt.ausgabeGruppeId=ausgabegruppe.ausgabegruppeId Where ausgabegruppe.name = ? and familienmitglied.einkaufsBerechtigt = true";
+            default:
+              break;
+    			}
+    		} else
+    		{
+    			switch (filter)
+    			{
+    			    case Constants.SEARCH_ALL_INDEX:
+    			        sql = "SELECT * FROM familienmitglied WHERE (haushaltId LIKE ? or  nName LIKE ? OR vName LIKE ?) and einkaufsBerechtigt = true" ;
+    			        sqlcnt=3;
+    			        break;
+    				case Constants.SEARCH_CUSTOMER_ID_INDEX:
+    					sql = "SELECT * FROM familienmitglied WHERE haushaltId LIKE ? and einkaufsBerechtigt = true";
+    					break;
+    				case Constants.SEARCH_SURNAME_INDEX:
+    					sql = "SELECT * FROM familienmitglied WHERE nName LIKE ? and einkaufsBerechtigt = true ";
+    					break;
+    				case Constants.SEARCH_FIRST_NAME_INDEX:
+    					sql = "SELECT * FROM familienmitglied WHERE vName LIKE ? and einkaufsBerechtigt = true";
+    					break;
+    				case Constants.SEARCH_STREET_INDEX:
+    					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer Where Strasse LIKE ? and familienmitglied.einkaufsBerechtigt = true";
+    					break;
+    				case Constants.SEARCH_POSTCODE_OR_LOCATION_INDEX:
+    					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join plz on haushalt.plz = plz.plzId Where (plz.plz LIKE ? OR ort LIKE ?) and familienmitglied.einkaufsBerechtigt = true";
+    					sqlcnt=2;
+    					break;
+    				case Constants.SEARCH_DISTRIBUTION_POINT_INDEX:
+    					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join verteilstelle on haushalt.verteilstellenId = verteilstelle.verteilstellenId Where verteilstelle.bezeichnung LIKE ? and familienmitglied.einkaufsBerechtigt = true";
+    					break;
+    				case Constants.SEARCH_OUTPUT_GROUP_INDEX:
+    					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join ausgabegruppe on haushalt.ausgabeGruppeId=ausgabegruppe.ausgabegruppeId Where ausgabegruppe.name LIKE ? and familienmitglied.einkaufsBerechtigt = true";
+            default:
+              break;
+    			}
+    		}
+	    }
+	    
 		try
 		{
 			ArrayList<Familienmitglied> familienmitgliedListe = new ArrayList<>();

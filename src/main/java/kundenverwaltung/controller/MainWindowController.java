@@ -52,6 +52,7 @@ import kundenverwaltung.toolsandworkarounds.IndeterminateProgressBar;
 import javafx.scene.layout.AnchorPane;
 import kundenverwaltung.service.GetVersionProperties;   // add U.P. 02.03.2026
 import kundenverwaltung.service.Booking_err_warn_list;
+import kundenverwaltung.service.Constants;
 
 /**
  * @Author Gruppe_1
@@ -151,6 +152,8 @@ public class MainWindowController
     private TextField txtKontosaldo;
     @FXML
     private ComboBox<String> cbSucheFilter;
+    @FXML
+    private ComboBox<String> cbSpezialfilter;
     @FXML
     private ComboBox<String> cbSucheSortieren;
     @FXML
@@ -353,23 +356,24 @@ public class MainWindowController
         cbErfassungsVerteilstelle.getSelectionModel().selectFirst();
         fuelleKassenFelder();
         cbSucheFilter.getSelectionModel().selectFirst();
-
+        cbSpezialfilter.getSelectionModel().selectFirst();
+        
         //dateLetzterEinkauf.setConverter(CHANGE_DATE_FORMAT.convertDatePickerFormat());
 
-  /*      txtSucheInput.setOnKeyPressed(e ->  {
-           KeyCode code=e.getCode();
-           if (code== KeyCode.F5)
+        txtSucheInput.setOnKeyPressed(e ->  {
+           if (cbSpezialfilter.getSelectionModel().getSelectedIndex() !=  Constants.SPECIAL_FILTER_NONE_INDEX)
              {
-               tablereload=true;
+             cbSpezialfilter.getSelectionModel().selectFirst();
              }
             }
         );
+        /*
         txtSucheInput.setOnKeyReleased(event -> searchCustomer());
         */
         txtSucheInput.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
           if (! isNowFocused) {
               // text field has lost focus...
-              System.out.println(txtSucheInput.getText());
+              
               searchCustomer();
           }
       });
@@ -380,6 +384,15 @@ public class MainWindowController
             kundensucheOutput.setItems(familienmitgliederOL);
             txtSucheInput.requestFocus();
         });
+        
+        cbSpezialfilter.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+          if (newValue != null) {
+            txtSucheInput.setText("");
+            searchCustomer();
+            
+          }
+     });
+ 
      // Schriftgröße auf dem Root setzen (vererbt sich an fast alle Controls)
         root.setStyle(String.format("-fx-font-size: %.1fpx;", currentFontSize));
 
@@ -757,11 +770,22 @@ public class MainWindowController
     {
 
         String userInput = txtSucheInput.getText();
-        if (userInput.isBlank())
+        int indexSpecialFilter=cbSpezialfilter.getSelectionModel().getSelectedIndex();
+        int indexSucheFilter = cbSucheFilter.getSelectionModel().getSelectedIndex();
+        
+        // check if no input and no special filter
+        // check if input len > 3 and filter search all 
+        if ((userInput.isBlank() || (userInput.length()<Constants.SEARCH_MIN_INPUT_LENGTH && indexSucheFilter==Constants.SEARCH_ALL_INDEX)) 
+            && indexSpecialFilter==Constants.SPECIAL_FILTER_NONE_INDEX)
         {
           return;
         }
-     
+        
+        switch (indexSpecialFilter ) {
+          case Constants.SPECIAL_FILTER_LAST_HOUSEHOLD_INDEX -> indexSucheFilter=-Constants.SPECIAL_FILTER_LAST_HOUSEHOLD_INDEX;
+          case Constants.SPECIAL_FILTER_HOUSEHOLD_WO_NOTIFICATON_INDEX -> indexSucheFilter=-Constants.SPECIAL_FILTER_HOUSEHOLD_WO_NOTIFICATON_INDEX;
+          case Constants.SPECIAL_FILTER_ALL_INDEX -> indexSucheFilter= -Constants.SPECIAL_FILTER_ALL_INDEX;
+        };
        // save order 
         List<TableColumn<Familienmitglied, ? >> sortOrder=null;
         
@@ -770,10 +794,10 @@ public class MainWindowController
         {
           sortOrder = new ArrayList<>(kundensucheOutput.getSortOrder());
         }  
-        if (!userInput.isBlank())
+        if (!userInput.isBlank() || indexSpecialFilter != Constants.SPECIAL_FILTER_NONE_INDEX)
         {
           familienmitgliederOL.clear();
-          ArrayList<Familienmitglied> aktualisiert = new FamilienmitgliedDAOimpl().getAllFamilienmitglieder(userInput,cbSucheFilter.getSelectionModel().getSelectedIndex(),false);
+          ArrayList<Familienmitglied> aktualisiert = new FamilienmitgliedDAOimpl().getAllFamilienmitglieder(userInput,indexSucheFilter,false);
         
           familienmitgliederOL= FXCollections.observableArrayList(aktualisiert);
           kundensucheOutput.setItems(familienmitgliederOL);

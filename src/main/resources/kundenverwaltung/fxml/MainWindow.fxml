@@ -49,6 +49,21 @@
                 <Font size="11.0" />
             </font>
         </Label>
+      <Label fx:id="labelSpezialfilter" layoutX="372.0" layoutY="32.0" maxHeight="25.0" maxWidth="145.0" minHeight="17.0" minWidth="52.0" prefHeight="24.0" prefWidth="145.0" text="Spezialfilter">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
+      <ComboBox fx:id="cbSpezialfilter" layoutX="372.0" layoutY="56.0" maxHeight="30.0" maxWidth="285.0" minHeight="30.0" minWidth="145.0" prefHeight="30.0" prefWidth="285.0">
+             <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="kein Spezialfilter" />
+                    <String fx:value="letzte erfasste Haushalte" />
+                    <String fx:value="Haushalte ohne gültigen Bescheid" />
+                    <String fx:value="Alle Haushalte (!!Laufzeit!!) " />
+                </FXCollections>
+            </items>
+      </ComboBox>
         <Separator layoutX="236.0" layoutY="132.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="132.0" />
         <MenuBar id="menubar" layoutX="8.0" layoutY="2.0" minHeight="30.0" minWidth="1024.0" prefHeight="30.0" prefWidth="1024.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <menus>
