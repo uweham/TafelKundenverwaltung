@@ -8,7 +8,6 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
@@ -44,12 +43,27 @@
             </font>
         </Label>
 
-        <TextField fx:id="txtSucheInput" layoutX="8.0" layoutY="53.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="21.0" minWidth="321.0" prefHeight="21.0" prefWidth="321.0" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="53.0" />
+        <TextField fx:id="txtSucheInput" layoutX="8.0" layoutY="53.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="21.0" minWidth="321.0" onAction="#searchCustomer" prefHeight="21.0" prefWidth="321.0" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="53.0" />
         <Label fx:id="labelFolgendesDurchsuchen" layoutX="14.0" layoutY="80.0" maxHeight="21.0" maxWidth="169.0" minHeight="15.0" minWidth="160.0" prefHeight="21.0" prefWidth="169.0" text="Dabei folgendes durchsuchen:" AnchorPane.leftAnchor="11.0" AnchorPane.topAnchor="78.0">
             <font>
                 <Font size="11.0" />
             </font>
         </Label>
+      <Label fx:id="labelSpezialfilter" layoutX="372.0" layoutY="32.0" maxHeight="25.0" maxWidth="145.0" minHeight="17.0" minWidth="52.0" prefHeight="24.0" prefWidth="145.0" text="Spezialfilter">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Label>
+      <ComboBox fx:id="cbSpezialfilter" layoutX="372.0" layoutY="56.0" maxHeight="30.0" maxWidth="285.0" minHeight="30.0" minWidth="145.0" prefHeight="30.0" prefWidth="285.0">
+             <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="kein Spezialfilter" />
+                    <String fx:value="letzte erfasste Haushalte" />
+                    <String fx:value="Haushalte ohne gültigen Bescheid" />
+                    <String fx:value="Alle Haushalte (!!Laufzeit!!) " />
+                </FXCollections>
+            </items>
+      </ComboBox>
         <Separator layoutX="236.0" layoutY="132.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="132.0" />
         <MenuBar id="menubar" layoutX="8.0" layoutY="2.0" minHeight="30.0" minWidth="1024.0" prefHeight="30.0" prefWidth="1024.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <menus>
@@ -170,14 +184,14 @@
                 <Font size="11.0" />
             </font>
         </Button>
-        <Button fx:id="btnInfosAendern" layoutX="833.0" layoutY="419.0" maxHeight="30.0" maxWidth="169.0" minHeight="30.0" minWidth="169.0" mnemonicParsing="false" onAction="#infosAendern" prefHeight="30.0" prefWidth="169.0" text="Einkäufe bearbeiten..." AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="419.0">
+        <Button fx:id="btnInfosAendern" layoutX="833.0" layoutY="419.0" maxHeight="30.0" maxWidth="169.0" minHeight="30.0" minWidth="169.0" mnemonicParsing="false" onAction="#oeffneBuchungenBearbeiten" prefHeight="30.0" prefWidth="169.0" text="Einkäufe bearbeiten..." AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="419.0">
             <font>
                 <Font size="11.0" />
             </font>
         </Button>
         <HBox layoutX="8.0" layoutY="476.0" prefHeight="289.0" prefWidth="996.0" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="476.0">
             <children>
-                <TableView fx:id="kundensucheOutput"  onKeyPressed="#tableOnKeyPressed" onKeyReleased="#tableOnKeyRelased" onMouseClicked="#waehleKunde" prefHeight="232.0" prefWidth="996.0" HBox.hgrow="ALWAYS">
+                <TableView fx:id="kundensucheOutput" onKeyPressed="#tableOnKeyPressed" onKeyReleased="#tableOnKeyRelased" onMouseClicked="#waehleKunde" prefHeight="232.0" prefWidth="996.0" HBox.hgrow="ALWAYS">
                     <columns>
                         <TableColumn fx:id="columnKundennummer" prefWidth="55.0" text="Kd.-Nr." />
                         <TableColumn fx:id="columnNachname" prefWidth="79.0" text="Nachname" />
@@ -262,7 +276,7 @@
         </ImageView>
         <Button fx:id="btnHaushaltHinzufuegen" layoutX="846.0" layoutY="243.0" maxHeight="30.0" maxWidth="169.0" minHeight="30.0" minWidth="169.0" mnemonicParsing="false" onAction="#oeffneHaushaltHinzufuegen" prefHeight="30.0" prefWidth="169.0" text="Haushalt hinzufügen..." AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="243.0" />
         <Rectangle fx:id="gruppenfarbe" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="23.0" layoutX="9.0" layoutY="246.0" stroke="TRANSPARENT" strokeType="INSIDE" width="32.0" AnchorPane.leftAnchor="9.0" AnchorPane.topAnchor="251.0" />
-        <DatePicker fx:id="dateLetzterEinkauf" layoutX="241.0" layoutY="247.0" maxHeight="25.0" maxWidth="217.0" minHeight="25.0" minWidth="217.0" prefHeight="25.0" prefWidth="217.0" AnchorPane.leftAnchor="241.0" AnchorPane.topAnchor="251.0" />
+        <TextField fx:id="dateLetzterEinkauf" editable="false" layoutX="241.0" layoutY="247.0" maxHeight="25.0" maxWidth="217.0" minHeight="25.0" minWidth="217.0" prefHeight="25.0" prefWidth="217.0" AnchorPane.leftAnchor="241.0" AnchorPane.topAnchor="251.0" />
         <CheckBox fx:id="ckbxDSE" disable="true" layoutX="846.0" layoutY="220.0" maxHeight="17.0" maxWidth="204.0" minHeight="17.0" minWidth="50.0" mnemonicParsing="false" opacity="1" prefHeight="17.0" prefWidth="50.0" text="DSE" AnchorPane.rightAnchor="137.0" AnchorPane.topAnchor="218.0">
             <font>
                 <Font size="13.0" />

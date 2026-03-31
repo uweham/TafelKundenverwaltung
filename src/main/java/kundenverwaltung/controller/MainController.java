@@ -34,6 +34,7 @@ import kundenverwaltung.model.Haushalt;
 import kundenverwaltung.model.User;
 import kundenverwaltung.model.Vollmacht;
 import kundenverwaltung.model.Warentyp;
+import kundenverwaltung.service.Booking_err_warn_list;
 import kundenverwaltung.toolsandworkarounds.ChangeFontSize;
 
 
@@ -867,7 +868,7 @@ public class MainController
             buchungenBearbeitenStage.initStyle(StageStyle.DECORATED);
             buchungenBearbeitenStage.initModality(Modality.APPLICATION_MODAL);
             buchungenBearbeitenStage.centerOnScreen();
-            buchungenBearbeitenStage.show();
+            buchungenBearbeitenStage.showAndWait();
 
         } catch (IOException e)
         {
@@ -1323,7 +1324,7 @@ public class MainController
      * @param warnungen the list of warnings to display.
      * @return true if the user confirmed the warnings, false otherwise.
      */
-    public Boolean zeigeBuchungswarnungen(ArrayList<String> warnungen)
+    public Boolean zeigeBuchungswarnungen(ArrayList<Booking_err_warn_list> warnungen)
     {
         try
         {
@@ -1332,12 +1333,12 @@ public class MainController
             DialogPane pane = loader.load();
             dialog.setDialogPane(pane);
             BuchungController buchungController = loader.getController();
-            buchungController.setAlertText(warnungen);
+            boolean lError=buchungController.setAlertText(warnungen);
             dialog.setTitle("Warnung!");
-
+        
             Optional<ButtonType> result = dialog.showAndWait();
 
-            return result.isPresent() && result.get() == ButtonType.YES;
+            return result.isPresent() && result.get() == ButtonType.YES && !lError;
 
         } catch (IOException e)
         {

@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import kundenverwaltung.controller.MainWindowController;
 import kundenverwaltung.model.Anrede;
 import kundenverwaltung.model.Berechtigung;
 import kundenverwaltung.model.Familienmitglied;
@@ -21,7 +22,7 @@ import kundenverwaltung.model.Haushalt;
 import kundenverwaltung.model.Nation;
 import kundenverwaltung.model.Verteilstelle;
 import kundenverwaltung.toolsandworkarounds.PropertiesFileController;
-
+import kundenverwaltung.service.Constants;
 /**
  * Created by Florian-PC on 02.11.2017.
  */
@@ -484,49 +485,57 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
 			PreparedStatement smt = con.prepareStatement(sql);
 			smt.setInt(1, haushaltsid);
 			ResultSet familienmitgliedResult = smt.executeQuery();
-			Haushalt haushalt = haushaltdao.read(haushaltsid);
+            Haushalt haushalt = null;
+            if (familienmitgliedResult.next()==false)
+            {
+              // Empty ResultSet
+            } else
+            {
+              haushalt = haushaltdao.read(haushaltsid);
+              do 
+              {
+                int anredeID = familienmitgliedResult.getInt("anredeId");
+                int genderID = familienmitgliedResult.getInt("genderId");
+                int personId = familienmitgliedResult.getInt("personId");
+                Anrede anrede = new Anrede(anredeID);
+                Gender gender = new Gender(genderID);
+                String vName = familienmitgliedResult.getString("vName");
+                String nName = familienmitgliedResult.getString("nName");
+                Date gDatumSQLDate = familienmitgliedResult.getDate("gDatum");
+                LocalDate gDatum = null;
+                if (gDatumSQLDate != null)
+                {
+                    gDatum = gDatumSQLDate.toLocalDate();
+                }
+                String bemerkung = familienmitgliedResult.getString("bemerkung");
+                Boolean haushaltsVorstand = familienmitgliedResult.getBoolean("haushaltsVorstand");
+                Boolean einkaufsberechtigt = familienmitgliedResult.getBoolean("einkaufsberechtigt");
+                Boolean gebuehrenBefreiung = familienmitgliedResult.getBoolean("gebuehrenBefreiung");
+                //Nation muss hier hin
+                Berechtigung berechtigung = berechtigungDAO.read(familienmitgliedResult.getInt("berechtigungId"));
+                Nation nation = nationDAO.read(familienmitgliedResult.getInt("nation"));
+                Boolean aufAusweis = familienmitgliedResult.getBoolean("aufAusweis");
+                Boolean dseSubmitted = familienmitgliedResult.getBoolean("dseSubmitted");
+                Timestamp hinzugefuegtAmSQLTimestamp = familienmitgliedResult.getTimestamp("hinzugefuegtAm");
+                LocalDateTime hinzugefuegtAm = null;
+                if (hinzugefuegtAmSQLTimestamp != null)
+                {
+                    hinzugefuegtAm = hinzugefuegtAmSQLTimestamp.toLocalDateTime();
+                }
+                Timestamp geandertAmSQLTimestamp = familienmitgliedResult.getTimestamp("geaendertAm");
+                LocalDateTime geandertAm = null;
+                if (hinzugefuegtAmSQLTimestamp != null)
+                {
+                    geandertAm = geandertAmSQLTimestamp.toLocalDateTime();
+                }
+                Familienmitglied familienMitglied = new Familienmitglied(personId, haushalt, anrede, gender, vName, nName, gDatum, bemerkung, haushaltsVorstand, einkaufsberechtigt, gebuehrenBefreiung, nation, berechtigung, aufAusweis, dseSubmitted, hinzugefuegtAm, geandertAm);
+                familienmitgliedListe.add(familienMitglied);
+                  
+              } while (familienmitgliedResult.next());
+          }
 
-			while (familienmitgliedResult.next())
-			{
-				int anredeID = familienmitgliedResult.getInt("anredeId");
-				int genderID = familienmitgliedResult.getInt("genderId");
-				int personId = familienmitgliedResult.getInt("personId");
-				Anrede anrede = new Anrede(anredeID);
-				Gender gender = new Gender(genderID);
-				String vName = familienmitgliedResult.getString("vName");
-				String nName = familienmitgliedResult.getString("nName");
-				Date gDatumSQLDate = familienmitgliedResult.getDate("gDatum");
-				LocalDate gDatum = null;
-				if (gDatumSQLDate != null)
-				{
-					gDatum = gDatumSQLDate.toLocalDate();
-				}
-				String bemerkung = familienmitgliedResult.getString("bemerkung");
-				Boolean haushaltsVorstand = familienmitgliedResult.getBoolean("haushaltsVorstand");
-				Boolean einkaufsberechtigt = familienmitgliedResult.getBoolean("einkaufsberechtigt");
-				Boolean gebuehrenBefreiung = familienmitgliedResult.getBoolean("gebuehrenBefreiung");
-				//Nation muss hier hin
-				Berechtigung berechtigung = berechtigungDAO.read(familienmitgliedResult.getInt("berechtigungId"));
-				Nation nation = nationDAO.read(familienmitgliedResult.getInt("nation"));
-				Boolean aufAusweis = familienmitgliedResult.getBoolean("aufAusweis");
-				Boolean dseSubmitted = familienmitgliedResult.getBoolean("dseSubmitted");
-				Timestamp hinzugefuegtAmSQLTimestamp = familienmitgliedResult.getTimestamp("hinzugefuegtAm");
-				LocalDateTime hinzugefuegtAm = null;
-				if (hinzugefuegtAmSQLTimestamp != null)
-				{
-					hinzugefuegtAm = hinzugefuegtAmSQLTimestamp.toLocalDateTime();
-				}
-				Timestamp geandertAmSQLTimestamp = familienmitgliedResult.getTimestamp("geaendertAm");
-				LocalDateTime geandertAm = null;
-				if (hinzugefuegtAmSQLTimestamp != null)
-				{
-					geandertAm = geandertAmSQLTimestamp.toLocalDateTime();
-				}
-				Familienmitglied familienMitglied = new Familienmitglied(personId, haushalt, anrede, gender, vName, nName, gDatum, bemerkung, haushaltsVorstand, einkaufsberechtigt, gebuehrenBefreiung, nation, berechtigung, aufAusweis, dseSubmitted, hinzugefuegtAm, geandertAm);
-				familienmitgliedListe.add(familienMitglied);
-			}
+            return familienmitgliedListe;
 
-			return familienmitgliedListe;
 		} catch (SQLException e)
 		{
 			e.printStackTrace();
@@ -568,16 +577,22 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
             HaushaltDAO haushaltdao = new HaushaltDAOimpl();
             BerechtigungDAO berechtigungDAO = new BerechtigungDAOimpl();
             @SuppressWarnings("unused")
-      NationDAO nationDAO = new NationDAOimpl();
+            NationDAO nationDAO = new NationDAOimpl();
 
             Connection con = SQLConnection.getCon();
             PreparedStatement smt = con.prepareStatement(sql);
             smt.setInt(1, haushaltsid);
             ResultSet familienmitgliedResult = smt.executeQuery();
-            Haushalt haushalt = haushaltdao.read(haushaltsid);
-
-            while (familienmitgliedResult.next())
+            
+            Haushalt haushalt = null;
+            if (familienmitgliedResult.next()==false)
             {
+              // Empty ResultSet
+            } else
+            {
+              haushalt = haushaltdao.read(haushaltsid);
+              do 
+              {
                 int anredeID = familienmitgliedResult.getInt("anredeId");
                 int genderID = familienmitgliedResult.getInt("genderId");
                 int personId = familienmitgliedResult.getInt("personId");
@@ -614,10 +629,13 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
                 }
                 Familienmitglied familienMitglied = new Familienmitglied(personId, haushalt, anrede, gender, vName, nName, gDatum, bemerkung, haushaltsVorstand, einkaufsberechtigt, gebuehrenBefreiung, nation, berechtigung, aufAusweis, dseSubmitted, hinzugefuegtAm, geandertAm);
                 familienmitgliedListe.add(familienMitglied);
-            }
+                  
+              } while (familienmitgliedResult.next());
+          }
 
             return familienmitgliedListe;
-        } catch (SQLException e)
+        }    
+         catch (SQLException e)
         {
             e.printStackTrace();
             System.out.println("Familienmitglieder lesen klappt nicht");
@@ -645,17 +663,28 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
 			HaushaltDAO haushaltdao = new HaushaltDAOimpl();
 			BerechtigungDAO berechtigungDAO = new BerechtigungDAOimpl();
 			@SuppressWarnings("unused")
-      NationDAO nationDAO = new NationDAOimpl();
+            NationDAO nationDAO = new NationDAOimpl();
 
 			Connection con = SQLConnection.getCon();
 			PreparedStatement smt = con.prepareStatement(sql);
 			// smt.setInt(1, haushaltsid);
 			ResultSet familienmitgliedResult = smt.executeQuery();
-
-
-			while (familienmitgliedResult.next())
-			{
-				Haushalt haushalt = haushaltdao.read(familienmitgliedResult.getInt("haushaltId"));
+            Haushalt haushalt = null;
+            if (familienmitgliedResult.next()==false)
+            {
+              // Empty ResultSet
+            } else
+            {
+              int  haushaltsid=0;
+              int  haushaltsidsave=-1;
+              do 
+              { 
+                haushaltsid=familienmitgliedResult.getInt("haushaltId");
+                if (haushaltsid != haushaltsidsave)
+                {
+                  haushalt = haushaltdao.read(haushaltsid);
+                  haushaltsidsave=haushaltsid;
+                }
 				int anredeID = familienmitgliedResult.getInt("anredeId");
 				int genderID = familienmitgliedResult.getInt("genderId");
 				int personId = familienmitgliedResult.getInt("personId");
@@ -678,6 +707,7 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
 				LocalDateTime geandertAm = familienmitgliedResult.getTimestamp("hinzugefuegtAm").toLocalDateTime();
 				Familienmitglied familienMitglied = new Familienmitglied(personId, haushalt, anrede, gender, vName, nName, gDatum, bemerkung, haushaltsVorstand, einkaufsberechtigt, gebuehrenBefreiung, nation, berechtigung, aufAusweis, dseSubmitted, hinzugefuegtAm, geandertAm);
 				familienmitgliedListe.add(familienMitglied);
+              } while (familienmitgliedResult.next());
 			}
 
 			return familienmitgliedListe;
@@ -711,18 +741,29 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
 			HaushaltDAO haushaltdao = new HaushaltDAOimpl();
 			BerechtigungDAO berechtigungDAO = new BerechtigungDAOimpl();
 			@SuppressWarnings("unused")
-      NationDAO nationDAO = new NationDAOimpl();
+            NationDAO nationDAO = new NationDAOimpl();
 
 			Connection con = SQLConnection.getCon();
 			PreparedStatement smt = con.prepareStatement(sql);
 			smt.setString(1, name);
 			ResultSet familienmitgliedResult = smt.executeQuery();
-
-
-			while (familienmitgliedResult.next())
-			{
-				Haushalt haushalt = haushaltdao.read(familienmitgliedResult.getInt("haushaltId"));
-				int anredeID = familienmitgliedResult.getInt("anredeId");
+			Haushalt haushalt = null;
+            if (familienmitgliedResult.next()==false)
+            {
+              // Empty ResultSet
+            } else
+            {
+              int  haushaltsid=0;
+              int  haushaltsidsave=-1;
+              do 
+              { 
+                haushaltsid=familienmitgliedResult.getInt("haushaltId");
+                if (haushaltsid != haushaltsidsave)
+                {
+                  haushalt = haushaltdao.read(haushaltsid);
+                  haushaltsidsave=haushaltsid;
+                }
+                int anredeID = familienmitgliedResult.getInt("anredeId");
 				int genderID = familienmitgliedResult.getInt("genderId");
 				int personId = familienmitgliedResult.getInt("personId");
 				Anrede anrede = new Anrede(anredeID);
@@ -743,6 +784,7 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
 				LocalDateTime geandertAm = familienmitgliedResult.getTimestamp("hinzugefuegtAm").toLocalDateTime();
 				Familienmitglied familienMitglied = new Familienmitglied(personId, haushalt, anrede, gender, vName, nName, gDatum, bemerkung, haushaltsVorstand, einkaufsberechtigt, gebuehrenBefreiung, nation, berechtigung, aufAusweis, dseSubmitted, hinzugefuegtAm, geandertAm);
 				familienmitgliedListe.add(familienMitglied);
+              } while (familienmitgliedResult.next());
 			}
 
 			return familienmitgliedListe;
@@ -767,127 +809,179 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
 	 * @param genaueSuche whether to perform an exact search
 	 * @return an ArrayList of Familienmitglied objects, or null if not found
 	 */
-	//Kann man wahrscheinlich löschen, ist noch von der alten Suchfunktion...
 	@Override
 	public ArrayList<Familienmitglied> getAllFamilienmitglieder(String suche, int filter, boolean genaueSuche)
 	{
-		String sql = "SELECT * FROM familienmitglied";
-		if (genaueSuche)
-		{
-			switch (filter)
-			{
-				case 0:
-					sql = "SELECT * FROM familienmitglied WHERE haushaltId = ? and not haushaltId = 1";
-					break;
-				case 1:
-					sql = "SELECT * FROM familienmitglied WHERE nName = ? and not haushaltId = 1";
-					break;
-				case 2:
-					sql = "SELECT * FROM familienmitglied WHERE vName = ? and not haushaltId = 1";
-					break;
-				case 3:
-					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer Where Strasse = ? and not haushaltId = 1";
-					break;
-				case 4:
-					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join plz on haushalt.plz = plz.plzId Where (plz.plz = ? OR ort = ?) and not haushaltId = 1";
-					break;
-				case 5:
-					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join verteilstelle on haushalt.verteilstellenId = verteilstelle.verteilstellenId Where verteilstelle.bezeichnung = ? and not haushaltId = 1";
-					break;
-				case 6:
-					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join ausgabegruppe on haushalt.ausgabeGruppeId=ausgabegruppe.ausgabegruppeId Where ausgabegruppe.name = ? and not haushaltId = 1";
-        default:
-          break;
-			}
-		} else
-		{
-			switch (filter)
-			{
-				case 0:
-					sql = "SELECT * FROM familienmitglied WHERE haushaltId LIKE ? and not haushaltId = 1";
-					break;
-				case 1:
-					sql = "SELECT * FROM familienmitglied WHERE nName LIKE ? and not haushaltId = 1";
-					break;
-				case 2:
-					sql = "SELECT * FROM familienmitglied WHERE vName LIKE ? and not haushaltId = 1";
-					break;
-				case 3:
-					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer Where Strasse LIKE ? and not haushaltId = 1";
-					break;
-				case 4:
-					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join plz on haushalt.plz = plz.plzId Where (plz.plz LIKE ? OR ort LIKE ?) and not haushaltId = 1";
-					break;
-				case 5:
-					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join verteilstelle on haushalt.verteilstellenId = verteilstelle.verteilstellenId Where verteilstelle.bezeichnung LIKE ? and not haushaltId = 1";
-					break;
-				case 6:
-					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join ausgabegruppe on haushalt.ausgabeGruppeId=ausgabegruppe.ausgabegruppeId Where ausgabegruppe.name LIKE ? and not haushaltId = 1";
-        default:
-          break;
-			}
-		}
-
+	  int sqlcnt=1;
+	  
+	  String sql = "SELECT * FROM familienmitglied";
+	    if (filter < 0)
+	    {
+	      switch (-filter)
+	      {
+	        case Constants.SPECIAL_FILTER_LAST_HOUSEHOLD_INDEX:
+	          sqlcnt=0;
+	          sql = "Select * FROM familienmitglied WHERE einkaufsBerechtigt = true and haushaltId in ";
+	          sql += "(Select kundennummer from haushalt WHERE kundeSeit in ( SELECT max(kundeSeit) as datumlast from haushalt  ))";
+	          break;
+	        case Constants.SPECIAL_FILTER_HOUSEHOLD_WO_NOTIFICATON_INDEX:
+	          sqlcnt=0;
+	          sql = "Select * FROM familienmitglied WHERE einkaufsBerechtigt = true and personId not in ";
+	          sql += "(Select personId from bescheid where Date(NOW()) between gueltigAb and gueltigBis)"; 
+	          break;
+	        case Constants.SPECIAL_FILTER_ALL_INDEX:
+	          sqlcnt=0;
+	          sql = "Select * FROM familienmitglied WHERE einkaufsBerechtigt = true";
+	          break;
+	      }
+	    } else
+	    {  
+    		if (genaueSuche)
+    		{
+    			switch (filter)
+    			{
+    				case Constants.SEARCH_CUSTOMER_ID_INDEX:
+    					sql = "SELECT * FROM familienmitglied WHERE haushaltId = ? and einkaufsBerechtigt = true";
+    					break;
+    				case Constants.SEARCH_SURNAME_INDEX:
+    					sql = "SELECT * FROM familienmitglied WHERE nName = ? and einkaufsBerechtigt = true";
+    					break;
+    				case Constants.SEARCH_FIRST_NAME_INDEX:
+    					sql = "SELECT * FROM familienmitglied WHERE vName = ? and einkaufsBerechtigt = true";
+    					break;
+    				case Constants.SEARCH_STREET_INDEX:
+    					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer Where Strasse = ? and familienmitglied.einkaufsBerechtigt = true";
+    					break;
+    				case Constants.SEARCH_POSTCODE_OR_LOCATION_INDEX:
+    					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join plz on haushalt.plz = plz.plzId Where (plz.plz = ? OR ort = ?) and familienmitglied.einkaufsBerechtigt = true";
+    					sqlcnt=2;
+    					break;
+    				case Constants.SEARCH_DISTRIBUTION_POINT_INDEX:
+    					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join verteilstelle on haushalt.verteilstellenId = verteilstelle.verteilstellenId Where verteilstelle.bezeichnung = ? and familienmitglied.einkaufsBerechtigt = true";
+    					break;
+    				case Constants.SEARCH_OUTPUT_GROUP_INDEX:
+    					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join ausgabegruppe on haushalt.ausgabeGruppeId=ausgabegruppe.ausgabegruppeId Where ausgabegruppe.name = ? and familienmitglied.einkaufsBerechtigt = true";
+            default:
+              break;
+    			}
+    		} else
+    		{
+    			switch (filter)
+    			{
+    			    case Constants.SEARCH_ALL_INDEX:
+    			        sql = "SELECT * FROM familienmitglied WHERE (haushaltId LIKE ? or  nName LIKE ? OR vName LIKE ?) and einkaufsBerechtigt = true" ;
+    			        sqlcnt=3;
+    			        break;
+    				case Constants.SEARCH_CUSTOMER_ID_INDEX:
+    					sql = "SELECT * FROM familienmitglied WHERE haushaltId LIKE ? and einkaufsBerechtigt = true";
+    					break;
+    				case Constants.SEARCH_SURNAME_INDEX:
+    					sql = "SELECT * FROM familienmitglied WHERE nName LIKE ? and einkaufsBerechtigt = true ";
+    					break;
+    				case Constants.SEARCH_FIRST_NAME_INDEX:
+    					sql = "SELECT * FROM familienmitglied WHERE vName LIKE ? and einkaufsBerechtigt = true";
+    					break;
+    				case Constants.SEARCH_STREET_INDEX:
+    					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer Where Strasse LIKE ? and familienmitglied.einkaufsBerechtigt = true";
+    					break;
+    				case Constants.SEARCH_POSTCODE_OR_LOCATION_INDEX:
+    					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join plz on haushalt.plz = plz.plzId Where (plz.plz LIKE ? OR ort LIKE ?) and familienmitglied.einkaufsBerechtigt = true";
+    					sqlcnt=2;
+    					break;
+    				case Constants.SEARCH_DISTRIBUTION_POINT_INDEX:
+    					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join verteilstelle on haushalt.verteilstellenId = verteilstelle.verteilstellenId Where verteilstelle.bezeichnung LIKE ? and familienmitglied.einkaufsBerechtigt = true";
+    					break;
+    				case Constants.SEARCH_OUTPUT_GROUP_INDEX:
+    					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join ausgabegruppe on haushalt.ausgabeGruppeId=ausgabegruppe.ausgabegruppeId Where ausgabegruppe.name LIKE ? and familienmitglied.einkaufsBerechtigt = true";
+            default:
+              break;
+    			}
+    		}
+	    }
+	    
 		try
 		{
 			ArrayList<Familienmitglied> familienmitgliedListe = new ArrayList<>();
 			HaushaltDAO haushaltdao = new HaushaltDAOimpl();
 			BerechtigungDAO berechtigungDAO = new BerechtigungDAOimpl();
 			@SuppressWarnings("unused")
-      NationDAO nationDAO = new NationDAOimpl();
+            NationDAO nationDAO = new NationDAOimpl();
 
 			Connection con = SQLConnection.getCon();
 			PreparedStatement smt = con.prepareStatement(sql);
+			String sucheparameter="";
 			if (genaueSuche)
 			{
-				smt.setString(1, suche);
-				if (filter == 4)
-				{
-					smt.setString(2, suche);
-				}
+			   sucheparameter += suche;
 			} else
 			{
-				smt.setString(1, "%" + suche + "%");
-				if (filter == 4)
-				{
-					smt.setString(2, "%" + suche + "%");
-				}
+			    sucheparameter +="%";
+			    sucheparameter +=suche;
+			    sucheparameter +="%";
+	
 			}
+			for (int i=0; i < sqlcnt; i++)
+			{
+			  smt.setString(i+1, sucheparameter);
+			}
+			
 			ResultSet familienmitgliedResult = smt.executeQuery();
 
-
-			while (familienmitgliedResult.next())
-			{
-				Haushalt haushalt = haushaltdao.read(familienmitgliedResult.getInt("haushaltId"));
-				int anredeID = familienmitgliedResult.getInt("anredeId");
-				int genderID = familienmitgliedResult.getInt("genderId");
-				int personId = familienmitgliedResult.getInt("personId");
-				Anrede anrede = new Anrede(anredeID);
-				Gender gender = new Gender(genderID);
-				String vName = familienmitgliedResult.getString("vName");
-				String nName = familienmitgliedResult.getString("nName");
-				Date gDatumSQLDate = familienmitgliedResult.getDate("gDatum");
-				LocalDate gDatum = null;
-				if (gDatumSQLDate != null)
-				{
-					gDatum = gDatumSQLDate.toLocalDate();
-
-				}
-
-				String bemerkung = familienmitgliedResult.getString("bemerkung");
-				Boolean haushaltsVorstand = familienmitgliedResult.getBoolean("haushaltsVorstand");
-				Boolean einkaufsberechtigt = familienmitgliedResult.getBoolean("einkaufsberechtigt");
-				Boolean gebuehrenBefreiung = familienmitgliedResult.getBoolean("gebuehrenBefreiung");
-				//Nation muss hier hin
-				Berechtigung berechtigung = berechtigungDAO.read(familienmitgliedResult.getInt("berechtigungId"));
-				Nation nation = nationDAO.read(familienmitgliedResult.getInt("nation"));
-				Boolean aufAusweis = familienmitgliedResult.getBoolean("aufAusweis");
-				Boolean dseSubmitted = familienmitgliedResult.getBoolean("dseSubmitted");
-				LocalDateTime hinzugefuegtAm = familienmitgliedResult.getTimestamp("hinzugefuegtAm").toLocalDateTime();
-				LocalDateTime geandertAm = familienmitgliedResult.getTimestamp("hinzugefuegtAm").toLocalDateTime();
-				Familienmitglied familienMitglied = new Familienmitglied(personId, haushalt, anrede, gender, vName, nName, gDatum, bemerkung, haushaltsVorstand, einkaufsberechtigt, gebuehrenBefreiung, nation, berechtigung, aufAusweis, dseSubmitted, hinzugefuegtAm, geandertAm);
-				familienmitgliedListe.add(familienMitglied);
-			}
+            Haushalt haushalt = null;
+            if (familienmitgliedResult.next()==false)
+            {
+              // Empty ResultSet
+            } else
+            {
+              int  haushaltsid=0;
+              int  haushaltsidsave=-1;
+              do 
+              { 
+                haushaltsid=familienmitgliedResult.getInt("haushaltId");
+                if (haushaltsid != haushaltsidsave)
+                {
+                  haushalt = haushaltdao.read(haushaltsid);
+                  haushaltsidsave=haushaltsid;
+                }
+                int anredeID = familienmitgliedResult.getInt("anredeId");
+                int genderID = familienmitgliedResult.getInt("genderId");
+                int personId = familienmitgliedResult.getInt("personId");
+                Anrede anrede = new Anrede(anredeID);
+                Gender gender = new Gender(genderID);
+                String vName = familienmitgliedResult.getString("vName");
+                String nName = familienmitgliedResult.getString("nName");
+                Date gDatumSQLDate = familienmitgliedResult.getDate("gDatum");
+                LocalDate gDatum = null;
+                if (gDatumSQLDate != null)
+                {
+                    gDatum = gDatumSQLDate.toLocalDate();
+                }
+                String bemerkung = familienmitgliedResult.getString("bemerkung");
+                Boolean haushaltsVorstand = familienmitgliedResult.getBoolean("haushaltsVorstand");
+                Boolean einkaufsberechtigt = familienmitgliedResult.getBoolean("einkaufsberechtigt");
+                Boolean gebuehrenBefreiung = familienmitgliedResult.getBoolean("gebuehrenBefreiung");
+                //Nation muss hier hin
+                Berechtigung berechtigung = berechtigungDAO.read(familienmitgliedResult.getInt("berechtigungId"));
+                Nation nation = nationDAO.read(familienmitgliedResult.getInt("nation"));
+                Boolean aufAusweis = familienmitgliedResult.getBoolean("aufAusweis");
+                Boolean dseSubmitted = familienmitgliedResult.getBoolean("dseSubmitted");
+                Timestamp hinzugefuegtAmSQLTimestamp = familienmitgliedResult.getTimestamp("hinzugefuegtAm");
+                LocalDateTime hinzugefuegtAm = null;
+                if (hinzugefuegtAmSQLTimestamp != null)
+                {
+                    hinzugefuegtAm = hinzugefuegtAmSQLTimestamp.toLocalDateTime();
+                }
+                Timestamp geandertAmSQLTimestamp = familienmitgliedResult.getTimestamp("geaendertAm");
+                LocalDateTime geandertAm = null;
+                if (hinzugefuegtAmSQLTimestamp != null)
+                {
+                    geandertAm = geandertAmSQLTimestamp.toLocalDateTime();
+                }
+                Familienmitglied familienMitglied = new Familienmitglied(personId, haushalt, anrede, gender, vName, nName, gDatum, bemerkung, haushaltsVorstand, einkaufsberechtigt, gebuehrenBefreiung, nation, berechtigung, aufAusweis, dseSubmitted, hinzugefuegtAm, geandertAm);
+                familienmitgliedListe.add(familienMitglied);
+                  
+              } while (familienmitgliedResult.next());
+  			}
 
 			return familienmitgliedListe;
 		} catch (SQLException e)

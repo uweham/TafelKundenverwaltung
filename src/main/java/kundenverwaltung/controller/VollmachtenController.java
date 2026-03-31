@@ -23,6 +23,7 @@ import kundenverwaltung.dao.VollmachtDAOimpl;
 import kundenverwaltung.model.Familienmitglied;
 import kundenverwaltung.model.Haushalt;
 import kundenverwaltung.model.Vollmacht;
+import kundenverwaltung.service.Constants;
 import kundenverwaltung.service.TablePreferenceServiceImpl;
 import kundenverwaltung.toolsandworkarounds.ChangeDateFormat;
 import kundenverwaltung.toolsandworkarounds.ChangeFontSize;
@@ -362,7 +363,7 @@ public class VollmachtenController
         String nachname = txtVollmachtNachname.getText();
         familienmitglieder.clear();
         familienmitgliederListe.clear();
-        familienmitglieder = new FamilienmitgliedDAOimpl().getAllFamilienmitglieder(nachname, 1, false);
+        familienmitglieder = new FamilienmitgliedDAOimpl().getAllFamilienmitglieder(nachname, Constants.SEARCH_SURNAME_INDEX, false);
         familienmitgliederListe.addAll(familienmitglieder);
 
         tvVollmachtenPersonenSuche.setItems(familienmitgliederListe);

@@ -21,6 +21,7 @@ import kundenverwaltung.dao.FamilienmitgliedDAOimpl;
 import kundenverwaltung.model.Einkauf;
 import kundenverwaltung.model.Familienmitglied;
 import kundenverwaltung.model.Haushalt;
+import kundenverwaltung.service.Booking_err_warn_list;
 import kundenverwaltung.toolsandworkarounds.ChangeFontSize;
 
 /**
@@ -41,6 +42,9 @@ public class BuchungController
     private ButtonType no;
     @FXML
     private ButtonType cancel;
+    
+    @FXML
+    private Label txtAttention;
 
     // Buchungsdetails
     @FXML
@@ -176,11 +180,22 @@ public class BuchungController
      *
      * @param warnungen the list of warnings to display
      */
-    public void setAlertText(ArrayList<String> warnungen)
+    public boolean setAlertText(ArrayList<Booking_err_warn_list> warnungen)
     {
         ObservableList<String> warnungenOL = FXCollections.observableArrayList();
-        warnungenOL.addAll(warnungen);
+        //warnungenOL.addAll(warnungen);
+        boolean lError=false;
+        for (Booking_err_warn_list warn : warnungen)
+        {
+           warnungenOL.add(warn.getList_type_toString()+ warn.getList_message());
+            lError=warn.getList_type()==Booking_err_warn_list.ENTRY_ERROR? true:lError;
+         }
         lwWarnungen.setItems(warnungenOL);
+        if (lError==true)
+        {  
+          textContinue.setText("Fehler vorhanden: Sie können keine Buchung vornehmen !");
+        }
+        return lError;
     }
 
     /**

@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.Properties;
@@ -19,6 +20,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import kundenverwaltung.service.Util;
 import kundenverwaltung.toolsandworkarounds.BlowfishEncryption;
 import kundenverwaltung.toolsandworkarounds.PropertiesFileController;
 
@@ -49,8 +51,8 @@ public class DatabaseBackupController
 
     @FXML
     private Button btnChooseMysqldump;
-    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    private LocalDate localDate = LocalDate.now();
+    private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd_HHmm");
+    private LocalDateTime localDate = LocalDateTime.now();
 
     /**
      * Wird aufgerufen, wenn die View initialisiert wird.
@@ -92,6 +94,12 @@ public class DatabaseBackupController
             // Nichts konfiguriert => automatisch suchen
             tryAutoFindMysqldump();
         }
+        String outputBackupPath = prop.getProperty("backup.path");
+        if (outputBackupPath != null && !outputBackupPath.trim().isEmpty())
+        {
+          txtBackupPath.setText(outputBackupPath);
+        }
+        
     }
 
     /**
@@ -133,44 +141,58 @@ public class DatabaseBackupController
      */
     private static String findMysqldumpAutomatically()
     {
-        String[] baseDirs = {
-                "C:\\Program Files\\",
-                "C:\\Program Files (x86)\\"
-        };
-
-        for (String baseDir : baseDirs)
+        switch (Util.getOS()) 
         {
-            File base = new File(baseDir);
-            if (!base.exists() || !base.isDirectory())
+          case WINDOWS:
+        
+            String[] baseDirs = {
+                    "C:\\Program Files\\",
+                    "C:\\Program Files (x86)\\"
+            };
+    
+            for (String baseDir : baseDirs)
             {
-                continue;
-            }
-
-            // Alle Unterordner in "C:\Program Files" (bzw. x86) durchsuchen, die mit "MariaDB" anfangen
-            File[] mariaDbDirs = base.listFiles((current, name) ->
-                    name.startsWith("MariaDB") && new File(current, name).isDirectory()
-            );
-            if (mariaDbDirs == null)
-            {
-                continue;
-            }
-
-            // Ohne spezielle Sortierung wird die erste gefundene MariaDB-Version genommen
-            for (File mariaDbDir : mariaDbDirs)
-            {
-                File binDir = new File(mariaDbDir, "bin");
-                if (!binDir.exists())
+                File base = new File(baseDir);
+                if (!base.exists() || !base.isDirectory())
                 {
                     continue;
                 }
-                File mysqldumpFile = new File(binDir, "mysqldump.exe");
-                if (mysqldumpFile.exists())
+    
+                // Alle Unterordner in "C:\Program Files" (bzw. x86) durchsuchen, die mit "MariaDB" anfangen
+                File[] mariaDbDirs = base.listFiles((current, name) ->
+                        name.startsWith("MariaDB") && new File(current, name).isDirectory()
+                );
+                if (mariaDbDirs == null)
                 {
-                    return mysqldumpFile.getAbsolutePath();
+                    continue;
+                }
+    
+                // Ohne spezielle Sortierung wird die erste gefundene MariaDB-Version genommen
+                for (File mariaDbDir : mariaDbDirs)
+                {
+                    File binDir = new File(mariaDbDir, "bin");
+                    if (!binDir.exists())
+                    {
+                        continue;
+                    }
+                    File mysqldumpFile = new File(binDir, "mysqldump.exe");
+                    if (mysqldumpFile.exists())
+                    {
+                        return mysqldumpFile.getAbsolutePath();
+                    }
                 }
             }
-        }
-
+            break;
+          case LINUX:
+            File mysqldumpFile = new File("/bin/", "mariadb-dump");
+            if (mysqldumpFile.exists())
+            {
+                return mysqldumpFile.getAbsolutePath();
+            }
+            break;
+          default:
+            break;
+        } 
         return null;
     }
 
@@ -217,17 +239,20 @@ public class DatabaseBackupController
 
             // Ermittlung des Sicherungsordners: entweder vom Benutzer ausgewählt oder Standard
             String folderPath;
+            String folderPathReduced;
+            
             if (txtBackupPath.getText() != null && !txtBackupPath.getText().trim().isEmpty())
             {
-                folderPath = txtBackupPath.getText() + File.separator + "MySQL Backup";
+                folderPathReduced=txtBackupPath.getText();
+                folderPath = folderPathReduced + File.separator + "MySQL Backup";
             }
             else
             {
                 File propertiesFile = new File(HOME_DIR);
                 File propertiesDirectory = new File(propertiesFile.getParentFile().getAbsolutePath());
                 propertiesDirectory.mkdirs();
-                folderPath = HOME_DIR + File.separator + "Tafel Kundenverwaltung"
-                        + File.separator + "MySQL Backup";
+                folderPathReduced=HOME_DIR + File.separator + "Tafel Kundenverwaltung";
+                folderPath = folderPathReduced + File.separator + "MySQL Backup";
             }
             File backupDir = new File(folderPath);
             backupDir.mkdirs();
@@ -243,12 +268,20 @@ public class DatabaseBackupController
             }
             else
             {
-                mysqldumpPath = "C:\\Program Files\\MariaDB 11.5\\bin\\mysqldump.exe";
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Datenbank-Export/Backup");
+                alert.setHeaderText("Fehler");
+                alert.setContentText(
+                      "Kein Pfad zu mysqldump ! "
+                    );
+                alert.showAndWait();
+                return ;
+                // mysqldumpPath = "C:\\Program Files\\MariaDB 11.5\\bin\\mysqldump.exe";
             }
 
             // Kommando für den Export
             String executeCmdExp = String.format(
-                    "\"%s\" --host=%s --port=%s --user=%s --password=%s %s --result-file=\"%s\"",
+                    "%s --host=%s --port=%s --user=%s --password=%s %s --result-file='%s'",
                     mysqldumpPath, dbHostname, dbPort, dbUsername, dbPassword, dbName, savePath
             );
             System.out.println("Executing command: " + executeCmdExp);
@@ -283,16 +316,29 @@ public class DatabaseBackupController
                 {
                     try
                     {
-                        Process runtimeProcess = Runtime.getRuntime().exec(executeCmdExp);
-                        BufferedReader reader = new BufferedReader(
-                                new InputStreamReader(runtimeProcess.getErrorStream())
-                        );
+
+  /*                      Process runtimeProcess = Runtime.getRuntime().exec(executeCmdExp);
+   * 
+   */
+                      ProcessBuilder pb = new ProcessBuilder(
+                        mysqldumpPath,
+                        "--host="+dbHostname,
+                        "--port="+dbPort,
+                        "--user="+dbUsername,
+                        "--password="+dbPassword,
+                        dbName,
+                        "--result-file="+savePath);
+                       Process process = pb.start();
+                       
+                       BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(process.getErrorStream()));
+                            
                         String line;
                         while ((line = reader.readLine()) != null)
                         {
                             System.out.println("Backup process output: " + line);
                         }
-                        int processComplete = runtimeProcess.waitFor();
+                        int processComplete = process.waitFor();
 
                         if (processComplete == 0)
                         {
@@ -312,6 +358,9 @@ public class DatabaseBackupController
 
                             // mysqldump-Pfad in Properties speichern
                             prop.setProperty("mysqldump.path", mysqldumpPath);
+                            // save dest path for backup
+                            prop.setProperty("backup.path", folderPathReduced);
+                            
 
                             String homeDir = System.getProperty("user.home");
                             FileOutputStream output = new FileOutputStream(

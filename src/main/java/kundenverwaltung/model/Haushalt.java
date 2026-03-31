@@ -13,6 +13,7 @@ import kundenverwaltung.dao.HaushaltDAOimpl;
 import kundenverwaltung.dao.VollmachtDAOimpl;
 import kundenverwaltung.dao.EinstellungenDAOimpl;
 import kundenverwaltung.model.Einstellungen;
+import kundenverwaltung.service.Booking_err_warn_list;
 /**
  * Created by Florian-PC on 02.11.2017.
  * <p>
@@ -225,13 +226,15 @@ public class Haushalt
      * @Author Robin Becker, Philipp Wilm Date 15.08.2018
      */
 
-    public ArrayList<String> getBuchungswarnungen(Warentyp warentyp)
+    public ArrayList<Booking_err_warn_list> getBuchungswarnungen(Warentyp warentyp)
     {
         
-        ArrayList<String> warnungen = new ArrayList<>();
+        //ArrayList<String> warnungen = new ArrayList<>();
+        ArrayList<Booking_err_warn_list> warnungen = new ArrayList<>();
+        
         if (this.saldo < 0.0)
         {
-            warnungen.add("Das Kundenkonto hat derzeit einen Sollsaldo von " + this.saldo + "EUR.");
+            warnungen.add(new Booking_err_warn_list(Booking_err_warn_list.ENTRY_WARNING, "Das Kundenkonto hat derzeit einen Sollsaldo von " + this.saldo + "EUR."));
         }
         LocalDateTime letzerEinkauf = new EinkaufDAOimpl().getLetzerEinkauf(this);
         long datediff=0L;
@@ -246,17 +249,19 @@ public class Haushalt
                 <=
                     (long) warentyp.getWarentyplimitabstand() && warentyp.getWarentyplimitabstand() != 0)
             {
-                warnungen.add("Der letzte Einkauf (" + letzerEinkauf
+                warnungen.add(new Booking_err_warn_list(Booking_err_warn_list.ENTRY_ERROR, 
+                         "Der letzte Einkauf (" + letzerEinkauf
                     +
                         ") liegt noch nicht lange genug zurück. Erforderlich "
                     +
-                        warentyp.getWarentyplimitabstand() + " Tage");
+                        warentyp.getWarentyplimitabstand() + " Tage"));
             }
         }
 
         if (letzerEinkauf != null && datediff == 0L && warentyp.getWarentypId() != 3)
         {
-            warnungen.add("Der Kunde hat heute bereits eingekauft!");
+            warnungen.add(new Booking_err_warn_list(Booking_err_warn_list.ENTRY_WARNING
+                ,"Der Kunde hat heute bereits eingekauft!"));
         }
 
         ArrayList<Familienmitglied> familienmitglieder =
@@ -267,21 +272,23 @@ public class Haushalt
                     new BescheidDAOimpl().readAllGueltige(familienmitglieder.get(i));
             if (bescheid.size() == 0)
             {
-                warnungen.add("Für " + familienmitglieder.get(i).getvName() + " "
+                warnungen.add(new Booking_err_warn_list(Booking_err_warn_list.ENTRY_WARNING,
+                    "Für " + familienmitglieder.get(i).getvName() + " "
             +
                         familienmitglieder.get(i).getnName()
                         +
-                        " liegen keine gültigen Bescheide vor.");
+                        " liegen keine gültigen Bescheide vor."));
             }
             if (familienmitglieder.get(i).getGeburtsdatum() == null)
             {
-                warnungen.add(familienmitglieder.get(i).getvName() + " "
+                warnungen.add(new Booking_err_warn_list(Booking_err_warn_list.ENTRY_WARNING,
+                    familienmitglieder.get(i).getvName() + " "
             +
                         familienmitglieder.get(i).getnName()
                         +
                         " hat kein gültiges Geburtsdatum. Die Betrags-Berechnung könnte somit "
                         +
-                        "fehlerhaft sein. Bitte prüfen Sie die Daten.");
+                        "fehlerhaft sein. Bitte prüfen Sie die Daten."));
             }
         }
 
