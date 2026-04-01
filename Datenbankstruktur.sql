@@ -305,7 +305,7 @@ CREATE TABLE `familienmitglied` (
 -- Table structure for table `guthabenstatistik`
 --
 
-CREATE TABLE `guthabenstatistik` (
+CREATE TABLE `guthabenStatistik` (
   `kunde` varchar(255) DEFAULT NULL,
   `einkaufId` int(11) NOT NULL,
   `warentyp` varchar(255) NOT NULL,
@@ -1286,7 +1286,7 @@ ALTER TABLE `familienmitglied`
 --
 -- Indexes for table `guthabenstatistik`
 --
-ALTER TABLE `guthabenstatistik`
+ALTER TABLE `guthabenStatistik`
   ADD PRIMARY KEY (`einkaufId`);
 
 --
