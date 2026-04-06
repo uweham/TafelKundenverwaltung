@@ -1,8 +1,8 @@
-SET @monat:=1 ;
-SET @jahr :=2026;
+SET @monat:=##MONTH## ;
+SET @jahr :=##YEAR## ;
 
 # Version 1.0.2 2026-01-15
-
+# Template Version 1.0.0 2026-04-02
 
 
 # Statistik
@@ -33,7 +33,7 @@ select DATE(A.erfassungsZeit) as DATUM,
               year(A.erfassungsZeit) =@jahr    and 
               isnull(storniertAm)                
         group by DATUM,bescheidname,NAME 
-        INTO OUTFILE '/data_export/tmp/Statistik_Teil1.csv'  
+        INTO OUTFILE '##STATISTIK_CSV_1##'  
         FIELDS TERMINATED BY ';' OPTIONALLY ENCLOSED BY '"'
         LINES TERMINATED BY '\n' ;   
 
@@ -47,7 +47,7 @@ select DATE(erfassungsZeit) as DATUM,count(*) as anzahlAlleinerz
               year(erfassungsZeit) =@jahr    and 
               isnull(storniertAm) 
         group by DATUM                    
-        INTO OUTFILE '/data_export/tmp/Statistik_Teil2.csv'  
+        INTO OUTFILE '##STATISTIK_CSV_2##'  
         FIELDS TERMINATED BY ';' OPTIONALLY ENCLOSED BY '"'
         LINES TERMINATED BY '\n' ;   
 
@@ -58,6 +58,6 @@ select A.kundeSeit as Datum, count(*) as anzahlHaushalte from haushalt A
     where month(A.kundeSeit)=@monat   and
         year(A.kundeSeit) =@jahr  
             group by Datum 
-        INTO OUTFILE '/data_export/tmp/Statistik_Teil3.csv'  
+        INTO OUTFILE '##STATISTIK_CSV_3##'  
         FIELDS TERMINATED BY ';' OPTIONALLY ENCLOSED BY '"'
         LINES TERMINATED BY '\n' ;   
