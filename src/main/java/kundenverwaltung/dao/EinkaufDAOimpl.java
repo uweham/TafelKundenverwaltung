@@ -725,7 +725,10 @@ public class EinkaufDAOimpl implements EinkaufDAO
     public List<Einkauf> buildQuery(String type, String verteilstelle)
     {
         List<Einkauf> einkaeufe = new ArrayList<>();
-        StringBuilder query = new StringBuilder("SELECT e.einkaufId, ");
+        String query=generateSQLQuery(verteilstelle, type);
+        System.out.println(query);
+        
+        /*StringBuilder query = new StringBuilder("SELECT e.einkaufId, ");
 
         query.append("f.vName, f.nName, "); // Vorname und Nachname
         query.append("w.name AS warentyp, ");
@@ -747,9 +750,10 @@ public class EinkaufDAOimpl implements EinkaufDAO
         {
             query.append("AND e.summeEinkauf <= e.summeZahlung ");
         }
-
+        */
+        
         try (Connection con = SQLConnection.getCon();
-             PreparedStatement statement = con.prepareStatement(query.toString()))
+             PreparedStatement statement = con.prepareStatement(query))
         {
             statement.setString(1, verteilstelle);
 
@@ -762,6 +766,7 @@ public class EinkaufDAOimpl implements EinkaufDAO
 
                     // Erstellen des Familienmitglied-Objekts
                     Familienmitglied person = new Familienmitglied();
+                    Haushalt kunde=new HaushaltDAOimpl().read(resultSet.getInt("kunde"));
                     String vName = resultSet.getString("vName");
                     String nName = resultSet.getString("nName");
 
@@ -776,7 +781,7 @@ public class EinkaufDAOimpl implements EinkaufDAO
                     einkauf.setAnzahlKinder(resultSet.getInt("anzahlKinder"));
                     einkauf.setAnzahlErwachsene(resultSet.getInt("anzahlErwachsene"));
                     einkauf.setSaldo(resultSet.getDouble("saldo"));
-
+                    einkauf.setKunde(kunde);
                     einkaeufe.add(einkauf);
                 }
             }
@@ -888,25 +893,26 @@ public class EinkaufDAOimpl implements EinkaufDAO
      */
     public String generateSQLQuery(String verteilstelle, String type)
     {
-        StringBuilder query = new StringBuilder("SELECT e.einkaufId, ");
+        StringBuilder query = new StringBuilder("SELECT e.einkaufId, e.kunde, ");
 
         // KundeName (Vorname und Nachname)
-        query.append("CONCAT(IFNULL(f.vName, ''), ' ', IFNULL(f.nName, '')) AS kundeName, ");
+        query.append("f.vName,f.nName,");
 
         // Warentyp-Name aus warentyp
         query.append("w.name AS warentyp, ");
 
         // Andere benötigte Felder aus einkauf
-        query.append("e.summeEinkauf, e.summeZahlung, e.anzahlKinder, e.anzahlErwachsene, f.personId ");
+        query.append("e.summeEinkauf, e.summeZahlung, e.anzahlKinder, e.anzahlErwachsene, f.personId, ");
+        query.append("(e.summeEinkauf - e.summeZahlung) AS saldo ");
 
         // Tabellen verknüpfen
-        query.append("FROM einkauf e ");
-        query.append("JOIN familienmitglied f ON e.kunde = f.personId ");
+        query.append("FROM einkauf e  ");
+        query.append("JOIN familienmitglied f ON e.person = f.personId ");
         query.append("JOIN warentyp w ON e.warentyp = w.warentypId ");
         query.append("JOIN verteilstelle v ON e.beiVerteilstelle  = v.verteilstellenId ");
 
         // Dynamische Filterung der Verteilstelle
-        query.append("WHERE v.bezeichnung = ? ");  // Platzhalter für die Verteilstelle
+        query.append("WHERE v.bezeichnung = ? AND e.storniertAm IS NULL AND f.haushaltsVorstand = 1 ");  // Platzhalter für die Verteilstelle
 
         // Optionaler Typfilter (Offene Beträge oder Guthaben)
         if ("Offene Beträge".equals(type))
