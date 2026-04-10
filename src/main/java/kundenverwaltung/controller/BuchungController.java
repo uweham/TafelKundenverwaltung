@@ -125,7 +125,7 @@ public class BuchungController
             return;
         }
         buchungResults.setBuchungstext(txtBuchungstext.getText());
-        if (buchungsTextErforderlich && buchungResults.getBuchungstext() == null)
+        if (buchungsTextErforderlich && (buchungResults.getBuchungstext() == null || buchungResults.getBuchungstext().isEmpty()))
         {
             Benachrichtigung.warnungBenachrichtigung("Fehlende Eingabe", "Bitte einen Buchungstext angeben.");
             return;
