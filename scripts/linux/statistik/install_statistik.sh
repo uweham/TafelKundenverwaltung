@@ -5,6 +5,7 @@
 TAFELPATH=$HOME"/Tafel Kundenverwaltung"
 DESKTOPFILE="Statistik.desktop"
 STATISTIKSCRIPT="statistik.sh"
+STATISTIKTEMPLATE="statistik_template.sql"
 ICON="tafelstatistik.png"
 
 SOURCEPATH=$(pwd)
@@ -13,8 +14,14 @@ echo "Install Tafel Statistik Script"
 # 
 
 # check 
-if [ ! -f "$TAFELPATH/$STATISTIKSCRIPT" ] ; then
-	echo "ERROR Script Datei fehlt : $TAFELPATH/$STATISTIKSCRIPT "
+if [ ! -f "$SOURCEPATH/$STATISTIKSCRIPT" ] ; then
+	echo "ERROR Script Datei fehlt : $SOURCEPATH/$STATISTIKSCRIPT "
+	echo "Abbruch !" 
+	exit 2
+fi
+#
+if [ ! -f "$SOURCEPATH/$STATISTIKTEMPLATE" ] ; then
+	echo "ERROR Template Datei fehlt : $SOURCEPATH/$STATISTIKTEMPLATE "
 	echo "Abbruch !" 
 	exit 2
 fi
@@ -22,6 +29,7 @@ fi
 if [ "$TAFELPATH" != "$SOURCEPATH" ] ; then
 	cp -f "$SOURCEPATH/$STATISTIKSCRIPT" "$TAFELPATH/$STATISTIKSCRIPT"
 	cp -f "$SOURCEPATH/$ICON" "$TAFELPATH/$ICON"
+	cp -f "$SOURCEPATH/$STATISTIKTEMPLATE" "$TAFELPATH/$STATISTIKTEMPLATE"
 fi
  
 chmod +x "$TAFELPATH/$STATISTIKSCRIPT"
