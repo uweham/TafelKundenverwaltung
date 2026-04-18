@@ -33,6 +33,8 @@ public interface EinkaufDAO
     boolean boughtHouseholdThisProductType(int householdId, Warentyp productType);
 
     LocalDateTime getLetzerEinkauf(Haushalt haushalt);
+    
+    LocalDateTime getLetzerEinkauf(Haushalt haushalt, Warentyp productType);
 
     ArrayList<Einkauf> getAllEinkauefe(Haushalt haushalt);
 
