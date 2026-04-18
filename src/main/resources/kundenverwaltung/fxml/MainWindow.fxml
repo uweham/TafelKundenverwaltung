@@ -131,7 +131,7 @@
             </font>
         </Label>
         <ListView fx:id="listWeitereInformationen" layoutX="8.0" layoutY="315.0" onMouseClicked="#aendereLabelbezeichnung" prefHeight="129.0" prefWidth="423.0" AnchorPane.leftAnchor="8.0" AnchorPane.rightAnchor="660.0" AnchorPane.topAnchor="315.0" />
-        <Button fx:id="btnWeitereInformationen" layoutX="392.0" layoutY="411.0" maxHeight="33.0" maxWidth="158.0" minHeight="33.0" minWidth="122.0" mnemonicParsing="false" onAction="#btnWeitereInformationen" prefHeight="33.0" prefWidth="158.0" text="Bescheide bearbeiten" AnchorPane.rightAnchor="485.0" AnchorPane.topAnchor="411.0">
+        <Button fx:id="btnWeitereInformationen" layoutX="381.0" layoutY="417.0" maxHeight="33.0" maxWidth="158.0" minHeight="33.0" minWidth="122.0" mnemonicParsing="false" onAction="#btnWeitereInformationen" prefHeight="33.0" prefWidth="158.0" text="Bescheide bearbeiten" AnchorPane.rightAnchor="485.0" AnchorPane.topAnchor="417.0">
             <font>
                 <Font size="11.0" />
             </font>
@@ -156,7 +156,7 @@
                 <Font size="13.0" />
             </font>
         </Label>
-        <ComboBox fx:id="cbWarentyp" layoutX="675.0" layoutY="308.0" maxHeight="24.0" maxWidth="145.0" minHeight="30.0" minWidth="145.0" prefHeight="24.0" prefWidth="145.0" AnchorPane.rightAnchor="210.0" AnchorPane.topAnchor="308.0" />
+        <ComboBox fx:id="cbWarentyp" layoutX="669.0" layoutY="302.0" maxHeight="24.0" maxWidth="145.0" minHeight="30.0" minWidth="145.0" prefHeight="24.0" prefWidth="145.0" AnchorPane.rightAnchor="210.0" AnchorPane.topAnchor="302.0" />
 
         <ComboBox fx:id="cbSucheFilter" layoutX="13.0" layoutY="100.0" maxHeight="24.0" maxWidth="169.0" minHeight="30.0" minWidth="169.0" prefHeight="30.0" prefWidth="169.0" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="98.0">
             <items>
@@ -176,15 +176,10 @@
             </cursor>
         </ComboBox>
 
-        <ComboBox fx:id="cbZuZahlen" layoutX="675.0" layoutY="345.0" maxHeight="24.0" maxWidth="145.0" minHeight="30.0" minWidth="145.0" prefHeight="24.0" prefWidth="145.0" AnchorPane.rightAnchor="210.0" AnchorPane.topAnchor="345.0" />
-        <TextField fx:id="txtKassiert" layoutX="675.0" layoutY="381.0" maxHeight="24.0" maxWidth="145.0" minHeight="30.0" minWidth="145.0" prefHeight="24.0" prefWidth="145.0" AnchorPane.rightAnchor="210.0" AnchorPane.topAnchor="381.0" />
-        <TextField fx:id="txtKontosaldo" editable="false" layoutX="675.0" layoutY="419.0" maxHeight="24.0" maxWidth="145.0" minHeight="30.0" minWidth="145.0" prefHeight="24.0" prefWidth="145.0" AnchorPane.rightAnchor="210.0" AnchorPane.topAnchor="419.0" />
-        <Button fx:id="btnDiesesBezahlt" layoutX="833.0" layoutY="381.0" maxHeight="30.0" maxWidth="169.0" minHeight="30.0" minWidth="169.0" mnemonicParsing="false" onAction="#diesesBezahlt" prefHeight="30.0" prefWidth="169.0" text="Dieses bezahlt" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="381.0">
-            <font>
-                <Font size="11.0" />
-            </font>
-        </Button>
-        <Button fx:id="btnInfosAendern" layoutX="833.0" layoutY="419.0" maxHeight="30.0" maxWidth="169.0" minHeight="30.0" minWidth="169.0" mnemonicParsing="false" onAction="#oeffneBuchungenBearbeiten" prefHeight="30.0" prefWidth="169.0" text="Einkäufe bearbeiten..." AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="419.0">
+        <ComboBox fx:id="cbZuZahlen" layoutX="669.0" layoutY="348.0" maxHeight="24.0" maxWidth="145.0" minHeight="30.0" minWidth="145.0" prefHeight="24.0" prefWidth="145.0" AnchorPane.rightAnchor="210.0" AnchorPane.topAnchor="348.0" />
+        <TextField fx:id="txtKassiert" layoutX="669.0" layoutY="387.0" maxHeight="24.0" maxWidth="145.0" minHeight="30.0" minWidth="145.0" prefHeight="24.0" prefWidth="145.0" AnchorPane.rightAnchor="210.0" AnchorPane.topAnchor="387.0" />
+        <TextField fx:id="txtKontosaldo" editable="false" layoutX="669.0" layoutY="425.0" maxHeight="24.0" maxWidth="145.0" minHeight="30.0" minWidth="145.0" prefHeight="24.0" prefWidth="145.0" AnchorPane.rightAnchor="210.0" AnchorPane.topAnchor="425.0" />
+        <Button fx:id="btnInfosAendern" layoutX="837.0" layoutY="425.0" maxHeight="30.0" maxWidth="169.0" minHeight="30.0" minWidth="169.0" mnemonicParsing="false" onAction="#oeffneBuchungenBearbeiten" prefHeight="30.0" prefWidth="169.0" text="Einkäufe bearbeiten..." AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="425.0">
             <font>
                 <Font size="11.0" />
             </font>
@@ -253,7 +248,7 @@
             </font>
         </Label>
         <TextField fx:id="txtAnzahlFamilienmitglieder" editable="false" layoutX="241.0" layoutY="201.0" maxHeight="24.0" maxWidth="217.0" minHeight="24.0" minWidth="217.0" prefHeight="24.0" prefWidth="217.0" AnchorPane.leftAnchor="241.0" AnchorPane.topAnchor="205.0" />
-        <Label fx:id="labelLetzterEinkauf" layoutX="241.0" layoutY="224.0" maxHeight="24.0" maxWidth="177.0" minHeight="17.0" minWidth="130.0" prefHeight="24.0" prefWidth="177.0" text="Letzter Einkauf:" AnchorPane.leftAnchor="243.0" AnchorPane.topAnchor="228.0">
+        <Label fx:id="labelLetzterEinkauf" layoutX="835.0" layoutY="283.0" maxHeight="24.0" maxWidth="195.0" minHeight="17.0" minWidth="130.0" prefHeight="24.0" prefWidth="195.0" text="Letzter Einkauf/Guthaben:" AnchorPane.rightAnchor="-6.0" AnchorPane.topAnchor="283.0">
             <font>
                 <Font size="13.0" />
             </font>
@@ -276,7 +271,7 @@
         </ImageView>
         <Button fx:id="btnHaushaltHinzufuegen" layoutX="846.0" layoutY="243.0" maxHeight="30.0" maxWidth="169.0" minHeight="30.0" minWidth="169.0" mnemonicParsing="false" onAction="#oeffneHaushaltHinzufuegen" prefHeight="30.0" prefWidth="169.0" text="Haushalt hinzufügen..." AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="243.0" />
         <Rectangle fx:id="gruppenfarbe" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="23.0" layoutX="9.0" layoutY="246.0" stroke="TRANSPARENT" strokeType="INSIDE" width="32.0" AnchorPane.leftAnchor="9.0" AnchorPane.topAnchor="251.0" />
-        <TextField fx:id="dateLetzterEinkauf" editable="false" layoutX="241.0" layoutY="247.0" maxHeight="25.0" maxWidth="217.0" minHeight="25.0" minWidth="217.0" prefHeight="25.0" prefWidth="217.0" AnchorPane.leftAnchor="241.0" AnchorPane.topAnchor="251.0" />
+        <TextField fx:id="dateLetzterEinkauf" editable="false" layoutX="836.0" layoutY="304.0" maxHeight="25.0" maxWidth="217.0" minHeight="25.0" minWidth="177.0" prefHeight="25.0" prefWidth="177.0" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="304.0" />
         <CheckBox fx:id="ckbxDSE" disable="true" layoutX="846.0" layoutY="220.0" maxHeight="17.0" maxWidth="204.0" minHeight="17.0" minWidth="50.0" mnemonicParsing="false" opacity="1" prefHeight="17.0" prefWidth="50.0" text="DSE" AnchorPane.rightAnchor="137.0" AnchorPane.topAnchor="218.0">
             <font>
                 <Font size="13.0" />
@@ -293,5 +288,38 @@
             <Font size="13.0" />
          </font>
       </Label>
+      <AnchorPane layoutX="824.0" layoutY="334.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="337.0">
+         <children>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#fff121" height="82.0" stroke="BLACK" strokeType="INSIDE" width="195.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <Button fx:id="btnDiesesKarteBezahlt" layoutX="73.0" layoutY="13.0" maxHeight="30.0" maxWidth="169.0" minHeight="30.0" minWidth="50.0" mnemonicParsing="false" onAction="#diesesKarteBezahlt" prefHeight="30.0" prefWidth="50.0" text="Karte">
+               <font>
+                  <Font size="11.0" />
+               </font>
+            </Button>
+            <Button fx:id="btnDiesesBarBezahlt" layoutX="13.0" layoutY="13.0" maxHeight="30.0" maxWidth="169.0" minHeight="30.0" minWidth="50.0" mnemonicParsing="false" onAction="#diesesBarBezahlt" prefHeight="30.0" prefWidth="50.0" text="Bar">
+               <font>
+                  <Font size="11.0" />
+               </font>
+            </Button>
+              <Button fx:id="btnDiesesBezahlt" layoutX="13.0" layoutY="47.0" maxHeight="30.0" maxWidth="169.0" minHeight="30.0" minWidth="169.0" mnemonicParsing="false" onAction="#diesesBezahlt" prefHeight="30.0" prefWidth="169.0" text="indiv. Buchungstext" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="47.0">
+                  <font>
+                      <Font size="11.0" />
+                  </font>
+              </Button>
+            <Button fx:id="btnDiesesNullBezahlt" layoutX="132.0" layoutY="13.0" maxHeight="30.0" maxWidth="169.0" minHeight="30.0" minWidth="50.0" mnemonicParsing="false" onAction="#diesesNullBezahlt" prefHeight="30.0" prefWidth="50.0" text="0">
+               <font>
+                  <Font size="11.0" />
+               </font>
+            </Button>
+            <Label layoutX="70.0" layoutY="-4.0" style="-fx-background-color: #fff121;" text=" Buchung " AnchorPane.rightAnchor="72.0" AnchorPane.topAnchor="-4.0">
+               <font>
+                  <Font size="12.0" />
+               </font>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </Label>
+         </children>
+      </AnchorPane>
     </children>
 </AnchorPane>

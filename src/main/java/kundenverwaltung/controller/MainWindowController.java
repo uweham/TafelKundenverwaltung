@@ -227,6 +227,12 @@ public class MainWindowController
     @FXML
     private Button btnDiesesBezahlt;
     @FXML
+    private Button btnDiesesKarteBezahlt;
+    @FXML
+    private Button btnDiesesBarBezahlt;
+    @FXML
+    private Button btnDiesesNullBezahlt;
+    @FXML
     private Button btnInfosAendern;
     @FXML
     private Label labelKundenSuchen;
@@ -355,6 +361,15 @@ public class MainWindowController
       
         cbErfassungsVerteilstelle.getSelectionModel().selectFirst();
         fuelleKassenFelder();
+        
+        cbWarentyp.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
+          
+          if (newValue != null)
+          {
+            fuelleKassenFelder_warentyp(newValue);
+          }
+        }); 
+        
         cbSucheFilter.getSelectionModel().selectFirst();
         cbSpezialfilter.getSelectionModel().selectFirst();
         
@@ -932,8 +947,22 @@ public class MainWindowController
 
             txtSucheInput.requestFocus();
     }
-
-
+    
+    @FXML public void diesesNullBezahlt()
+    {
+      Bezahlt("0",true);
+    }    
+    
+    @FXML public void diesesBarBezahlt()
+    {
+      Bezahlt("Bar",false);
+    }
+    
+    @FXML public void diesesKarteBezahlt()
+    {
+      Bezahlt("Karte",false);
+    }
+    
     /**
      * @Author Adam Starobrzanski
      * <p>
@@ -941,8 +970,81 @@ public class MainWindowController
      *
      * @Author Richard Kromm
      * fixed "save in DB"
+     * Modified U.P. fast booking without booking mask for Card, Money, Zero 
      */
+    private void Bezahlt(String buchungstext, boolean zero)
+    {
+        if (haushalt!=null)
+        {  
+          Warentyp warentyp = cbWarentyp.getSelectionModel().getSelectedItem();
+          LocalDateTime erfassungszeit = LocalDateTime.now();
+          Float summEinkauf = haushalt.getZuZahlen(warentyp);
+          Float summeZahlung = 0.0F;
+          if (!zero)
+          {
+          try
+            {
+                summeZahlung = Float.valueOf(txtKassiert.getText());
+            } catch (Exception e)
+            {
+                Benachrichtigung.warnungBenachrichtigung("Falsche Eingabe",
+                        "Bitte geben sie den Betrag im richtigen Format an.");
+                return;
+            }
+          }
+          int anzahlKinder = haushalt.getanzahlKinder();
+          int anzahlErwachsene = haushalt.getanzahlErwachsene();
+          Boolean warnung = true;
+  
+          if (haushalt.getBuchungswarnungen(warentyp).size() != 0)
+          {
+              warnung = MainController.getInstance()
+                      .zeigeBuchungswarnungen(haushalt.getBuchungswarnungen(warentyp));
+          }
+  
+          if (warnung)
+          {
+              try
+              {
+                  
+                  saldo = saldo + (summeZahlung - summEinkauf);
+                    
+                    Familienmitglied personbuchung=new Familienmitglied();
+                    int personID=personbuchung.getFamilienmitgliedDAO().getHousholdDirector(haushalt.getKundennummer());
+                    if (personID != FamilienmitgliedDAOimpl.ILLEGAL_PERSON_ID)
+                    {
+                      personbuchung=personbuchung.getFamilienmitgliedDAO().read(personID);
+                      
+                      haushalt.setSaldo(saldo);
+                      @SuppressWarnings("unused")
+                      Einkauf einkauf =
+                              new Einkauf(warentyp, null, null, buchungstext, haushalt,
+                                      personbuchung, erfassungszeit, summEinkauf, summeZahlung,
+                                      cbErfassungsVerteilstelle.getSelectionModel().getSelectedItem(),
+                                      anzahlKinder, anzahlErwachsene);
+                      Boolean updateCheck = new HaushaltDAOimpl().update(haushalt);
+      
+                      if (!updateCheck)
+                      {
+                          Benachrichtigung.warnungBenachrichtigung("",
+                                  "Der Einkauf konnte nicht gebucht werden. Bitt prüfen sie die "
+                          +
+                                          "Datenbank verbindung.");
+                      }
+      
+                      fuelleKassenFelder();
+                    }
+              } catch (NullPointerException e)
+              {
+                  System.out.println("kein Objekt gewählt (Zeile 722)");
+              }
+          }
+  
+          txtSucheInput.requestFocus();
+        }
+    }
 
+    
     @FXML public void diesesBezahlt()
     {
         if (haushalt!=null)
@@ -1020,9 +1122,47 @@ public class MainWindowController
     /**
      *.
      */
+    private void fuelleKassenFelder_warentyp(Warentyp wt)
+    {
+     
+      if (haushalt != null && wt !=null) 
+      {
+        if (!wt.isManuelleBerechnung())
+        {
+            // Berechne einmal zentral
+            float zuZahlen = haushalt.getZuZahlen(wt);
+
+            // Nur diesen einen Wert anbieten (kein 0.0 mehr)
+            ObservableList<Float> zuZahlenWerte =
+                FXCollections.observableArrayList(zuZahlen);
+            cbZuZahlen.setItems(zuZahlenWerte);
+            cbZuZahlen.getSelectionModel().selectFirst();
+
+            // Und im Textfeld vorfüllen
+            txtKassiert.setText(Float.toString(zuZahlen));
+        }
+
+        // Kontosaldo aktualisieren
+        saldo = haushalt.getSaldo();
+        txtKontosaldo.setText(String.valueOf(saldo));
+        LocalDateTime letzterEinkauf=new EinkaufDAOimpl().getLetzerEinkauf(haushalt,wt);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        String TxtletzterEinkauf=(letzterEinkauf==null)?"kein Einkauf/Gutschr.!":letzterEinkauf.format(formatter);
+        if (letzterEinkauf!=null && letzterEinkauf.toLocalDate().isEqual(LocalDateTime.now().toLocalDate()))
+        {
+          dateLetzterEinkauf.setStyle("-fx-text-fill: red;");
+        } else
+        {
+          dateLetzterEinkauf.setStyle("-fx-text-fill: black;");
+        }
+        dateLetzterEinkauf.setText(TxtletzterEinkauf);
+    }
+
+    }
 
     public void fuelleKassenFelder()
     {
+      
         cbWarentyp.setItems(warentypen);
         cbWarentyp.getSelectionModel().selectFirst();
 
@@ -1067,41 +1207,11 @@ public class MainWindowController
                 return null;
             }
         });
+        
 
-        if (haushalt != null)
-        {
-          Warentyp wt = cbWarentyp.getValue();
+        Warentyp wt = cbWarentyp.getValue();
 
-          if (!wt.isManuelleBerechnung())
-          {
-              // Berechne einmal zentral
-              float zuZahlen = haushalt.getZuZahlen(wt);
-
-              // Nur diesen einen Wert anbieten (kein 0.0 mehr)
-              ObservableList<Float> zuZahlenWerte =
-                  FXCollections.observableArrayList(zuZahlen);
-              cbZuZahlen.setItems(zuZahlenWerte);
-              cbZuZahlen.getSelectionModel().selectFirst();
-
-              // Und im Textfeld vorfüllen
-              txtKassiert.setText(Float.toString(zuZahlen));
-          }
-
-          // Kontosaldo aktualisieren
-          saldo = haushalt.getSaldo();
-          txtKontosaldo.setText(String.valueOf(saldo));
-          LocalDateTime letzterEinkauf=new EinkaufDAOimpl().getLetzerEinkauf(haushalt);
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-          String TxtletzterEinkauf=(letzterEinkauf==null)?"kein Einkauf erfolgt !":letzterEinkauf.format(formatter);
-          if (letzterEinkauf!=null && letzterEinkauf.toLocalDate().isEqual(LocalDateTime.now().toLocalDate()))
-          {
-            dateLetzterEinkauf.setStyle("-fx-text-fill: red;");
-          } else
-          {
-            dateLetzterEinkauf.setStyle("-fx-text-fill: black;");
-          }
-          dateLetzterEinkauf.setText(TxtletzterEinkauf);
-      }
+        fuelleKassenFelder_warentyp(wt);
     }
 
 
