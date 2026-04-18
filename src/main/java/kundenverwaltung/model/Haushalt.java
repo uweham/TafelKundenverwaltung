@@ -236,7 +236,7 @@ public class Haushalt
         {
             warnungen.add(new Booking_err_warn_list(Booking_err_warn_list.ENTRY_WARNING, "Das Kundenkonto hat derzeit einen Sollsaldo von " + this.saldo + "EUR."));
         }
-        LocalDateTime letzerEinkauf = new EinkaufDAOimpl().getLetzerEinkauf(this);
+        LocalDateTime letzerEinkauf = new EinkaufDAOimpl().getLetzerEinkauf(this,warentyp);
         long datediff=0L;
         if (letzerEinkauf != null)
         {
@@ -247,7 +247,7 @@ public class Haushalt
             // bugfix datecompare
             if (datediff
                 <=
-                    (long) warentyp.getWarentyplimitabstand() && warentyp.getWarentyplimitabstand() != 0)
+                    (long) warentyp.getWarentyplimitabstand() && warentyp.getWarentyplimitabstand() > 0)
             {
                 warnungen.add(new Booking_err_warn_list(Booking_err_warn_list.ENTRY_ERROR, 
                          "Der letzte Einkauf (" + letzerEinkauf
