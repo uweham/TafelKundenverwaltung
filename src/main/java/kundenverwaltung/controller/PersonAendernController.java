@@ -245,9 +245,9 @@ public class PersonAendernController
 			haushaltsvorstandVorher = familienmitglied.isHaushaltsVorstand();  // by add person --> NullPointerException
 		} catch (NullPointerException exception)
 			{
-				haushaltsvorstandVorher = true;
+				haushaltsvorstandVorher = false;
+				
 			}
-
 		String vname = txtPAVorname.getText().trim(); // inhibit uppercase first letter
 		String nname = txtPANachname.getText().trim(); // inhibit uppercase first letter
 		String bemerkung = txtPABemerkungen.getText();
@@ -303,7 +303,7 @@ public class PersonAendernController
 
 		Boolean checkVorstand = true;
 
-		if (!haushaltsvorstandVorher && vorstand)
+		if (haushaltsvorstandVorher != vorstand)
 		{
 			checkVorstand = haushaltsvorstandAendern();
 		}

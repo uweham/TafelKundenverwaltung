@@ -474,9 +474,10 @@ public class HaushaltVerwaltenController
 
     public void personhinzufuegen(Familienmitglied familienmitglied)
     {
-        familienmitgliedListe.add(familienmitglied);
-        familienmitglieder.add(familienmitglied);
-        tvFamilienmitglieder.setItems(familienmitglieder);
+        personenAktualisieren();
+        //familienmitgliedListe.add(familienmitglied);
+        //familienmitglieder.add(familienmitglied);
+        //tvFamilienmitglieder.setItems(familienmitglieder);
     }
     /**
      *.
