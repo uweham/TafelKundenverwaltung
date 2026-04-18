@@ -480,7 +480,7 @@ public class Familienmitglied
      */
     public String getGebuehren()
     {
-        if (gebuehrenBefreiung)
+        if (!gebuehrenBefreiung)
         {
             return "normal";
         } else
