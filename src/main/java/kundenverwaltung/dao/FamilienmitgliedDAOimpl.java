@@ -28,7 +28,7 @@ import kundenverwaltung.service.Constants;
  */
 public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
 {
-	private static final int ILLEGAL_PERSON_ID = -1;
+	public static final int ILLEGAL_PERSON_ID = -1;
 	@SuppressWarnings("unused")
 	private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
 	private String databaseName = PropertiesFileController.getDbName();

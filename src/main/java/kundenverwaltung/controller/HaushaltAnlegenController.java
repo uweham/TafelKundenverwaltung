@@ -838,11 +838,12 @@ public class HaushaltAnlegenController
      */
     public Boolean pruefeFelderHaushalt()
     {
+        boolean check_addr = false;     // false no check Hausnummer + Strasse 
         return !((txtWohnort.isVisible() && txtWohnort.getText().trim().isEmpty())
-                || txtHausnummer.getText().trim().isEmpty()
+                || (check_addr && txtHausnummer.getText().trim().isEmpty())
                 || txtPostleitzahl.getText().trim().isEmpty()
                 || (dateKundeSeit.getValue() == null || dateKundeSeit.getValue().toString().isEmpty())
-                || txtStrasse.getText().trim().isEmpty());
+                || (check_addr && txtStrasse.getText().trim().isEmpty()));
     }
     /**
      *.

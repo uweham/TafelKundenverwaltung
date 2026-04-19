@@ -301,9 +301,10 @@ public class KundenlisteErstellenController extends Thread
                         tempCountRow++;
                     }
                     /*       indeterminateProgressBar.closeProgressBar();*/
-                    Desktop.getDesktop().open(tempReadyHtml);
+                    // Desktop.getDesktop().open(tempReadyHtml);
                     bufferedWriter.close();
                     bufferedReader.close();
+                    Desktop.getDesktop().open(tempReadyHtml);
                     tempReadyHtml.deleteOnExit();
 
                 } catch (IOException ioException)

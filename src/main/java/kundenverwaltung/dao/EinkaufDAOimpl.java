@@ -417,6 +417,40 @@ public class EinkaufDAOimpl implements EinkaufDAO
         }
         return null;
     }
+    
+    
+    @Override
+    public LocalDateTime getLetzerEinkauf(Haushalt haushalt, Warentyp productType)
+    {
+        
+        String sql = "Select MAX(erfassungsZeit) AS letzterEinkauf FROM einkauf WHERE kunde = ? AND storniertAm IS NULL AND warentyp=?";
+        try
+        {
+            Connection con = SQLConnection.getCon();
+            PreparedStatement smt = con.prepareStatement(sql);
+            smt.setInt(1, haushalt.getKundennummer());
+            smt.setInt(2, productType.getWarentypId());
+            
+            ResultSet einkaufResult = smt.executeQuery();
+            einkaufResult.next();
+            if (einkaufResult.getTimestamp("letzterEinkauf") == null)
+            {
+                return null; //Falls kein letzter Einkauf vorhanden
+            }
+            LocalDateTime erfassungszeit = einkaufResult.getTimestamp("letzterEinkauf").toLocalDateTime();
+            smt.close();
+            return erfassungszeit;
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+            System.out.println("Letzter Einkauf wurde nicht gefunden");
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+            System.out.println("Fehler");
+        }
+        return null;
+    }    
     /**
      */
     @Override
