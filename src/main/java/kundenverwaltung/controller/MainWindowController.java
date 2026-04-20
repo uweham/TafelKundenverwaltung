@@ -267,7 +267,10 @@ public class MainWindowController
     @FXML
     private Label labelKontosaldo;
     @FXML private AnchorPane root;
-
+    @FXML private AnchorPane anchorBooking;
+    @FXML private Rectangle rectBooking;
+    @FXML private Label labelBooking;
+    
     private ChangeDateFormat changeDateFormat = new ChangeDateFormat();
     private ArrayList<Warentyp> warentypListe = new WarentypDAOimpl().readAllAktiv();
     private ObservableList<Warentyp> warentypen = FXCollections.observableArrayList(warentypListe);
@@ -382,16 +385,7 @@ public class MainWindowController
              }
             }
         );
-        /*
-        txtSucheInput.setOnKeyReleased(event -> searchCustomer());
-        */
-        txtSucheInput.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-          if (! isNowFocused) {
-              // text field has lost focus...
-              
-              searchCustomer();
-          }
-      });
+  
 
         cbSucheFilter.setOnHiding(event ->
         {
@@ -727,7 +721,7 @@ public class MainWindowController
         {
           MainController.getInstance().oeffneBuchungenBearbeiten(haushalt, currentFontSize);
           fuelleKassenFelder();
-        }
+        } 
     }
 
 
@@ -783,7 +777,6 @@ public class MainWindowController
     @FXML
     public void searchCustomer()
     {
-
         String userInput = txtSucheInput.getText();
         int indexSpecialFilter=cbSpezialfilter.getSelectionModel().getSelectedIndex();
         int indexSucheFilter = cbSucheFilter.getSelectionModel().getSelectedIndex();
@@ -1124,7 +1117,6 @@ public class MainWindowController
      */
     private void fuelleKassenFelder_warentyp(Warentyp wt)
     {
-     
       if (haushalt != null && wt !=null) 
       {
         if (!wt.isManuelleBerechnung())
