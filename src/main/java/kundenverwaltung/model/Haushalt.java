@@ -143,8 +143,9 @@ public class Haushalt
       } else
       {
           // 2) Sonst pro Person: zählt intern Erwachsenen/Kinder über Dein Alter-Kriterium
-          int erw = getanzahlErwachsene();
-          int kin = getanzahlKinder();
+          // befreite Personen nicht mitzählen
+          int erw = getanzahlErwachsene_free();
+          int kin = getanzahlKinder_free();
           gebuehr = erw * wt.getPreisErwachsene()
                  + kin * wt.getPreisKinder();
       }
@@ -157,13 +158,32 @@ public class Haushalt
       return Math.max(0, gebuehr);
   }
 
+    public int getanzahlKinder_free()
+    {
+      return getanzahlKinder_intern(false);     
+    }
+    
+    public int getanzahlErwachsene_free()
+    {
+      return getanzahlErwachsene_intern(false);
+    }
 
-
+    public int getanzahlKinder()
+    {
+        return getanzahlKinder_intern(true);
+    }
+    
+    public int getanzahlErwachsene()
+    {
+      return getanzahlErwachsene_intern(true);
+    }
     /**
      *.
      */
-    public int getanzahlKinder()
+    public int getanzahlKinder_intern(boolean allflg)
     {
+       // allflg : true count all persons
+       //          false count only persons where not "befreit"
         // NEU: Einstellungen aus der Datenbank laden
         Einstellungen einstellungen = new EinstellungenDAOimpl().read();
         // Fallback, falls in der DB nichts steht (0), nehmen wir 18 als Sicherheit
@@ -179,7 +199,7 @@ public class Haushalt
             long alter = ChronoUnit.YEARS.between(gDatum, now);
 
             // HIER GEÄNDERT: Variable statt starrer Zahl
-            if (alter < grenzAlter)
+            if (alter < grenzAlter &&  (allflg || !element.isGebuehrenBefreiung()))
             {
                 anzahlKinder++;
             }
@@ -190,8 +210,10 @@ public class Haushalt
     /**
      *.
      */
-    public int getanzahlErwachsene()
+    public int getanzahlErwachsene_intern(boolean allflg)
     {
+        // allflg : true count all persons
+        //          false count only persons where not "befreit"
         // NEU: Einstellungen laden
         Einstellungen einstellungen = new EinstellungenDAOimpl().read();
         // Fallback auf 18, falls DB leer/0 ist
@@ -208,7 +230,7 @@ public class Haushalt
 
             // HIER GEÄNDERT: Variable statt starrer Zahl
             // WICHTIG: >= verwenden, damit das Grenzalter selbst schon als Erwachsen zählt
-            if (alter >= grenzAlter)
+            if (alter >= grenzAlter && (allflg || !element.isGebuehrenBefreiung()))
             {
                 anzahlErwachsene++;
             }
