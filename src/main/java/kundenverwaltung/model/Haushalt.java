@@ -228,7 +228,14 @@ public class Haushalt
 
     public ArrayList<Booking_err_warn_list> getBuchungswarnungen(Warentyp warentyp)
     {
-        
+      Einstellungen einstellungen = new EinstellungenDAOimpl().read();
+      
+      // Fallback auf 18, falls die Datenbank 0 liefert oder das Objekt null ist.
+      // Das ist sicherer als 14, da Kinder unter 18 meist keinen eigenen Bescheid haben.
+      int alterBescheidPflicht = (einstellungen != null && einstellungen.getAlterBescheid() > 0) 
+                                 ? einstellungen.getAlterBescheid() 
+                                 : 18; 
+      
         //ArrayList<String> warnungen = new ArrayList<>();
         ArrayList<Booking_err_warn_list> warnungen = new ArrayList<>();
         
@@ -270,7 +277,9 @@ public class Haushalt
         {
             ArrayList<Bescheid> bescheid =
                     new BescheidDAOimpl().readAllGueltige(familienmitglieder.get(i));
-            if (bescheid.size() == 0)
+            if ( familienmitglieder.get(i).getGeburtsdatum().toLocalDate()
+                    .isBefore(LocalDate.now().minusYears(alterBescheidPflicht)) &&
+                    (bescheid == null || bescheid.size() == 0))
             {
                 warnungen.add(new Booking_err_warn_list(Booking_err_warn_list.ENTRY_WARNING,
                     "Für " + familienmitglieder.get(i).getvName() + " "
