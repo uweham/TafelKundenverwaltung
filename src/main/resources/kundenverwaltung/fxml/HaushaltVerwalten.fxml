@@ -44,7 +44,7 @@
                                 <Insets />
                             </HBox.margin>
                             <children>
-                                <AnchorPane prefHeight="122.0" prefWidth="787.0" style="-fx-border-color: #D8D8D8; -fx-border-style: 1;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-4.0" AnchorPane.topAnchor="0.0">
+                                <AnchorPane prefHeight="122.0" prefWidth="787.0" style="-fx-border-color: #D8D8D8; -fx-border-style: solid; -fx-border-width: 1;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-4.0" AnchorPane.topAnchor="0.0">
                                     <children>
                                         <HBox layoutX="4.0" layoutY="4.0" prefHeight="120.0" prefWidth="650.0" AnchorPane.leftAnchor="3.0" AnchorPane.topAnchor="3.0">
                                             <children>
@@ -137,7 +137,7 @@
                                 <Insets left="10.0" />
                             </HBox.margin>
                             <children>
-                                <AnchorPane style="-fx-border-color: #D8D8D8; -fx-border-style: 1;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <AnchorPane style="-fx-border-color: #D8D8D8; -fx-border-style: solid; -fx-border-width: 1;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                     <children>
                                         <Label fx:id="lbVollmachten" layoutX="10.0" layoutY="10.0" prefHeight="63.0" prefWidth="153.0" text="Dieser Haushalt hat x Vollmachten" wrapText="true" AnchorPane.leftAnchor="47.0" AnchorPane.topAnchor="10.0" />
                                         <Button fx:id="buttonEditPowerOfAttorney" layoutX="78.0" layoutY="79.0" mnemonicParsing="false" onAction="#oeffneVollmachtenBearbeiten" text="Bearbeiten" AnchorPane.leftAnchor="78.0" AnchorPane.topAnchor="79.0" />
