@@ -176,6 +176,47 @@ public class VollmachtDAOimpl implements VollmachtDAO
         return null;
     }
 
+    /**
+     *.
+     */
+    public ArrayList<Vollmacht> readAllGueltigeVollmachtOwner(int haushaltsId)
+    {
+
+        String sql = "SELECT * FROM vollmacht WHERE bevollmaechtigtePersonId in (select personID from familienmitglied where haushaltId = ?)  AND vollmacht.ausgestelltAm <= CURRENT_DATE AND vollmacht.ablaufDatum >= CURRENT_DATE ";
+        try
+        {
+            Connection con = SQLConnection.getCon();
+            ArrayList<Vollmacht> vollmachtenListe = new ArrayList<>();
+            PreparedStatement smt = con.prepareStatement(sql);
+            smt.setInt(1, haushaltsId);
+            ResultSet vollmachtResult = smt.executeQuery();
+
+            while (vollmachtResult.next())
+            {
+                int vollmachtid = vollmachtResult.getInt("vollmachtId");
+                Haushalt haushalt = new HaushaltDAOimpl().read(vollmachtResult.getInt("haushaltId"));
+                Familienmitglied bevollmaechtiger = new FamilienmitgliedDAOimpl().read(vollmachtResult.getInt("bevollmaechtigtePersonId"));
+                LocalDate ausgestellAm = vollmachtResult.getDate("ausgestelltAm").toLocalDate();
+                LocalDate ablaufDatum = vollmachtResult.getDate("ablaufDatum").toLocalDate();
+
+                Vollmacht vollmachtobjekt = new Vollmacht(vollmachtid, haushalt, bevollmaechtiger, ausgestellAm, ablaufDatum);
+
+                vollmachtenListe.add(vollmachtobjekt);
+            }
+            return vollmachtenListe;
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            System.out.println("Vollmacht lesen klappt nicht");
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            System.out.println("Fehler");
+        }
+        return null;
+    }
 
     /**
      *.
@@ -208,7 +249,7 @@ public class VollmachtDAOimpl implements VollmachtDAO
         catch (SQLException e)
         {
             e.printStackTrace();
-            System.out.println("Nation lesen klappt nicht");
+            System.out.println("Vollmacht lesen klappt nicht");
         }
         catch (Exception e)
         {

@@ -361,6 +361,33 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
 			}
 	}
 
+	   /**
+     * Gets the household director (head) for a given household.
+     *
+     * @param householdId the ID of the household
+     * @return the person ID of the household director, or ILLEGAL_PERSON_ID if not found
+     */
+    @Override
+    public String getNameHousholdDirector(int householdId)
+    {
+        String sql = "SELECT * FROM familienmitglied WHERE haushaltsVorstand = 1 AND haushaltId = ?";
+        try
+        {
+            Connection con = SQLConnection.getCon();
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+            preparedStatement.setInt(1, householdId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+
+            return resultSet.getString("nName");
+
+        } catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+        return null;
+    }
+	
 	/**
 	 * Gets the household director (head) for a given household.
 	 *

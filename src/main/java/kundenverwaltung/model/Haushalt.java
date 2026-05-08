@@ -446,6 +446,28 @@ public class Haushalt
 
         }
 
+        ArrayList<Vollmacht> vollmachtOwner = new VollmachtDAOimpl().readAllGueltigeVollmachtOwner(kundennummer);
+
+        if (vollmachtOwner != null && vollmachtOwner.size() != 0)
+        {
+
+            for (int i = 0; i < vollmachtOwner.size(); i++)
+            {   int haushaltid = vollmachtOwner.get(i).getHaushalt().getKundennummer();
+                String nName = new FamilienmitgliedDAOimpl().getNameHousholdDirector(haushaltid);
+                haushaltsinformationen.add(new Haushaltsinformationen(null,
+                        "Vollmacht erteilt für "
+                                +
+                                nName
+                                +
+                                "(Kd.-Nr. "
+                                +   
+                                haushaltid
+                                +
+                                ")"
+                                , Informationstypen.VollmachtBesitzer));
+            }
+
+        }
         return haushaltsinformationen;
     }
 

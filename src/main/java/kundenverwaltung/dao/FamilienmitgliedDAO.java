@@ -16,6 +16,7 @@ public interface FamilienmitgliedDAO
     boolean update(Familienmitglied familienmitglied);
     boolean delete(Familienmitglied familienmitglied);
     boolean insertDeletedMemberOfTheFamiliy(Familienmitglied memberOfTheFamily, String reasenDelete);
+    String getNameHousholdDirector(int householdId);
     int getHousholdDirector(int householdId);
     int getMaxPersonId();
     Familienmitglied read(int personId);
