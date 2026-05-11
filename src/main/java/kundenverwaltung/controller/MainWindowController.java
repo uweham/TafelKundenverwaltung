@@ -442,6 +442,28 @@ public class MainWindowController
       return v == null || v.startsWith("${"); 
   }
 
+  private void  setHintergrundHaushalt()
+  {
+      Boolean einkaufsberechtigt = haushalt.getEinkaufsberechtigt();
+    
+      if (einkaufsberechtigt)
+      {
+          haushaltHintergrund.setStyle("-fx-background-color: greenyellow");
+      } else
+      {
+          haushaltHintergrund.setStyle("-fx-background-color: red");
+      }
+      if (haushalt.getIstArchiviert())
+      {
+          haushaltHintergrund.setStyle("-fx-background-color: skyblue");
+      }
+      if (haushalt.getIstGesperrt())
+      {
+          haushaltHintergrund.setStyle("-fx-background-color: sienna");
+      }
+ 
+   }
+ 
     /**
      *.
      */
@@ -694,16 +716,7 @@ public class MainWindowController
             ObservableList<Haushaltsinformationen> informationenHaushaltOL = FXCollections
                     .observableArrayList(haushalt.getHaushaltsinformationen(familienmitliederAkt));
             listWeitereInformationen.setItems(informationenHaushaltOL);
-
-            Boolean einkaufsberechtigt = haushalt.getEinkaufsberechtigt();
-
-            if (einkaufsberechtigt)
-            {
-                haushaltHintergrund.setStyle("-fx-background-color: greenyellow");
-            } else
-            {
-                haushaltHintergrund.setStyle("-fx-background-color: red");
-            }
+            setHintergrundHaushalt();
 
         } else
         {
@@ -740,15 +753,7 @@ public class MainWindowController
                     .observableArrayList(haushalt.getHaushaltsinformationen(familienmitliederAkt));
             listWeitereInformationen.setItems(informationenHaushaltOL);
 
-            Boolean einkaufsberechtigt = haushalt.getEinkaufsberechtigt();
-
-            if (einkaufsberechtigt)
-            {
-                haushaltHintergrund.setStyle("-fx-background-color: greenyellow");
-            } else
-            {
-                haushaltHintergrund.setStyle("-fx-background-color: red");
-            }
+            setHintergrundHaushalt();
 
         } else
         {
@@ -1100,7 +1105,7 @@ public class MainWindowController
                         +
                                         "Datenbank verbindung.");
                     }
-    
+                    
                     fuelleKassenFelder();
                   }
               } catch (NullPointerException e)
@@ -1149,6 +1154,7 @@ public class MainWindowController
           dateLetzterEinkauf.setStyle("-fx-text-fill: black;");
         }
         dateLetzterEinkauf.setText(TxtletzterEinkauf);
+        setHintergrundHaushalt();
     }
 
     }
@@ -1236,29 +1242,12 @@ public class MainWindowController
         Familienmitglied haushaltsvorstand = null;
 
         haushaltsvorstand = haushalt.getHaushaltsvorstand(familienmitliederAkt);
-
+        listWeitereInformationen.getItems().clear();
         ObservableList<Haushaltsinformationen> informationenHaushaltOL = FXCollections
                 .observableArrayList(haushalt.getHaushaltsinformationen(familienmitliederAkt));
         listWeitereInformationen.setItems(informationenHaushaltOL);
-
-        Boolean einkaufsberechtigt = haushalt.getEinkaufsberechtigt();
-
-        if (einkaufsberechtigt)
-        {
-            haushaltHintergrund.setStyle("-fx-background-color: greenyellow");
-        } else
-        {
-            haushaltHintergrund.setStyle("-fx-background-color: red");
-        }
-        if (haushalt.getIstGesperrt())
-        {
-            haushaltHintergrund.setStyle("-fx-background-color: sienna");
-        }
-        if (haushalt.getIstArchiviert())
-        {
-            haushaltHintergrund.setStyle("-fx-background-color: skyblue");
-        }
-
+        setHintergrundHaushalt();
+        
         if (familienmitglied.dseSubmitted())
         {
             ckbxDSE.setSelected(true);
@@ -1345,7 +1334,9 @@ public class MainWindowController
     {
         if (haushalt != null)
         {
-          Boolean einkaufsberechtigt;
+          Haushaltsinformationen haushaltsinformationen =
+              listWeitereInformationen.getSelectionModel().getSelectedItem();
+       
           ObservableList<Haushaltsinformationen> informationenHaushaltOL = FXCollections.observableArrayList();
   
           switch (btnWeitereInformationen.getText())
@@ -1356,25 +1347,12 @@ public class MainWindowController
                   fuelleKundendaten();
                   break;
               case "Personendaten ändern":
-                  MainController.getInstance().oeffnePersonAendern(familienmitglied, haushalt, currentFontSize);
+                  MainController.getInstance().oeffnePersonAendern(haushaltsinformationen.getfamilienmitglied(), haushalt, currentFontSize);
                   if (haushalt != null) refreshSingleHousehold(haushalt.getKundennummer());
-                  fuelleKundendaten();
-  
-                  familienmitliederAkt = new FamilienmitgliedDAOimpl()
-                          .getAllFamilienmitglieder(haushalt.getKundennummer());
                   informationenHaushaltOL.clear();
-                  informationenHaushaltOL
-                          .addAll(haushalt.getHaushaltsinformationen(familienmitliederAkt));
-                  listWeitereInformationen.setItems(informationenHaushaltOL);
-                  einkaufsberechtigt = haushalt.getEinkaufsberechtigt();
-  
-                  if (einkaufsberechtigt)
-                  {
-                      haushaltHintergrund.setStyle("-fx-background-color: greenyellow");
-                  } else
-                  {
-                      haushaltHintergrund.setStyle("-fx-background-color: red");
-                  }
+                  familienmitliederAkt = new FamilienmitgliedDAOimpl()
+                      .getAllFamilienmitglieder(haushalt.getKundennummer());                  
+                  fuelleKundendaten();
                   break;
               case "Bescheide bearbeiten":
                   MainController.getInstance().oeffneBescheideBearbeiten(haushalt, currentFontSize);
@@ -1384,15 +1362,7 @@ public class MainWindowController
                   informationenHaushaltOL.clear();
                   informationenHaushaltOL
                           .addAll(haushalt.getHaushaltsinformationen(familienmitliederAkt));
-                  einkaufsberechtigt = haushalt.getEinkaufsberechtigt();
-  
-                  if (einkaufsberechtigt)
-                  {
-                      haushaltHintergrund.setStyle("-fx-background-color: greenyellow");
-                  } else
-                  {
-                      haushaltHintergrund.setStyle("-fx-background-color: red");
-                  }
+                  setHintergrundHaushalt();
                   break;
               case "Einkäufe anzeigen":
                   MainController.getInstance().oeffneBuchungenBearbeiten(haushalt, currentFontSize);

@@ -351,7 +351,7 @@ public class Haushalt
                                    ? einstellungen.getAlterBescheid() 
                                    : 18; 
         // -----------------------------------------------------------------------
-
+        haushaltsinformationen.clear();
         int anzahlungueltigeBescheideHaushalt = 0;
         einkaufsberechtigt = true;
 
