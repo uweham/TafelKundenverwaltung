@@ -238,6 +238,10 @@ public class BuchungenBearbeitenController
     public void btnUmsatzStornieren()
     {
         einkauf = tvBuchungen.getSelectionModel().getSelectedItem();
+        if (einkauf == null)
+        {
+          return;
+        }
 
         if
         (einkauf.getStorniertAm() != null)
