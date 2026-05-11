@@ -1009,6 +1009,7 @@ public class MainWindowController
                       personbuchung=personbuchung.getFamilienmitgliedDAO().read(personID);
                       
                       haushalt.setSaldo(saldo);
+                      haushalt.setIstArchiviert(false);
                       @SuppressWarnings("unused")
                       Einkauf einkauf =
                               new Einkauf(warentyp, null, null, buchungstext, haushalt,
@@ -1083,7 +1084,7 @@ public class MainWindowController
                     saldo = saldo + (summeZahlung - summEinkauf);
     
                     haushalt.setSaldo(saldo);
-    
+                    haushalt.setIstArchiviert(false);
                     @SuppressWarnings("unused")
                     Einkauf einkauf =
                             new Einkauf(warentyp, null, null, result.getBuchungstext(), haushalt,
@@ -1248,6 +1249,14 @@ public class MainWindowController
         } else
         {
             haushaltHintergrund.setStyle("-fx-background-color: red");
+        }
+        if (haushalt.getIstGesperrt())
+        {
+            haushaltHintergrund.setStyle("-fx-background-color: sienna");
+        }
+        if (haushalt.getIstArchiviert())
+        {
+            haushaltHintergrund.setStyle("-fx-background-color: skyblue");
         }
 
         if (familienmitglied.dseSubmitted())

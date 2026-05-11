@@ -260,6 +260,16 @@ public class Haushalt
       
         //ArrayList<String> warnungen = new ArrayList<>();
         ArrayList<Booking_err_warn_list> warnungen = new ArrayList<>();
+        if (this.istGesperrt)
+        {
+          warnungen.add(new Booking_err_warn_list(Booking_err_warn_list.ENTRY_ERROR, 
+              "Der Kunde ist gesperrt, kein Einkauf möglich !"));
+        }
+        if (this.istArchiviert)
+        {
+          warnungen.add(new Booking_err_warn_list(Booking_err_warn_list.ENTRY_WARNING, 
+              "Der Kunde ist archiviert, wird beim Einkauf automatisch aktiviert!"));
+        }
         
         if (this.saldo < 0.0)
         {
