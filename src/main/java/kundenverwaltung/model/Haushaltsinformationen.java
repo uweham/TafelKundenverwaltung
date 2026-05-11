@@ -31,4 +31,9 @@ public class Haushaltsinformationen
     {
         return typ;
     }
+    
+    public Familienmitglied getfamilienmitglied()
+    {
+      return familienmitglied;
+    }
 }
