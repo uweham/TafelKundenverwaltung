@@ -49,7 +49,7 @@ import kundenverwaltung.toolsandworkarounds.FirstLetterToUppercase;
 public class PersonAendernController
 {
 	private static final int DEFAULT_SELECTED_NATION_INDEX = 1;
-	private static final int DEFAULT_SELECTED_AUTHORIZATION_INDEX = 3;
+	private static final int DEFAULT_SELECTED_AUTHORIZATION_INDEX = 4;
 	private static final String HOUSEHOLDER_DIRECTOR_HAS_NO_ASSESSMENTS = "(Der Haushaltsvorstand hat keinen Bescheid!)";
 	private static final String[] LABEL_TEST_SHOW_ASSESSMENTS = {"(Bescheide vom Haushaltsvorstand:", ")."};
 	private static final String SEPERATOR = ", ";
@@ -176,9 +176,9 @@ public class PersonAendernController
 		cbPABesBerechtigungen.setItems(bliste);
 
 		cbPABesBerechtigungen.getSelectionModel().selectLast();
-		cbPAAnrede.getSelectionModel().selectFirst();
-		cbPAGender.getSelectionModel().selectFirst();
-
+		cbPAAnrede.getSelectionModel().select(0);
+        cbPAGender.getSelectionModel().select(3);
+        
 		nationen = new NationDAOimpl().getAllEnabledNationen();
 		ObservableList<Nation> nliste = FXCollections.observableArrayList(nationen);
 		cbPANationalitaet.setItems(nliste);
@@ -198,9 +198,13 @@ public class PersonAendernController
 			@Override
 			public void handle(ActionEvent e)
 			{
-				evaluateShowingAnrede();
+              if (evaluateShowingAnrede())
+              {
+                setAnredebyDefault();
+              };			  
 			}
 		});
+		evaluateShowingAnrede();
 	}
 
 	private boolean evaluateShowingAnrede()
@@ -232,6 +236,11 @@ public class PersonAendernController
         };
     }
 
+	   private void setAnredebyDefault()
+	    {
+	      cbPAAnrede.getSelectionModel().select(cbPAGender.getSelectionModel().getSelectedIndex());
+	    }
+
 
 	/**
 	 * Handles the event when the OK button is clicked to change a person.
@@ -262,35 +271,13 @@ public class PersonAendernController
 		Nation nation = dynamicNationDropDownMenu.getAndCheckNationValue(cbPANationalitaet, nationen);   //cbPANationalitaet.getValue();
 		Berechtigung berechtigung = cbPABesBerechtigungen.getValue();
 
-		switch (cbPAAnrede.getSelectionModel().getSelectedIndex())
-		{
-			case 0:
-				anrede = new Anrede(32);
-				break;
-			case 1:
-				anrede = new Anrede(31);
-				break;
-			case 2:
-				anrede = new Anrede(34);
-				break;
-			case 3:
-				anrede = new Anrede(33);
-				break;
-			case 4:
-				anrede = new Anrede(36);
-				break;
-			case 5:
-				anrede = new Anrede(35);
-				break;
-			case 6:
-				anrede = new Anrede(38);
-				break;
-			case 7:
-				anrede = new Anrede(37);
-				break;
-			default:
-				break;
-		}
+        anrede = switch (cbPAAnrede.getSelectionModel().getSelectedIndex())
+            {
+          case 0 -> new Anrede(31);
+          case 1 -> new Anrede(32);
+          case 2 -> new Anrede(33);
+          default -> null;
+        };		
 
 		gender = getGenderByComboBoxIndex(cbPAGender.getSelectionModel().getSelectedIndex());
 

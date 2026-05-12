@@ -111,14 +111,9 @@
                            </HBox.margin>
                            <items>
                               <FXCollections fx:factory="observableArrayList">
-                                 <String fx:value="Frau" />
                                  <String fx:value="Herr" />
-                                 <String fx:value="Frau Dr." />
-                                 <String fx:value="Herr Dr." />
-                                 <String fx:value="Frau Prof." />
-                                 <String fx:value="Herr Prof." />
-                                 <String fx:value="Frau Prof. Dr." />
-                                 <String fx:value="Herr Prof. Dr." />
+                                 <String fx:value="Frau" />
+                                 <String fx:value="Divers" />                              
                               </FXCollections>
                            </items>
                         </ComboBox>

@@ -234,7 +234,7 @@ public class HaushaltAnlegenController
         cbAnrede.getSelectionModel().select(0);
         cbGender.getSelectionModel().select(3);
         cbNation.getSelectionModel().select(DEFAULT_SELECTED_NATION_INDEX);
-        cbBesBerechtigung.getSelectionModel().select(0);
+        cbBesBerechtigung.getSelectionModel().select(4);
         cbAusgabegruppe.getSelectionModel().selectFirst();
         setzeAusgabegruppe();
         cbVerteilstelle.getSelectionModel().selectFirst();
