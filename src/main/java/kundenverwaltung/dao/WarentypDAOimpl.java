@@ -26,7 +26,7 @@ public class WarentypDAOimpl implements WarentypDAO
     +
                 "WHERE TABLE_SCHEMA = " + "'" + databaseName + "'"
     +
-                "AND TABLE_NAME = 'Warentyp'";
+                "AND TABLE_NAME = 'warentyp'";
 
 
         String sql = "INSERT INTO warentyp("
