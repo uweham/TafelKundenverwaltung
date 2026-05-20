@@ -16,6 +16,7 @@ public class Vollmacht
     private Familienmitglied bevollmaechtigtePerson;
     private LocalDate ausgestelltAm;
     private LocalDate ablaufDatum;
+    private int bevollmaechtigteHaushaltID;
 
     private ChangeDateFormat changeDateFormat = new ChangeDateFormat();
 
@@ -26,6 +27,7 @@ public class Vollmacht
         this.bevollmaechtigtePerson = bevollmaechtigtePerson;
         this.ausgestelltAm = ausgestelltAm;
         this.ablaufDatum = ablaufDatum;
+        this.setBevollmaechtigteHaushaltID(getBevollmaechtigterHaushaltIDfromPersonID());
     }
 
     public Vollmacht(Haushalt haushalt, Familienmitglied bevollmaechtigtePerson, LocalDate ausgestelltAm, LocalDate ablaufDatum)
@@ -34,6 +36,7 @@ public class Vollmacht
         this.bevollmaechtigtePerson = bevollmaechtigtePerson;
         this.ausgestelltAm = ausgestelltAm;
         this.ablaufDatum = ablaufDatum;
+        this.setBevollmaechtigteHaushaltID(getBevollmaechtigterHaushaltIDfromPersonID());
         //vollmachtDAO.create(this);
     }
     /**
@@ -91,7 +94,27 @@ public class Vollmacht
     public void setBevollmaechtigtePerson(Familienmitglied bevollmaechtigtePerson)
     {
         this.bevollmaechtigtePerson = bevollmaechtigtePerson;
+        this.setBevollmaechtigteHaushaltID(getBevollmaechtigterHaushaltIDfromPersonID());
     }
+    
+    public int getBevollmaechtigterHaushaltIDfromPersonID()
+    {
+      return bevollmaechtigtePerson.getKundennummer();
+    }
+    /**
+     * @return the bevollmaechtigteHaushaltID
+     */
+    public int getBevollmaechtigteHaushaltID() {
+      return bevollmaechtigteHaushaltID;
+    }
+
+    /**
+     * @param bevollmaechtigteHaushaltID the bevollmaechtigteHaushaltID to set
+     */
+    private void setBevollmaechtigteHaushaltID(int bevollmaechtigteHaushaltID) {
+      this.bevollmaechtigteHaushaltID = bevollmaechtigteHaushaltID;
+    }
+
     /**
      *.
      */

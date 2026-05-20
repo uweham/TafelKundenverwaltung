@@ -31,6 +31,24 @@ import kundenverwaltung.toolsandworkarounds.ChangeFontSize;
 public class VollmachtenController
 {
 
+    private static final int NO_ERR = 0;            // no Error
+    private static final int ERR_NO_SELECT = -1;    // no selection of Power of attorney
+    private static final int ERR_DATE_END = -2;     // end date < beg date
+    private static final int ERR_DATE_FILL = -3;    // empty dates
+    private static final int ERR_INV_POA = -4;      // id equal
+
+    private static final int IND_TITLE = 0;
+    private static final int IND_MESSAGE=1;
+    
+    private String [][] errormsg ={
+                                  { "Kein Bevollmächtigter ausgewählt", "Bitte wählen Sie einen Haushalt aus, die bevollmächtigt werden soll."},
+                                  { "Fehler !","Das Anfangsdatum darf nicht nach dem Enddatum liegen."},
+                                  { "Fehler !", "Bitte füllen Sie alle Pflichtfelder aus." },
+                                  { "Fehler !", "Vollmachtgeber ist gleich Vollmachtnehmer" }
+                                  };
+
+
+    
     private  ChangeDateFormat changeDateFormat = new ChangeDateFormat();
     private ChangeFontSize changeFontSize = new ChangeFontSize();
     @SuppressWarnings("static-access")
@@ -45,10 +63,13 @@ public class VollmachtenController
     private TableView<Vollmacht> tvBestehendeVollmachten;
     @SuppressWarnings("rawtypes")
     @FXML
-    private TableColumn columnBestehendEmpfaenger;
+    private TableColumn columnBestehendHaushaltID;
     @SuppressWarnings("rawtypes")
     @FXML
-    private TableColumn columnBestehendKdnr;
+    private TableColumn columnBestehendEmpfaenger;
+  //  @SuppressWarnings("rawtypes")
+  //  @FXML
+  //  private TableColumn columnBestehendKdnr;
     @SuppressWarnings("rawtypes")
     @FXML
     private TableColumn columnBestehendAusstelldatum;
@@ -86,16 +107,13 @@ public class VollmachtenController
     private Label labelValidFrom;
     @SuppressWarnings("rawtypes")
     @FXML
+    private TableColumn columnVollmachtHaushaltID;
+    @SuppressWarnings("rawtypes")
+    @FXML
     private TableColumn columnVollmachtName;
     @SuppressWarnings("rawtypes")
     @FXML
-    private TableColumn columnVollmachtGeburtsdatum;
-    @SuppressWarnings("rawtypes")
-    @FXML
-    private TableColumn columnVollmachtAnschrift;
-    @SuppressWarnings("rawtypes")
-    @FXML
-    private TableColumn columnVollmachtWohnort;
+    private TableColumn columnVollmachtTypString;
     @FXML
     private Button btnSearchPerson;
     @FXML
@@ -135,11 +153,14 @@ public class VollmachtenController
     @SuppressWarnings("unchecked")
     public void erstelleTabelleBestehendeVollmachten()
     {
+       columnBestehendHaushaltID.setCellValueFactory(new PropertyValueFactory<>("BevollmaechtigteHaushaltID"));
+       columnBestehendHaushaltID.setId("BevollmaechtigteHaushaltID");
+      
         columnBestehendEmpfaenger.setCellValueFactory(new PropertyValueFactory<>("Empfaenger"));
         columnBestehendEmpfaenger.setId("Empfaenger");
 
-        columnBestehendKdnr.setCellValueFactory(new PropertyValueFactory<>("EmpfaengerNr"));
-        columnBestehendKdnr.setId("EmpfaengerNr");
+        //columnBestehendKdnr.setCellValueFactory(new PropertyValueFactory<>("EmpfaengerNr"));
+        //columnBestehendKdnr.setId("EmpfaengerNr");
 
         columnBestehendAusstelldatum.setCellValueFactory(new PropertyValueFactory<>("DateOfIssue"));
         columnBestehendAusstelldatum.setId("DateOfIssue");
@@ -149,6 +170,7 @@ public class VollmachtenController
 
         vollmachtenliste = new VollmachtDAOimpl().getAllVollmachtenById(haushalt.getKundennummer());
         bestehendeVollmachten.clear();
+        
         bestehendeVollmachten.addAll(vollmachtenliste);
 
         anzahlVollmachten = bestehendeVollmachten.size();
@@ -163,24 +185,23 @@ public class VollmachtenController
     @SuppressWarnings("unchecked")
     public void erstelleTabelleVollmachthinzufuegen()
     {
+        columnVollmachtHaushaltID.setCellValueFactory(new PropertyValueFactory<>("Kundennummer"));;
+        columnVollmachtHaushaltID.setId("Kundennummer");
+        
         columnVollmachtName.setCellValueFactory(new PropertyValueFactory<>("Name"));
         columnVollmachtName.setId("Name");
 
-        columnVollmachtAnschrift.setCellValueFactory(new PropertyValueFactory<>("Adresse"));
-        columnVollmachtAnschrift.setId("Adresse");
+        columnVollmachtTypString.setCellValueFactory(new PropertyValueFactory<>("TypString"));
+        columnVollmachtTypString.setId("TypString");
 
-        columnVollmachtWohnort.setCellValueFactory(new PropertyValueFactory<>("Wohnort"));
-        columnVollmachtWohnort.setId("Wohnort");
-
-        columnVollmachtGeburtsdatum.setCellValueFactory(new PropertyValueFactory<>("BirthdayString"));
-        columnVollmachtGeburtsdatum.setId("BirthdayString");
 
         dateVollmachtGueltigAb.setConverter(changeDateFormat.convertDatePickerFormat());
         dateVollmachtGueltigBis.setConverter(changeDateFormat.convertDatePickerFormat());
         dateVollmachtGueltigAb.setValue(LocalDate.now());
-        dateVollmachtGueltigBis.setValue(LocalDate.now());
-
-        empfaenger.add(familienmitglied);
+        dateVollmachtGueltigBis.setValue(LocalDate.now().plusYears(1));
+        
+        empfaenger.clear();
+        empfaenger.addAll(familienmitglieder);
         tvVollmachtenPersonenSuche.setItems(empfaenger);
 
         TablePreferenceServiceImpl.getInstance().setupPersistence(tvVollmachtenPersonenSuche, "VollmachtenPersonenSuche");
@@ -277,72 +298,62 @@ public class VollmachtenController
 
         familienmitglied = null;
         familienmitglied = tvVollmachtenPersonenSuche.getSelectionModel().getSelectedItem();
-
+        
         Boolean checkUpdate;
+        int errorno=NO_ERR;
+        int errorindex=0;
 
         if (familienmitglied == null && familienmitgliederListe.size() == 1)
         {
             familienmitglied = familienmitgliederListe.get(0);
         }
+        LocalDate vollmachtAb = dateVollmachtGueltigAb.getValue();
+        LocalDate vollmachtBis;
 
-        if (familienmitglied != null)
+        if (cbxVollmachtUnbegrenzt.isSelected())
         {
-            if (pruefeFelder())
-            {
-
-                LocalDate vollmachtAb = dateVollmachtGueltigAb.getValue();
-                LocalDate vollmachtBis;
-
-
-                if (cbxVollmachtUnbegrenzt.isSelected())
-                {
-                    vollmachtBis = LocalDate.of(9999, 12, 31);
-                } else
-                {
-                    vollmachtBis = dateVollmachtGueltigBis.getValue();
-                }
-
-                if ((cbxVollmachtUnbegrenzt.isSelected()) || (!vollmachtAb.isAfter(vollmachtBis)))
-                {
-
-                    if (neuHinzufuegen)
-                    {
-                        vollmacht = new Vollmacht(haushalt, familienmitglied, vollmachtAb, vollmachtBis);
-                        checkUpdate = new VollmachtDAOimpl().create(vollmacht);
-                    } else
-                    {
-                        vollmacht.setAblaufDatum(vollmachtBis);
-                        vollmacht.setAusgestelltAm(vollmachtAb);
-
-                        checkUpdate = new VollmachtDAOimpl().update(vollmacht);
-                    }
-
-                    if (checkUpdate)
-                    {
-                        Benachrichtigung.infoBenachrichtigung("Bearbeiten erfolgreich.", "Die Vollmacht wurde erfolgreich bearbeitet..");
-                        Stage stage = (Stage) btnHinzufuegenSchliessen.getScene().getWindow();
-                        stage.close();
-                    } else
-                    {
-                        Benachrichtigung.warnungBenachrichtigung("Vollmacht konnte nicht bearbeitet werden.", "Bitte überprüfen Sie Ihre Verbindung zur Datenbank und probieren Sie es erneut.");
-                    }
-
-
-                } else
-                {
-                    Benachrichtigung.infoBenachrichtigung("Achtung!", "Das Anfangsdatum darf nicht nach dem Enddatum liegen.");
-
-                }
-            } else
-            {
-                Benachrichtigung.infoBenachrichtigung("Achtung!", "Bitte füllen Sie alle Pflichtfelder aus.");
-                }
-            } else
-            {
-            Benachrichtigung.infoBenachrichtigung("Kein Bevollmächtigter ausgewählt", "Bitte wählen Sie eine Person aus, die bevollmächtigt werden soll.");
-            }
+            vollmachtBis = LocalDate.of(9999, 12, 31);
+        } else
+        {
+            vollmachtBis = dateVollmachtGueltigBis.getValue();
         }
+        // checks 
 
+        errorno=(errorno == NO_ERR) ? (familienmitglied == null)  ? ERR_NO_SELECT : errorno  : errorno ;
+        errorno=(errorno == NO_ERR) ? (!pruefeFelder())            ? ERR_DATE_FILL : errorno : errorno;
+        errorno=(errorno == NO_ERR) ? (!(cbxVollmachtUnbegrenzt.isSelected()) && (vollmachtAb.isAfter(vollmachtBis))) ? ERR_DATE_END : errorno : errorno;
+        errorno=(errorno == NO_ERR) ? (!checkVollmacht(haushalt, familienmitglied)) ? ERR_INV_POA : errorno : errorno;
+        
+
+        if (errorno == NO_ERR)
+        {
+            if (neuHinzufuegen)
+            {
+                vollmacht = new Vollmacht(haushalt, familienmitglied, vollmachtAb, vollmachtBis);
+                checkUpdate = new VollmachtDAOimpl().create(vollmacht);
+            } else
+            {
+                vollmacht.setAblaufDatum(vollmachtBis);
+                vollmacht.setAusgestelltAm(vollmachtAb);
+
+                checkUpdate = new VollmachtDAOimpl().update(vollmacht);
+            }
+
+            if (checkUpdate)
+            {
+                Benachrichtigung.infoBenachrichtigung("Bearbeiten erfolgreich.", "Die Vollmacht wurde erfolgreich bearbeitet..");
+                Stage stage = (Stage) btnHinzufuegenSchliessen.getScene().getWindow();
+                stage.close();
+            } else
+            {
+                Benachrichtigung.warnungBenachrichtigung("Vollmacht konnte nicht bearbeitet werden.", "Bitte überprüfen Sie Ihre Verbindung zur Datenbank und probieren Sie es erneut.");
+            }
+        } else
+        {
+          errorindex=-errorno - 1;
+          Benachrichtigung.warnungBenachrichtigung(errormsg[errorindex][IND_TITLE],errormsg[errorindex][IND_MESSAGE]);
+        }
+    }   
 
     /**
      * Closes the current window.
@@ -363,7 +374,7 @@ public class VollmachtenController
         String nachname = txtVollmachtNachname.getText();
         familienmitglieder.clear();
         familienmitgliederListe.clear();
-        familienmitglieder = new FamilienmitgliedDAOimpl().getAllFamilienmitglieder(nachname, Constants.SEARCH_SURNAME_INDEX, false);
+        familienmitglieder = new FamilienmitgliedDAOimpl().getAllFamilienmitglieder(nachname, Constants.SEARCH_ALL_INDEX, false);
         familienmitgliederListe.addAll(familienmitglieder);
 
         tvVollmachtenPersonenSuche.setItems(familienmitgliederListe);
@@ -409,6 +420,18 @@ public class VollmachtenController
             dateVollmachtGueltigAb.setConverter(changeDateFormat.convertDatePickerFormat());
             dateVollmachtGueltigAb.setValue(vollmacht.getAusgestelltAm());
             dateVollmachtGueltigBis.setValue(vollmacht.getAblaufDatum());
+            
+            txtVollmachtNachname.setVisible(false);
+            btnSearchPerson.setVisible(false);
+            labelSurname.setVisible(false);
+            
+        }
+        else 
+        {
+           txtVollmachtNachname.setVisible(true);
+           btnSearchPerson.setVisible(true);
+           labelSurname.setVisible(true);         
+           
         }
 
     }
@@ -429,7 +452,10 @@ public class VollmachtenController
                 ((dateVollmachtGueltigBis.getValue() == null || dateVollmachtGueltigBis.getValue().toString().isEmpty()) && !cbxVollmachtUnbegrenzt.isSelected()));
     }
 
-
+    public Boolean checkVollmacht(Haushalt haushalt, Familienmitglied familienmitglied)
+    {
+      return (haushalt.getKundennummer() != familienmitglied.getKundennummer());
+    }
     /**
      * Set the correct font size in VollmachtenAnzeigen.fxml.
      * @param fontSize
@@ -443,7 +469,7 @@ public class VollmachtenController
         changeFontSize.changeFontSizeFromLabelArrayList(labelArrayList, newFontSize);
 
         @SuppressWarnings("rawtypes")
-		ArrayList<TableColumn> tableColumnArrayList = new ArrayList<>(Arrays.asList(columnBestehendEmpfaenger, columnBestehendKdnr, columnBestehendAusstelldatum, columnBestehendAblaufdatum));
+		ArrayList<TableColumn> tableColumnArrayList = new ArrayList<>(Arrays.asList(columnBestehendEmpfaenger, columnBestehendHaushaltID, columnBestehendAusstelldatum, columnBestehendAblaufdatum));
         changeFontSize.changeFontSizeFromTableColumnArrayList(tableColumnArrayList, newFontSize);
 
         ArrayList<Button> buttonArrayList = new ArrayList<>(Arrays.asList(btnAddPowerOfAttorneyShow, btnEditPowerOfAttorneyShow, btnDeletePowerOfAttorneyShow, btnAnzeigenSchliessen));
@@ -471,7 +497,7 @@ public class VollmachtenController
 
         @SuppressWarnings("rawtypes")
 		ArrayList<TableColumn> tableColumnArrayList = new ArrayList<>(Arrays.asList(
-                        columnVollmachtName, columnVollmachtGeburtsdatum, columnVollmachtAnschrift, columnVollmachtWohnort
+                        columnVollmachtName, columnVollmachtHaushaltID, columnVollmachtTypString
                 ));
         changeFontSize.changeFontSizeFromTableColumnArrayList(tableColumnArrayList, primarayFontSize);
 

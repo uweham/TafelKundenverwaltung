@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -16,11 +11,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.VollmachtenController">
+<AnchorPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.VollmachtenController">
    <children>
-      <BorderPane prefHeight="313.0" prefWidth="441.0">
+      <BorderPane prefHeight="313.0" prefWidth="676.0">
          <top>
-            <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
+            <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="435.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
                <children>
                   <Label fx:id="labelHeadingShow" text="Sehen Sie hier die Liste der bestehenden Vollmachten" textFill="#ee6f00">
                      <HBox.margin>
@@ -41,10 +36,10 @@
                         <Insets bottom="5.0" />
                      </VBox.margin>
                   </Label>
-                  <TableView fx:id="tvBestehendeVollmachten" prefHeight="200.0" prefWidth="421.0">
+                  <TableView fx:id="tvBestehendeVollmachten" prefHeight="168.0" prefWidth="443.0">
                      <columns>
-                        <TableColumn fx:id="columnBestehendEmpfaenger" prefWidth="75.0" text="Empfänger" />
-                        <TableColumn fx:id="columnBestehendKdnr" prefWidth="75.0" text="Kundennummer" />
+                        <TableColumn fx:id="columnBestehendHaushaltID" prefWidth="91.0" text="Kundennr." />
+                        <TableColumn fx:id="columnBestehendEmpfaenger" prefWidth="237.0" text="Empfänger" />
                         <TableColumn fx:id="columnBestehendAusstelldatum" prefWidth="75.0" text="Ausstelldatum" />
                         <TableColumn fx:id="columnBestehendAblaufdatum" prefWidth="75.0" text="Ablaufdatum" />
                      </columns>

@@ -1246,6 +1246,7 @@ public class MainWindowController
         ObservableList<Haushaltsinformationen> informationenHaushaltOL = FXCollections
                 .observableArrayList(haushalt.getHaushaltsinformationen(familienmitliederAkt));
         listWeitereInformationen.setItems(informationenHaushaltOL);
+        btnWeitereInformationen.setText("Keine Aktion");
         setHintergrundHaushalt();
         
         if (familienmitglied.dseSubmitted())
@@ -1294,7 +1295,7 @@ public class MainWindowController
     {
         Haushaltsinformationen haushaltsinformationen =
                 listWeitereInformationen.getSelectionModel().getSelectedItem();
-
+        
         if (haushaltsinformationen != null)
         {
             if (haushaltsinformationen.getTyp() == Informationstypen.Archiv
@@ -1322,6 +1323,9 @@ public class MainWindowController
             } else if (haushaltsinformationen.getTyp() == Informationstypen.Vollmacht)
             {
                 btnWeitereInformationen.setText("Vollmachten bearbeiten");
+            } else if (haushaltsinformationen.getTyp() == Informationstypen.VollmachtBesitzer)
+            {
+              btnWeitereInformationen.setText("Keine Aktion");
             }
         }
     }
