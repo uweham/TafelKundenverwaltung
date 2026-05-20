@@ -31,6 +31,7 @@ import kundenverwaltung.model.Familienmitglied;
 import kundenverwaltung.model.Gender;
 import kundenverwaltung.model.Haushalt;
 import kundenverwaltung.model.Nation;
+import kundenverwaltung.service.Constants;
 import kundenverwaltung.toolsandworkarounds.ChangeDateFormat;
 import kundenverwaltung.toolsandworkarounds.ChangeFontSize;
 import kundenverwaltung.toolsandworkarounds.CheckOfAge;
@@ -56,9 +57,6 @@ public class PersonAendernController
 	private static final String SPACE = " ";
 	private static final int FIRST_ARRAY_POSITION = 0;
 	private static final int SECOND_ARRAY_POSITION = 1;
-
-	private static final int GENDER_ID_SONSTIGES = 73;
-	private static final int GENDER_ID_KEINE_ANGABE = 74;
 
 	private DynamicNationDropDownMenu dynamicNationDropDownMenu = new DynamicNationDropDownMenu();
 	private ChangeDateFormat changeDateFormat = new ChangeDateFormat();
@@ -213,8 +211,8 @@ public class PersonAendernController
 
 		if (gender != null)
 		{
-			boolean showAnrede = (gender.getGenderId() != GENDER_ID_SONSTIGES
-					&& gender.getGenderId() != GENDER_ID_KEINE_ANGABE);
+			boolean showAnrede = (gender.getGenderId() != Constants.GENDER_OTHER
+					&& gender.getGenderId() != Constants.GENDER_NN);
 
 			cbPAAnrede.setVisible(showAnrede);
 			labelAnrede.setVisible(showAnrede);
@@ -228,10 +226,10 @@ public class PersonAendernController
 	{
         return switch (cbPAGender.getSelectionModel().getSelectedIndex())
 		{
-            case 0 -> new Gender(71);
-            case 1 -> new Gender(72);
-            case 2 -> new Gender(GENDER_ID_SONSTIGES);
-            case 3 -> new Gender(GENDER_ID_KEINE_ANGABE);
+            case 0 -> new Gender(Constants.GENDER_MALE);
+            case 1 -> new Gender(Constants.GENDER_FEMALE);
+            case 2 -> new Gender(Constants.GENDER_OTHER);
+            case 3 -> new Gender(Constants.GENDER_NN);
             default -> null;
         };
     }
@@ -273,9 +271,9 @@ public class PersonAendernController
 
         anrede = switch (cbPAAnrede.getSelectionModel().getSelectedIndex())
             {
-          case 0 -> new Anrede(31);
-          case 1 -> new Anrede(32);
-          case 2 -> new Anrede(33);
+          case 0 -> new Anrede(Constants.SALUTATION_MR);
+          case 1 -> new Anrede(Constants.SALUTATION_MRS);
+          case 2 -> new Anrede(Constants.SALUTATION_ETC);
           default -> null;
         };		
 
@@ -420,29 +418,14 @@ public class PersonAendernController
 
 		switch (familienmitglied.getAnrede().getAnredeId())
 		{
-			case 31:
-				cbPAAnrede.getSelectionModel().select(1);
-				break;
-			case 32:
+			case Constants.SALUTATION_MR:
 				cbPAAnrede.getSelectionModel().select(0);
 				break;
-			case 33:
-				cbPAAnrede.getSelectionModel().select(3);
+			case Constants.SALUTATION_MRS:
+				cbPAAnrede.getSelectionModel().select(1);
 				break;
-			case 34:
+			case Constants.SALUTATION_ETC:
 				cbPAAnrede.getSelectionModel().select(2);
-				break;
-			case 35:
-				cbPAAnrede.getSelectionModel().select(5);
-				break;
-			case 36:
-				cbPAAnrede.getSelectionModel().select(4);
-				break;
-			case 37:
-				cbPAAnrede.getSelectionModel().select(7);
-				break;
-			case 38:
-				cbPAAnrede.getSelectionModel().select(6);
 				break;
 			default:
 				break;
@@ -450,16 +433,16 @@ public class PersonAendernController
 
 		switch (familienmitglied.getGender().getGenderId())
 		{
-			case 71:
+			case Constants.GENDER_MALE:
 				cbPAGender.getSelectionModel().select(0);
 				break;
-			case 72:
+			case Constants.GENDER_FEMALE:
 				cbPAGender.getSelectionModel().select(1);
 				break;
-			case 73:
+			case Constants.GENDER_OTHER:
 				cbPAGender.getSelectionModel().select(2);
 				break;
-			case 74:
+			case Constants.GENDER_NN:
 				cbPAGender.getSelectionModel().select(3);
 				break;
 			default:

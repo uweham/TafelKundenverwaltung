@@ -1,5 +1,7 @@
 package kundenverwaltung.model;
 
+import kundenverwaltung.service.Constants;
+
 public final class Gender
 {
     private int genderId;
@@ -19,10 +21,10 @@ public final class Gender
     {
         switch (genderId)
         {
-            case 71: return maennlich;
-            case 72: return weiblich;
-            case 73: return sonstiges;
-            case 74: return keineangabe;
+            case Constants.GENDER_MALE: return maennlich;
+            case Constants.GENDER_FEMALE: return weiblich;
+            case Constants.GENDER_OTHER: return sonstiges;
+            case Constants.GENDER_NN: return keineangabe;
           default:
             break;
         }

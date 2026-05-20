@@ -1,5 +1,7 @@
 package kundenverwaltung.model;
 
+import kundenverwaltung.service.Constants;
+
 /**
  * Created by Florian-PC on 02.11.2017.
  */
@@ -22,9 +24,9 @@ public final class Anrede
     {
         switch (anredeId)
         {
-            case 31: return herr;
-            case 32: return frau;
-            case 33: return divers;
+            case Constants.SALUTATION_MR: return herr;
+            case Constants.SALUTATION_MRS: return frau;
+            case Constants.SALUTATION_ETC: return divers;
           default:
             break;
         }

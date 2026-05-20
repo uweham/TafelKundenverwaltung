@@ -19,4 +19,13 @@ public class Constants {
   public static final int SPECIAL_FILTER_HOUSEHOLD_WO_NOTIFICATON_INDEX=2;
   public static final int SPECIAL_FILTER_ALL_INDEX = 3;
   
+  public static final int SALUTATION_MR = 31;
+  public static final int SALUTATION_MRS = 32;
+  public static final int SALUTATION_ETC = 33;
+  
+  public static final int GENDER_MALE = 71;
+  public static final int GENDER_FEMALE = 72;
+  public static final int GENDER_OTHER =73;
+  public static final int GENDER_NN =74;
+    
 }
