@@ -2,7 +2,7 @@
 
 zur "realtime" Anzeige der versorgten Haushalten und Personen
 
-![Icon](assets/Screenshot Tafel.png)  
+![Icon](assets/Screenshot_Tafel.png)  
 
 # zu installierende Softwarepakte
 
@@ -70,7 +70,7 @@ Aufnahme tafel_realtime.sh in cron job (z.B. jede Minute)
 
 for “real-time” display of connected households and individuals
 
-![Icon](assets/Screenshot Tafel.png)
+![Icon](assets/Screenshot_Tafel.png)
 
 # Software packages to install
 
