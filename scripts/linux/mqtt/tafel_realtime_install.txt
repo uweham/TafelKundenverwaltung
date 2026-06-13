@@ -1,0 +1,16 @@
+install mosquitto 
+install node_red 
+copy scripts tafel_realtime.sh, tafel_realtime.sql, tafel_realtime_test.sh to Tafel Kundenverwaltung
+set execute bit for all .sh files
+modify bash variables in tafel_realtime.sh, tafel_realtime_test.sh 
+
+MOSQUITTO_USER="broker user"
+MOSQUITTO_PWD="broker password"
+MOSQUITTO_HOST="localhost"
+MOSQUITTO_PORT="1883"
+
+with your broker values
+
+open node red in browser
+import tafel_realtime_flow.json 
+configure mqtt in node
