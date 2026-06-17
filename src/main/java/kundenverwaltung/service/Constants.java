@@ -27,5 +27,9 @@ public class Constants {
   public static final int GENDER_FEMALE = 72;
   public static final int GENDER_OTHER =73;
   public static final int GENDER_NN =74;
-    
+  
+  public static final int NO_ERROR = 0;
+  public static final int SQL_ERROR = -1;
+  public static final int FILE_ERROR = -2;
+  
 }
