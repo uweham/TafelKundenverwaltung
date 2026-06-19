@@ -13,6 +13,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import kundenverwaltung.service.SQLQuery_to_CSV;
 import kundenverwaltung.service.TablePreferenceServiceImpl;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -38,6 +39,9 @@ public class StatistiktoolSQLController
 
 	@FXML
 	private Button executeQueryButton;
+	
+	@FXML
+    private Button executeCSVExportButton;
 
 	@FXML
 	private Button loadRelationsButton;
@@ -80,6 +84,9 @@ public class StatistiktoolSQLController
 
 	@SuppressWarnings("unused")
   private StatistiktoolDAO statistikDAO;
+	
+	private String lastQuery="";
+	
 	/**
     *
     */
@@ -88,6 +95,7 @@ public class StatistiktoolSQLController
 	public void initialize()
 	{
 		executeQueryButton.setOnAction(event -> executeSQLQuery());
+		executeCSVExportButton.setOnAction(event->executeCSVExport());
 		loadRelationsButton.setOnAction(event -> loadRelations());
 		loadTablesAndColumnsButton.setOnAction(event -> loadTablesAndColumns());
 		sqlDropdown.setItems(FXCollections.observableArrayList(getCommonSQLQueries()));
@@ -107,7 +115,9 @@ public class StatistiktoolSQLController
 		loadSavedQueries(); // Lade gespeicherte SQL-Abfragen
 	}
 
-	/** Methode, um den Tabellennamen aus der SQL-Abfrage zu extrahieren.
+
+
+  /** Methode, um den Tabellennamen aus der SQL-Abfrage zu extrahieren.
 	private String getTableNameFromQuery(String query) {
 		query = query.toLowerCase();
 		if (query.contains(" from ")) {
@@ -131,7 +141,8 @@ public class StatistiktoolSQLController
 			return;
 		}
 		saveSQLQuery(query); // Speichert die Abfrage
-
+		
+		
 		// Überprüfen und Hinzufügen der Abfrage zum Dropdown-Menü
 		if (!sqlDropdown.getItems().contains(query))
 		{
@@ -141,8 +152,10 @@ public class StatistiktoolSQLController
 		if (query.toLowerCase().startsWith("select") || query.toLowerCase().startsWith("show"))
 		{
 			executeSelectQuery(query);
+			lastQuery=query;
 		} else
 		{
+		    lastQuery="";
 			boolean success = executeUpdateQuery(query);
 			if (success)
 			{
@@ -153,7 +166,41 @@ public class StatistiktoolSQLController
 			}
 		}
 	}
+    private void executeCSVExport() {
+      String query = lastQuery;
+      if (query.isEmpty())
+      {
+          showAlert(Alert.AlertType.ERROR, "Fehler", "SQL-Abfrage darf nicht leer sein.");
+          return;
+      }
+     
+      if (query.toLowerCase().startsWith("select") || query.toLowerCase().startsWith("show"))
+      {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters()
+                .add(new FileChooser.ExtensionFilter("csv Datei", "*.csv"));
 
+        
+         SQLQuery_to_CSV sqltoquery = new SQLQuery_to_CSV();
+         String filename=fileChooser.showSaveDialog(null).getAbsolutePath();
+         if (filename == null)
+          {
+            showAlert(Alert.AlertType.ERROR, "Fehler", "Bitte geben Sie einen Dateinamen ein !");
+            return;
+          }
+         if (filename.toUpperCase().endsWith(".CSV"))
+         {
+           sqltoquery.setCsvFilePath(filename);
+           sqltoquery.to_CSV(query);
+         } else
+         {
+           showAlert(Alert.AlertType.ERROR, "Fehler", "Bitte geben Sie als Dateityp .csv ein !");
+           return;
+          
+         }
+      } 
+    return;
+    }
 	// Methode zum Löschen einer gespeicherten SQL-Abfrage
 	@FXML
 	private void handleDeleteQuery()
@@ -265,6 +312,8 @@ public class StatistiktoolSQLController
 		}
 	}
 
+	// Methode, um ein Ergebnis nach CSV zu exportieren
+	
 	// Methode, um eine SELECT-SQL-Abfrage auszuführen
 	private void executeSelectQuery(String query)
 	{
@@ -273,6 +322,7 @@ public class StatistiktoolSQLController
 			 ResultSet rs = stmt.executeQuery(query))
 		{
 
+            
 			ResultSetMetaData rsmd = rs.getMetaData();
 			int columnCount = rsmd.getColumnCount();
 
@@ -287,6 +337,7 @@ public class StatistiktoolSQLController
 			}
 
 			ObservableList<ObservableList<String>> data = FXCollections.observableArrayList();
+			
 			while (rs.next())
 			{
 				ObservableList<String> row = FXCollections.observableArrayList();
@@ -298,6 +349,8 @@ public class StatistiktoolSQLController
 			}
 			queryResultTable.setItems(data);
 			populateAxisDropdowns(rsmd);
+			
+        
 		} catch (SQLException e)
 		{
 			showAlert(Alert.AlertType.ERROR, "Fehler", "Fehler bei der Ausführung der SQL-Abfrage: " + e.getMessage());
@@ -480,6 +533,8 @@ public class StatistiktoolSQLController
 			queryResultTable.setItems(data);
 
 			TablePreferenceServiceImpl.getInstance().setupPersistence(queryResultTable, "QueryResultTableStatistikTool");
+			lastQuery=query;
+			
 		} catch (SQLException e)
 		{
 			showAlert(Alert.AlertType.ERROR, "Fehler", "Fehler bei der Abfrage der Relationen: " + e.getMessage());
@@ -525,6 +580,7 @@ public class StatistiktoolSQLController
 				data.add(row);
 			}
 			queryResultTable.setItems(data);
+			lastQuery=query;
 		} catch (SQLException e)
 		{
 			showAlert(Alert.AlertType.ERROR, "Fehler", "Fehler bei der Abfrage der Tabellen und Spalten: " + e.getMessage());

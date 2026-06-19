@@ -44,6 +44,7 @@
                     <HBox spacing="10.0" prefWidth="750">
                         <children>
                             <Button fx:id="executeQueryButton" mnemonicParsing="false" prefHeight="31.0" prefWidth="200.0" text="Abfrage ausführen" />
+                            <Button fx:id="executeCSVExportButton" mnemonicParsing="false" prefHeight="31.0" prefWidth="200.0" text="CSV Export" />
                             <Button fx:id="loadRelationsButton" mnemonicParsing="false" prefHeight="31.0" prefWidth="200.0" text="Relationen laden" />
                             <Button fx:id="loadTablesAndColumnsButton" mnemonicParsing="false" prefHeight="31.0" prefWidth="200.0" text="Tabellen und Spalten laden" />
                             <Button fx:id="addCustomSQLQueryButton" mnemonicParsing="false" onAction="#addCustomSQLQuery" prefHeight="31.0" prefWidth="200.0" text="SQL-Abfrage hinzufügen" />
