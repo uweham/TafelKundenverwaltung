@@ -270,19 +270,41 @@ public class StatistiktoolSQLController
 	// Methode, um eine SQL-Abfrage zu speichern
 	private void saveSQLQuery(String query)
 	{
-		String insertQuery = "INSERT INTO saved_queries (query) VALUES (?)";
-
-		try (Connection conn = SQLConnection.getCon();
-			 PreparedStatement pstmt = conn.prepareStatement(insertQuery))
-		{
-
-			pstmt.setString(1, query);
-			pstmt.executeUpdate();
-		} catch (SQLException e)
-		{
-			showAlert(Alert.AlertType.ERROR, "Fehler", "Fehler beim Speichern der SQL-Abfrage: " + e.getMessage());
-			e.printStackTrace();
-		}
+	  int count=0;
+	  String checkquery="SELECT query from saved_queries where query = ?";
+	  try (Connection conn = SQLConnection.getCon();
+	      PreparedStatement stmt = conn.prepareStatement(checkquery))
+	      {
+	      stmt.setString(1, query);
+	      ResultSet rs = stmt.executeQuery();
+	      
+          while (rs.next())
+          {
+            ++count;
+            break;
+          }
+	     } catch (SQLException e)
+	      {
+             showAlert(Alert.AlertType.ERROR, "Fehler", "Fehler bei der Ausführung der SQL-Abfrage: " + e.getMessage());
+              e.printStackTrace();
+	      }
+	    if (count==0)
+	    {
+    		String insertQuery = "INSERT INTO saved_queries (query) VALUES (?) ";
+    
+    		try (Connection conn = SQLConnection.getCon();
+    			 PreparedStatement pstmt = conn.prepareStatement(insertQuery))
+    		{
+    
+    			pstmt.setString(1, query);
+                  			
+    			pstmt.executeUpdate();
+    		} catch (SQLException e)
+    		{
+    			showAlert(Alert.AlertType.ERROR, "Fehler", "Fehler beim Speichern der SQL-Abfrage: " + e.getMessage());
+    			e.printStackTrace();
+    		}
+	    }
 	}
 	/**
      *
