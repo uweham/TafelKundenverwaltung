@@ -15,10 +15,10 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="900.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.admintool.StatistiktoolSQLController">
+<AnchorPane prefHeight="900.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.admintool.StatistiktoolSQLController">
     <children>
         <ScrollPane fitToHeight="true" fitToWidth="true" layoutX="0.0" layoutY="0.0" prefHeight="900.0" prefWidth="1200.0">
-            <VBox spacing="10.0" fx:id="dynamicGroupContainer">
+            <VBox fx:id="dynamicGroupContainer" spacing="10.0">
                 <padding>
                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                 </padding>
@@ -36,26 +36,31 @@
                     </Text>
                     <TextArea fx:id="sqlQueryArea" prefHeight="300.0" prefWidth="1150.0" promptText="Geben Sie Ihre SQL-Abfrage hier ein..." style="-fx-font-size: 16px;" />
 
-                    <HBox spacing="10.0" prefWidth="750">
+                    <HBox prefWidth="750" spacing="10.0">
                         <children>
                             <ComboBox fx:id="sqlDropdown" prefHeight="31.0" prefWidth="250.0" promptText="Wählen Sie eine Abfrage..." />
                         </children>
                     </HBox>
-                    <HBox spacing="10.0" prefWidth="750">
+                    <HBox prefHeight="67.0" prefWidth="1178.0" spacing="10.0">
                         <children>
                             <Button fx:id="executeQueryButton" mnemonicParsing="false" prefHeight="31.0" prefWidth="200.0" text="Abfrage ausführen" />
                             <Button fx:id="executeCSVExportButton" mnemonicParsing="false" prefHeight="31.0" prefWidth="200.0" text="CSV Export" />
                             <Button fx:id="loadRelationsButton" mnemonicParsing="false" prefHeight="31.0" prefWidth="200.0" text="Relationen laden" />
                             <Button fx:id="loadTablesAndColumnsButton" mnemonicParsing="false" prefHeight="31.0" prefWidth="200.0" text="Tabellen und Spalten laden" />
-                            <Button fx:id="addCustomSQLQueryButton" mnemonicParsing="false" onAction="#addCustomSQLQuery" prefHeight="31.0" prefWidth="200.0" text="SQL-Abfrage hinzufügen" />
-                            <Button fx:id="deleteQueryButton" mnemonicParsing="false" onAction="#handleDeleteQuery" prefHeight="31.0" prefWidth="200.0" text="SQL-Abfrage löschen" />
                         </children>
                     </HBox>
-                    <TableView fx:id="queryResultTable" prefHeight="400.0" prefWidth="1150.0">
+               <HBox prefHeight="67.0" prefWidth="1178.0" spacing="10.0">
+                  <children>
+                            <Button fx:id="addCustomSQLQueryButton" mnemonicParsing="false" onAction="#addCustomSQLQuery" prefHeight="31.0" prefWidth="200.0" text="SQL-Abfrage hinzufügen" />
+                     <Button fx:id="saveQueryButton" mnemonicParsing="false" prefHeight="31.0" prefWidth="200.0" text="SQL-Abfrage speichern" />
+                            <Button fx:id="deleteQueryButton" mnemonicParsing="false" onAction="#handleDeleteQuery" prefHeight="31.0" prefWidth="200.0" text="SQL-Abfrage löschen" />
+                  </children>
+               </HBox>
+                    <TableView fx:id="queryResultTable" prefHeight="337.0" prefWidth="1178.0">
                     </TableView>
                     <HBox spacing="10.0">
                         <children>
-                            <ComboBox fx:id="xAxisDropdown" prefHeight="31.0" prefWidth="250.0" promptText="X-Achse..." />
+                            <ComboBox prefHeight="31.0" prefWidth="250.0" promptText="X-Achse..." fx:id="xAxisDropdown" />
                             <ComboBox fx:id="yAxisDropdown" prefHeight="31.0" prefWidth="250.0" promptText="Y-Achse..." />
                             <Button fx:id="generatePieChartButton" mnemonicParsing="false" prefHeight="31.0" prefWidth="200.0" text="PieChart erstellen" />
                             <Button fx:id="savePieChartButton" mnemonicParsing="false" prefHeight="31.0" prefWidth="200.0" text="PieChart speichern" />

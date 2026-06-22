@@ -2,6 +2,7 @@ package kundenverwaltung.controller.admintool;
 
 import kundenverwaltung.dao.SQLConnection;
 import kundenverwaltung.dao.StatistiktoolDAO;
+import kundenverwaltung.model.Familienmitglied;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import kundenverwaltung.service.Constants;
 import kundenverwaltung.service.SQLQuery_to_CSV;
 import kundenverwaltung.service.TablePreferenceServiceImpl;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -54,6 +56,9 @@ public class StatistiktoolSQLController
 
 	@FXML
 	private Button deleteQueryButton;
+	
+	@FXML
+    private Button saveQueryButton;
 
 	@FXML
 	private TableView<ObservableList<String>> queryResultTable;
@@ -98,6 +103,7 @@ public class StatistiktoolSQLController
 		executeCSVExportButton.setOnAction(event->executeCSVExport());
 		loadRelationsButton.setOnAction(event -> loadRelations());
 		loadTablesAndColumnsButton.setOnAction(event -> loadTablesAndColumns());
+		saveQueryButton.setOnAction(event -> saveQueriesToDatabase());
 		sqlDropdown.setItems(FXCollections.observableArrayList(getCommonSQLQueries()));
 		sqlDropdown.setOnAction(event ->
 		{
@@ -105,6 +111,7 @@ public class StatistiktoolSQLController
 			{
 				sqlDropdown.getItems().add(sqlDropdown.getValue());
 			}
+			System.out.println("OnAction");
 			sqlQueryArea.setText(sqlDropdown.getValue());
 		});
 		generatePieChartButton.setOnAction(event -> generatePieChart());
@@ -134,21 +141,12 @@ public class StatistiktoolSQLController
 	// Methode, um eine SQL-Abfrage auszuführen
 	private void executeSQLQuery()
 	{
-		String query = sqlQueryArea.getText().trim();
+	    String query = sqlQueryArea.getText().trim();
 		if (query.isEmpty())
 		{
 			showAlert(Alert.AlertType.ERROR, "Fehler", "SQL-Abfrage darf nicht leer sein.");
 			return;
 		}
-		saveSQLQuery(query); // Speichert die Abfrage
-		
-		
-		// Überprüfen und Hinzufügen der Abfrage zum Dropdown-Menü
-		if (!sqlDropdown.getItems().contains(query))
-		{
-			sqlDropdown.getItems().add(query);
-		}
-
 		if (query.toLowerCase().startsWith("select") || query.toLowerCase().startsWith("show"))
 		{
 			executeSelectQuery(query);
@@ -167,6 +165,8 @@ public class StatistiktoolSQLController
 		}
 	}
     private void executeCSVExport() {
+     
+      int errorcode=0;
       String query = lastQuery;
       if (query.isEmpty())
       {
@@ -191,7 +191,18 @@ public class StatistiktoolSQLController
          if (filename.toUpperCase().endsWith(".CSV"))
          {
            sqltoquery.setCsvFilePath(filename);
-           sqltoquery.to_CSV(query);
+           errorcode=sqltoquery.to_CSV(query);
+           if (errorcode==Constants.SQL_ERROR)
+           {
+             showAlert(Alert.AlertType.ERROR, "Fehler", "SQL Fehler !");
+             return;
+           }
+           if (errorcode==Constants.FILE_ERROR)
+           {
+             showAlert(Alert.AlertType.ERROR, "Fehler", "CSV Schreibfehler !");
+             return;
+           }
+            
          } else
          {
            showAlert(Alert.AlertType.ERROR, "Fehler", "Bitte geben Sie als Dateityp .csv ein !");
@@ -213,9 +224,52 @@ public class StatistiktoolSQLController
 		}
 
 		sqlDropdown.getItems().remove(selectedQuery);
-		saveQueriesToFile();
-		showAlert(Alert.AlertType.INFORMATION, "Erfolg", "Abfrage erfolgreich gelöscht.");
+		if (deleteQuery(selectedQuery))
+		{
+		  showAlert(Alert.AlertType.INFORMATION, "Erfolg", "Abfrage erfolgreich gelöscht.");
+		}
+		else
+		{
+		  showAlert(Alert.AlertType.ERROR, "Fehlerg", "Abfrage konnte nciht gelöscht werden.");
+		}
+		
 	}
+
+	private boolean deleteQuery(String selectedQuery)
+	    {
+	        String sqlDeletePerson = "Delete from saved_queries where query = ?";
+
+	        try
+	        {
+	            Connection con = SQLConnection.getCon();
+	            PreparedStatement smtDelete = con.prepareStatement(sqlDeletePerson);
+	            smtDelete.setString(1, selectedQuery);
+	            smtDelete.executeUpdate();
+	            smtDelete.close();
+
+	            return true;
+
+	        } catch (SQLException e)
+	        {
+	            e.printStackTrace();
+	            System.out.println("Abfrage loeschen klappt nicht");
+	        }
+
+	        return false;
+	    }
+	 private void saveQueriesToDatabase()
+	    {
+	        String query = sqlQueryArea.getText().trim();
+	        if (query.isEmpty())
+	        {
+	            showAlert(Alert.AlertType.ERROR, "Fehler", "SQL-Abfrage darf nicht leer sein.");
+	            return;
+	        }
+	        if (saveSQLQuery(query)) // Speichert die Abfrage
+	          {
+	            sqlDropdown.getItems().add(query);
+	          }; 
+	    }     
 
 	private void saveQueriesToFile()
 	{
@@ -243,33 +297,47 @@ public class StatistiktoolSQLController
 	@FXML
 	private void addCustomSQLQuery()
 	{
-		TextInputDialog dialog = new TextInputDialog();
-		dialog.setTitle("Neue SQL-Abfrage");
-		dialog.setHeaderText("Individuelle SQL-Abfrage hinzufügen");
-		dialog.setContentText("Bitte geben Sie Ihre SQL-Abfrage ein:");
+	  // Code adapted from AI Chat
+	  Dialog<String> dialog = new Dialog<>();
+      dialog.setTitle("Neue SQL-Abfrage");
+      dialog.setHeaderText("Individuelle SQL-Abfrage hinzufügen");
 
-		DialogPane dialogPane = dialog.getDialogPane();
+      // Set the button types
+      ButtonType submitButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+      dialog.getDialogPane().getButtonTypes().addAll(submitButton, ButtonType.CANCEL);
 
-		// Anpassen des TextInputDialog-Fensters
-		TextArea textArea = new TextArea();
-		textArea.setPrefHeight(100); // Höhe anpassen
-		textArea.setPrefWidth(400);  // Breite anpassen
-		dialogPane.setContent(textArea);
+      // Create a TextArea
+      TextArea textArea = new TextArea();
+      textArea.setPromptText("Bitte geben Sie Ihre SQL-Abfrage ein...");
+      textArea.setWrapText(true);
+      textArea.setPrefHeight(200);
 
-		Optional<String> result = dialog.showAndWait();
-		result.ifPresent(query ->
-		{
-			if (!sqlDropdown.getItems().contains(query))
-			{
-				sqlDropdown.getItems().add(query);
-				saveSQLQuery(query);
-			}
-		});
+      // Add the TextArea to the dialog pane
+      dialog.getDialogPane().setContent(textArea);
+
+      // Convert the result to a string when the submit button is clicked
+      dialog.setResultConverter(dialogButton -> {
+          if (dialogButton == submitButton) {
+              return textArea.getText();
+          }
+          return null;
+      });
+
+      // Show the dialog and wait for the result
+      dialog.showAndWait().ifPresent(result -> {
+          System.out.println("User entered: " + result);
+          // You can process the result here
+          sqlQueryArea.setText(result);
+      });
+          
+	  
+
 	}
 
 	// Methode, um eine SQL-Abfrage zu speichern
-	private void saveSQLQuery(String query)
+	private boolean saveSQLQuery(String query)
 	{
+	  boolean retcode=false;
 	  int count=0;
 	  String checkquery="SELECT query from saved_queries where query = ?";
 	  try (Connection conn = SQLConnection.getCon();
@@ -299,12 +367,15 @@ public class StatistiktoolSQLController
     			pstmt.setString(1, query);
                   			
     			pstmt.executeUpdate();
+    			retcode=true;
+    			
     		} catch (SQLException e)
     		{
     			showAlert(Alert.AlertType.ERROR, "Fehler", "Fehler beim Speichern der SQL-Abfrage: " + e.getMessage());
     			e.printStackTrace();
     		}
 	    }
+	    return retcode;
 	}
 	/**
      *
