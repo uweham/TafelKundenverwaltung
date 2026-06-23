@@ -2,17 +2,23 @@ package kundenverwaltung.controller.admintool;
 
 import kundenverwaltung.dao.SQLConnection;
 import kundenverwaltung.dao.StatistiktoolDAO;
+import kundenverwaltung.model.Familienmitglied;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import kundenverwaltung.service.Constants;
+import kundenverwaltung.service.SQLQuery_to_CSV;
 import kundenverwaltung.service.TablePreferenceServiceImpl;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -29,7 +35,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-public class StatistiktoolSQLController
+public class StatistiktoolSQLController 
 {
 
 	// FXML-Elemente
@@ -38,6 +44,9 @@ public class StatistiktoolSQLController
 
 	@FXML
 	private Button executeQueryButton;
+	
+	@FXML
+    private Button executeCSVExportButton;
 
 	@FXML
 	private Button loadRelationsButton;
@@ -50,6 +59,9 @@ public class StatistiktoolSQLController
 
 	@FXML
 	private Button deleteQueryButton;
+	
+	@FXML
+    private Button saveQueryButton;
 
 	@FXML
 	private TableView<ObservableList<String>> queryResultTable;
@@ -80,7 +92,18 @@ public class StatistiktoolSQLController
 
 	@SuppressWarnings("unused")
   private StatistiktoolDAO statistikDAO;
-	/**
+	
+	private String lastQuery="";
+	
+	private Stage stage;
+	@FXML
+	public void setStage(Stage stage) {
+    this.stage = stage;
+	}
+
+
+
+  /**
     *
     */
 	// Initialisierungsmethode, die automatisch aufgerufen wird, wenn die FXML-Datei geladen wird
@@ -88,8 +111,10 @@ public class StatistiktoolSQLController
 	public void initialize()
 	{
 		executeQueryButton.setOnAction(event -> executeSQLQuery());
+		executeCSVExportButton.setOnAction(event->executeCSVExport());
 		loadRelationsButton.setOnAction(event -> loadRelations());
 		loadTablesAndColumnsButton.setOnAction(event -> loadTablesAndColumns());
+		saveQueryButton.setOnAction(event -> saveQueriesToDatabase());
 		sqlDropdown.setItems(FXCollections.observableArrayList(getCommonSQLQueries()));
 		sqlDropdown.setOnAction(event ->
 		{
@@ -97,6 +122,7 @@ public class StatistiktoolSQLController
 			{
 				sqlDropdown.getItems().add(sqlDropdown.getValue());
 			}
+			System.out.println("OnAction");
 			sqlQueryArea.setText(sqlDropdown.getValue());
 		});
 		generatePieChartButton.setOnAction(event -> generatePieChart());
@@ -107,7 +133,9 @@ public class StatistiktoolSQLController
 		loadSavedQueries(); // Lade gespeicherte SQL-Abfragen
 	}
 
-	/** Methode, um den Tabellennamen aus der SQL-Abfrage zu extrahieren.
+
+
+  /** Methode, um den Tabellennamen aus der SQL-Abfrage zu extrahieren.
 	private String getTableNameFromQuery(String query) {
 		query = query.toLowerCase();
 		if (query.contains(" from ")) {
@@ -124,25 +152,19 @@ public class StatistiktoolSQLController
 	// Methode, um eine SQL-Abfrage auszuführen
 	private void executeSQLQuery()
 	{
-		String query = sqlQueryArea.getText().trim();
+	    String query = sqlQueryArea.getText().trim();
 		if (query.isEmpty())
 		{
 			showAlert(Alert.AlertType.ERROR, "Fehler", "SQL-Abfrage darf nicht leer sein.");
 			return;
 		}
-		saveSQLQuery(query); // Speichert die Abfrage
-
-		// Überprüfen und Hinzufügen der Abfrage zum Dropdown-Menü
-		if (!sqlDropdown.getItems().contains(query))
-		{
-			sqlDropdown.getItems().add(query);
-		}
-
 		if (query.toLowerCase().startsWith("select") || query.toLowerCase().startsWith("show"))
 		{
 			executeSelectQuery(query);
+			lastQuery=query;
 		} else
 		{
+		    lastQuery="";
 			boolean success = executeUpdateQuery(query);
 			if (success)
 			{
@@ -153,7 +175,54 @@ public class StatistiktoolSQLController
 			}
 		}
 	}
+    private void executeCSVExport() {
+     
+      int errorcode=0;
+      String query = lastQuery;
+      if (query.isEmpty())
+      {
+          showAlert(Alert.AlertType.ERROR, "Fehler", "SQL-Abfrage darf nicht leer sein.");
+          return;
+      }
+     
+      if (query.toLowerCase().startsWith("select") || query.toLowerCase().startsWith("show"))
+      {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters()
+                .add(new FileChooser.ExtensionFilter("csv Datei", "*.csv"));
 
+        
+         SQLQuery_to_CSV sqltoquery = new SQLQuery_to_CSV();
+         String filename=fileChooser.showSaveDialog(null).getAbsolutePath();
+         if (filename == null)
+          {
+            showAlert(Alert.AlertType.ERROR, "Fehler", "Bitte geben Sie einen Dateinamen ein !");
+            return;
+          }
+         if (filename.toUpperCase().endsWith(".CSV"))
+         {
+           sqltoquery.setCsvFilePath(filename);
+           errorcode=sqltoquery.to_CSV(query);
+           if (errorcode==Constants.SQL_ERROR)
+           {
+             showAlert(Alert.AlertType.ERROR, "Fehler", "SQL Fehler !");
+             return;
+           }
+           if (errorcode==Constants.FILE_ERROR)
+           {
+             showAlert(Alert.AlertType.ERROR, "Fehler", "CSV Schreibfehler !");
+             return;
+           }
+            
+         } else
+         {
+           showAlert(Alert.AlertType.ERROR, "Fehler", "Bitte geben Sie als Dateityp .csv ein !");
+           return;
+          
+         }
+      } 
+    return;
+    }
 	// Methode zum Löschen einer gespeicherten SQL-Abfrage
 	@FXML
 	private void handleDeleteQuery()
@@ -166,9 +235,52 @@ public class StatistiktoolSQLController
 		}
 
 		sqlDropdown.getItems().remove(selectedQuery);
-		saveQueriesToFile();
-		showAlert(Alert.AlertType.INFORMATION, "Erfolg", "Abfrage erfolgreich gelöscht.");
+		if (deleteQuery(selectedQuery))
+		{
+		  showAlert(Alert.AlertType.INFORMATION, "Erfolg", "Abfrage erfolgreich gelöscht.");
+		}
+		else
+		{
+		  showAlert(Alert.AlertType.ERROR, "Fehlerg", "Abfrage konnte nciht gelöscht werden.");
+		}
+		
 	}
+
+	private boolean deleteQuery(String selectedQuery)
+	    {
+	        String sqlDeletePerson = "Delete from saved_queries where query = ?";
+
+	        try
+	        {
+	            Connection con = SQLConnection.getCon();
+	            PreparedStatement smtDelete = con.prepareStatement(sqlDeletePerson);
+	            smtDelete.setString(1, selectedQuery);
+	            smtDelete.executeUpdate();
+	            smtDelete.close();
+
+	            return true;
+
+	        } catch (SQLException e)
+	        {
+	            e.printStackTrace();
+	            System.out.println("Abfrage loeschen klappt nicht");
+	        }
+
+	        return false;
+	    }
+	 private void saveQueriesToDatabase()
+	    {
+	        String query = sqlQueryArea.getText().trim();
+	        if (query.isEmpty())
+	        {
+	            showAlert(Alert.AlertType.ERROR, "Fehler", "SQL-Abfrage darf nicht leer sein.");
+	            return;
+	        }
+	        if (saveSQLQuery(query)) // Speichert die Abfrage
+	          {
+	            sqlDropdown.getItems().add(query);
+	          }; 
+	    }     
 
 	private void saveQueriesToFile()
 	{
@@ -196,46 +308,85 @@ public class StatistiktoolSQLController
 	@FXML
 	private void addCustomSQLQuery()
 	{
-		TextInputDialog dialog = new TextInputDialog();
-		dialog.setTitle("Neue SQL-Abfrage");
-		dialog.setHeaderText("Individuelle SQL-Abfrage hinzufügen");
-		dialog.setContentText("Bitte geben Sie Ihre SQL-Abfrage ein:");
+	  // Code adapted from AI Chat
+	  Dialog<String> dialog = new Dialog<>();
+      dialog.setTitle("Neue SQL-Abfrage");
+      dialog.setHeaderText("Individuelle SQL-Abfrage hinzufügen");
 
-		DialogPane dialogPane = dialog.getDialogPane();
+      // Set the button types
+      ButtonType submitButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+      dialog.getDialogPane().getButtonTypes().addAll(submitButton, ButtonType.CANCEL);
 
-		// Anpassen des TextInputDialog-Fensters
-		TextArea textArea = new TextArea();
-		textArea.setPrefHeight(100); // Höhe anpassen
-		textArea.setPrefWidth(400);  // Breite anpassen
-		dialogPane.setContent(textArea);
+      // Create a TextArea
+      TextArea textArea = new TextArea();
+      textArea.setPromptText("Bitte geben Sie Ihre SQL-Abfrage ein...");
+      textArea.setWrapText(true);
+      textArea.setPrefHeight(200);
 
-		Optional<String> result = dialog.showAndWait();
-		result.ifPresent(query ->
-		{
-			if (!sqlDropdown.getItems().contains(query))
-			{
-				sqlDropdown.getItems().add(query);
-				saveSQLQuery(query);
-			}
-		});
+      // Add the TextArea to the dialog pane
+      dialog.getDialogPane().setContent(textArea);
+
+      // Convert the result to a string when the submit button is clicked
+      dialog.setResultConverter(dialogButton -> {
+          if (dialogButton == submitButton) {
+              return textArea.getText();
+          }
+          return null;
+      });
+
+      // Show the dialog and wait for the result
+      dialog.showAndWait().ifPresent(result -> {
+          System.out.println("User entered: " + result);
+          // You can process the result here
+          sqlQueryArea.setText(result);
+      });
+          
+	  
+
 	}
 
 	// Methode, um eine SQL-Abfrage zu speichern
-	private void saveSQLQuery(String query)
+	private boolean saveSQLQuery(String query)
 	{
-		String insertQuery = "INSERT INTO saved_queries (query) VALUES (?)";
-
-		try (Connection conn = SQLConnection.getCon();
-			 PreparedStatement pstmt = conn.prepareStatement(insertQuery))
-		{
-
-			pstmt.setString(1, query);
-			pstmt.executeUpdate();
-		} catch (SQLException e)
-		{
-			showAlert(Alert.AlertType.ERROR, "Fehler", "Fehler beim Speichern der SQL-Abfrage: " + e.getMessage());
-			e.printStackTrace();
-		}
+	  boolean retcode=false;
+	  int count=0;
+	  String checkquery="SELECT query from saved_queries where query = ?";
+	  try (Connection conn = SQLConnection.getCon();
+	      PreparedStatement stmt = conn.prepareStatement(checkquery))
+	      {
+	      stmt.setString(1, query);
+	      ResultSet rs = stmt.executeQuery();
+	      
+          while (rs.next())
+          {
+            ++count;
+            break;
+          }
+	     } catch (SQLException e)
+	      {
+             showAlert(Alert.AlertType.ERROR, "Fehler", "Fehler bei der Ausführung der SQL-Abfrage: " + e.getMessage());
+              e.printStackTrace();
+	      }
+	    if (count==0)
+	    {
+    		String insertQuery = "INSERT INTO saved_queries (query) VALUES (?) ";
+    
+    		try (Connection conn = SQLConnection.getCon();
+    			 PreparedStatement pstmt = conn.prepareStatement(insertQuery))
+    		{
+    
+    			pstmt.setString(1, query);
+                  			
+    			pstmt.executeUpdate();
+    			retcode=true;
+    			
+    		} catch (SQLException e)
+    		{
+    			showAlert(Alert.AlertType.ERROR, "Fehler", "Fehler beim Speichern der SQL-Abfrage: " + e.getMessage());
+    			e.printStackTrace();
+    		}
+	    }
+	    return retcode;
 	}
 	/**
      *
@@ -265,6 +416,8 @@ public class StatistiktoolSQLController
 		}
 	}
 
+	// Methode, um ein Ergebnis nach CSV zu exportieren
+	
 	// Methode, um eine SELECT-SQL-Abfrage auszuführen
 	private void executeSelectQuery(String query)
 	{
@@ -273,6 +426,7 @@ public class StatistiktoolSQLController
 			 ResultSet rs = stmt.executeQuery(query))
 		{
 
+            
 			ResultSetMetaData rsmd = rs.getMetaData();
 			int columnCount = rsmd.getColumnCount();
 
@@ -287,6 +441,7 @@ public class StatistiktoolSQLController
 			}
 
 			ObservableList<ObservableList<String>> data = FXCollections.observableArrayList();
+			
 			while (rs.next())
 			{
 				ObservableList<String> row = FXCollections.observableArrayList();
@@ -298,6 +453,8 @@ public class StatistiktoolSQLController
 			}
 			queryResultTable.setItems(data);
 			populateAxisDropdowns(rsmd);
+			
+        
 		} catch (SQLException e)
 		{
 			showAlert(Alert.AlertType.ERROR, "Fehler", "Fehler bei der Ausführung der SQL-Abfrage: " + e.getMessage());
@@ -480,6 +637,8 @@ public class StatistiktoolSQLController
 			queryResultTable.setItems(data);
 
 			TablePreferenceServiceImpl.getInstance().setupPersistence(queryResultTable, "QueryResultTableStatistikTool");
+			lastQuery=query;
+			
 		} catch (SQLException e)
 		{
 			showAlert(Alert.AlertType.ERROR, "Fehler", "Fehler bei der Abfrage der Relationen: " + e.getMessage());
@@ -525,6 +684,7 @@ public class StatistiktoolSQLController
 				data.add(row);
 			}
 			queryResultTable.setItems(data);
+			lastQuery=query;
 		} catch (SQLException e)
 		{
 			showAlert(Alert.AlertType.ERROR, "Fehler", "Fehler bei der Abfrage der Tabellen und Spalten: " + e.getMessage());
@@ -565,6 +725,8 @@ public class StatistiktoolSQLController
 		alert.setTitle(title);
 		alert.setHeaderText(null);
 		alert.setContentText(message);
+		alert.initModality(Modality.APPLICATION_MODAL);
+		alert.initOwner(stage);
 		alert.showAndWait();
 	}
 
