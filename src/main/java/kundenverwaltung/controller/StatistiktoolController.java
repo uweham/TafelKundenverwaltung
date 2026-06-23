@@ -193,7 +193,7 @@ public class StatistiktoolController
             Scene scene = new Scene(root);
             GlobalEventLogger.attachTo("StatistikToolSQL", scene);
             stage.setScene(scene);
-
+            sqlController.setStage(stage);
             stage.show();
         } catch (IOException e)
         {

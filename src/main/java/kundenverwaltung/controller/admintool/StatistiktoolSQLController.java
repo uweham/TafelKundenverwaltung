@@ -8,12 +8,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import kundenverwaltung.service.Constants;
 import kundenverwaltung.service.SQLQuery_to_CSV;
 import kundenverwaltung.service.TablePreferenceServiceImpl;
@@ -32,7 +35,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-public class StatistiktoolSQLController
+public class StatistiktoolSQLController 
 {
 
 	// FXML-Elemente
@@ -92,7 +95,15 @@ public class StatistiktoolSQLController
 	
 	private String lastQuery="";
 	
-	/**
+	private Stage stage;
+	@FXML
+	public void setStage(Stage stage) {
+    this.stage = stage;
+	}
+
+
+
+  /**
     *
     */
 	// Initialisierungsmethode, die automatisch aufgerufen wird, wenn die FXML-Datei geladen wird
@@ -714,6 +725,8 @@ public class StatistiktoolSQLController
 		alert.setTitle(title);
 		alert.setHeaderText(null);
 		alert.setContentText(message);
+		alert.initModality(Modality.APPLICATION_MODAL);
+		alert.initOwner(stage);
 		alert.showAndWait();
 	}
 

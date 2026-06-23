@@ -1,6 +1,7 @@
 package kundenverwaltung.controller.admintool;
 
 import java.io.IOException;
+
 import java.util.Optional;
 
 import javafx.event.ActionEvent;
@@ -269,14 +270,15 @@ public class AdmintoolController
         {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/kundenverwaltung/fxml/admintool/StatistiktoolSQL.fxml"));
             Parent root = loader.load();
-
+            StatistiktoolSQLController controller=loader.<StatistiktoolSQLController>getController();
+            
             Stage stage = new Stage();
             stage.setTitle("SQL-Abfrage Tool");
 
             Scene scene = new Scene(root);
             GlobalEventLogger.attachTo("StatistikToolSQL", scene);
             stage.setScene(scene);
-
+            controller.setStage(stage);
             stage.show();
         } catch (IOException e)
         {
