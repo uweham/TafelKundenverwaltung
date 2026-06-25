@@ -312,7 +312,8 @@ public class StatistiktoolSQLController
 	  Dialog<String> dialog = new Dialog<>();
       dialog.setTitle("Neue SQL-Abfrage");
       dialog.setHeaderText("Individuelle SQL-Abfrage hinzufügen");
-
+      dialog.initOwner(stage);
+      dialog.initModality(Modality.APPLICATION_MODAL);
       // Set the button types
       ButtonType submitButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
       dialog.getDialogPane().getButtonTypes().addAll(submitButton, ButtonType.CANCEL);
