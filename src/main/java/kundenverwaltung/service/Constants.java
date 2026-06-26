@@ -31,5 +31,14 @@ public class Constants {
   public static final int NO_ERROR = 0;
   public static final int SQL_ERROR = -1;
   public static final int FILE_ERROR = -2;
+  public static final int NUMERIC_ERROR = -98;
+  public static final int INTERNAL_ERROR = -99;
+  
+  
+  public static final int ERROR_MSG_ADD = 0;
+  public static final int ERROR_MSG_APPEND = 1;
+  public static final int ERROR_MSG_CLEAR = 2;
+  
+  
   
 }
