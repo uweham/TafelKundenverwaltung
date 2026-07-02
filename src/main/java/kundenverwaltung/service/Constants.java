@@ -28,9 +28,13 @@ public class Constants {
   public static final int GENDER_OTHER =73;
   public static final int GENDER_NN =74;
   
+  public static final int ALL_DISTRIBUTION_POINTS = -99;
+  
   public static final int NO_ERROR = 0;
   public static final int SQL_ERROR = -1;
   public static final int FILE_ERROR = -2;
+  public static final int FILE_NAME_ERROR = -3;
+  public static final int FILE_PDF_GEN_ERROR = -4;
   public static final int NUMERIC_ERROR = -98;
   public static final int INTERNAL_ERROR = -99;
   
@@ -39,6 +43,7 @@ public class Constants {
   public static final int ERROR_MSG_APPEND = 1;
   public static final int ERROR_MSG_CLEAR = 2;
   
-  
+  public static final int STATISTIK_OUT_LIST =1;
+  public static final int STATISTIK_OUT_CSV =2;
   
 }
