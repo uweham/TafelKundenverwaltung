@@ -25,6 +25,7 @@ import kundenverwaltung.controller.admintool.NeueAusgabegruppeController;
 import kundenverwaltung.controller.admintool.NeueVerteilstelleController;
 import kundenverwaltung.controller.admintool.NeuerWarentypController;
 import kundenverwaltung.controller.admintool.UserAddChangeController;
+import kundenverwaltung.controller.statistiktool.StatistiktoolResultViewController;
 import kundenverwaltung.logger.event.GlobalEventLogger;
 import kundenverwaltung.model.Benutzer;
 import kundenverwaltung.model.Bescheid;
@@ -1395,8 +1396,11 @@ public class MainController
         try
         {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/kundenverwaltung/fxml/Statistiktool.fxml"));
+             
             AnchorPane pane = loader.load();
-
+            StatistiktoolController controller = loader.getController();
+            controller.setUser(user);
+            
             Stage statistikStage = new Stage();
             Scene statistikScene = new Scene(pane);
             GlobalEventLogger.attachTo("Statistiktool.fxml", statistikScene);
@@ -1407,8 +1411,8 @@ public class MainController
             statistikStage.centerOnScreen();
             statistikStage.show();
 
-            StatistiktoolController controller = loader.getController();
-            controller.initStatistikTool(); // Initialisiere den Statistiktool-Controller
+            //StatistiktoolController controller = loader.getController();
+            //controller.initStatistikTool(); // Initialisiere den Statistiktool-Controller
 
         } catch (IOException e)
         {
