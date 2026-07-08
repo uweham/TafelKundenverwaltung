@@ -86,5 +86,41 @@ public class SQLQuery_to_CSV {
  }
   return retcode;
 }
+ 
+ public int to_CSV(ResultSet rs) 
+ {
+  int retcode=Constants.NO_ERROR;
+     try {
+       ResultSetMetaData rsmd = rs.getMetaData();
+       CSVFormat csvFormat = CSVFormat.EXCEL.builder().setHeader(rsmd).setQuoteMode(this.quoteMode).setQuote(this.quote).get();
+
+       // Get metadata to fetch column names
+       int columnCount = rsmd.getColumnCount();
+
+       // Write to CSV
+       try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(this.csvFilePath), csvFormat)) {
+           // Print data
+           while (rs.next()) {
+               for (int i = 1; i <= columnCount; i++) {
+                   Object value = rs.getObject(i);
+                   csvPrinter.print(value != null ? value : "");
+               }
+               csvPrinter.println();
+           }
+       }
+       
+     } 
+     catch (SQLException e) {
+       System.out.println("Fehler beim Exportieren nach CSV: " + e.getMessage());
+       return Constants.SQL_ERROR;
+     } 
+     catch (IOException e) {
+       System.out.println("Fehler beim Exportieren nach CSV: " + e.getMessage());
+       return Constants.FILE_ERROR;
+     }
+     return retcode;  
+   }
+ 
 }
+ 
 
