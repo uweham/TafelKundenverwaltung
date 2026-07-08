@@ -46,4 +46,9 @@ public class Constants {
   public static final int STATISTIK_OUT_LIST =1;
   public static final int STATISTIK_OUT_CSV =2;
   
+  public static final int STATISTIK_AMOUNTS_ALL=0;
+  public static final int STATISTIK_AMOUNTS_CREDITS=1;
+  public static final int STATISTIK_AMOUNTS_OUTSTANDING = 2;
+  
+  
 }
