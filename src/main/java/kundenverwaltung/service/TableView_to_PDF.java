@@ -130,7 +130,7 @@ public class  TableView_to_PDF<T> {
               for (int i = 0; i < cols; i++) 
               {
                 String value = (String) ((List<T>) row).get(i);
-                System.out.println("Found Row: " +i+ " Value "+ value);
+   //uncomment if debug             System.out.println("Found Row: " +i+ " Value "+ value);
                 tableData[i_row][i]=(value == null)?"null": value;
               }
               i_row ++;
