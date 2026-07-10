@@ -2,6 +2,7 @@ package kundenverwaltung.controller.statistiktool;
 
 import kundenverwaltung.dao.EinkaufDAO;
 import kundenverwaltung.dao.EinkaufDAOimpl;
+import kundenverwaltung.dao.StatistiktoolDAO;
 import kundenverwaltung.dao.VerteilstelleDAO;
 import kundenverwaltung.dao.VerteilstelleDAOimpl;
 import kundenverwaltung.model.Einkauf;
@@ -9,173 +10,91 @@ import kundenverwaltung.model.Verteilstelle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import kundenverwaltung.service.Constants;
 import kundenverwaltung.service.TablePreferenceServiceImpl;
 
 import java.util.List;
 
-public class GuthabenStatistikController
+public class GuthabenStatistikController extends StatistiktoolMasterClassController<GuthabenStatistikController>
 {
+  
+    record statistictyp(int pos,String value) {
+      @Override
+      public String toString() {
+          return value;
+      }
+      public int getId() {
+        return pos;
+      }
+    };
+    
 
 	@FXML
 	private ComboBox<Verteilstelle> verteilstelleComboBox; // ComboBox für Verteilstellen
 	@FXML
-	private ComboBox<String> typeComboBox; // ComboBox für Typen
-	@FXML
-	private TableView<Einkauf> resultTableView; // Tabelle für Einkäufe
-
-	@FXML
-	private TableColumn<Einkauf, Integer> einkaufIdColumn;
-	@FXML
-	private TableColumn<Einkauf, String> warentypColumn;
-	@FXML
-	private TableColumn<Einkauf, String> kundeColumn;
-	@FXML
-	private TableColumn<Einkauf, Float> summeEinkaufColumn;
-	@FXML
-	private TableColumn<Einkauf, Float> summeZahlungColumn;
-	@FXML
-	private TableColumn<Einkauf, Double> saldoColumn;
-
-	@FXML
-	private TableColumn<Einkauf, Integer> anzahlKinderColumn;
-	@FXML
-	private TableColumn<Einkauf, Integer> anzahlErwachseneColumn;
+	private ComboBox<statistictyp> typeComboBox; // ComboBox für Typen
 
 	@FXML
 	private MenuItem handleExit;
 
-	private ObservableList<Einkauf> einkaufList = FXCollections.observableArrayList();
-	private EinkaufDAO einkaufDAO = new EinkaufDAOimpl();
 	private VerteilstelleDAO verteilstelleDAO = new VerteilstelleDAOimpl(); // DAO für Verteilstellen
+
 
 	@FXML
 	private void initialize()
 	{
-		// Spaltenbindung
-		einkaufIdColumn.setCellValueFactory(new PropertyValueFactory<>("einkaufId"));
-		einkaufIdColumn.setId("einkaufId");
-
-		warentypColumn.setCellValueFactory(new PropertyValueFactory<>("warentyp"));
-		warentypColumn.setId("warentyp");
-
-		kundeColumn.setCellValueFactory(new PropertyValueFactory<>("kundeName"));
-		kundeColumn.setId("kundeName");
-
-		summeEinkaufColumn.setCellValueFactory(new PropertyValueFactory<>("summeEinkauf"));
-		summeEinkaufColumn.setId("summeEinkauf");
-
-		summeZahlungColumn.setCellValueFactory(new PropertyValueFactory<>("summeZahlung"));
-		summeZahlungColumn.setId("summeZahlung");
-
-		anzahlKinderColumn.setCellValueFactory(new PropertyValueFactory<>("anzahlKinder"));
-		anzahlKinderColumn.setId("anzahlKinder");
-
-		anzahlErwachseneColumn.setCellValueFactory(new PropertyValueFactory<>("anzahlErwachsene"));
-		anzahlErwachseneColumn.setId("anzahlErwachsene");
-
-		saldoColumn.setCellValueFactory(new PropertyValueFactory<>("saldo"));
-		saldoColumn.setId("saldo");
-
-		// Null-Werte behandeln
-		setupNullValueHandling();
-
-		// Tabelle an ObservableList binden
-		resultTableView.setItems(einkaufList);
-
 		// ComboBox initialisieren
-		typeComboBox.setItems(FXCollections.observableArrayList("Offene Beträge", "Guthaben"));
-
-		// Lade Verteilstellen in die ComboBox
-		loadVerteilstellen();
-
-		TablePreferenceServiceImpl.getInstance().setupPersistence(resultTableView, "GuthabenStatistikResultTableView");
+	    typeComboBox.getItems().add(new statistictyp(Constants.STATISTIK_AMOUNTS_ALL,"Alle"));
+	    typeComboBox.getItems().add(new statistictyp(Constants.STATISTIK_AMOUNTS_OUTSTANDING,"Offene Beträge"));
+	    typeComboBox.getItems().add(new statistictyp(Constants.STATISTIK_AMOUNTS_CREDITS,"Guthaben"));
+	    typeComboBox.getItems().add(new statistictyp(Constants.STATISTIK_AMOUNTS_ERROR,"Fehlerliste"));
+        
+	 
+	       // Lade Verteilstellen in die ComboBox
+        List<Verteilstelle> verteilstelleList = verteilstelleDAO.readAll();
+        if (verteilstelleList != null && !verteilstelleList.isEmpty())
+        {
+          ObservableList<Verteilstelle> vliste = FXCollections.observableArrayList(verteilstelleList);
+          verteilstelleComboBox.getItems().add(new Verteilstelle(Constants.ALL_DISTRIBUTION_POINTS, "Alle","", 0));
+          verteilstelleComboBox.getItems().addAll(vliste);
+        } else
+        {
+            System.out.println("Keine Verteilstellen gefunden oder Fehler beim Abrufen.");
+        }
+        loadheader("Tafel Statistik - Angemeldet als :","Statistik:Guthaben/offene Beträge");
+        loadresultview(this,childResultContainer.getPrefWidth(),childResultContainer.getPrefHeight()) ;
+   
 	}
 
-
-	private void loadVerteilstellen()
-	{
-		List<Verteilstelle> verteilstellen = verteilstelleDAO.readAll(); // Alle Verteilstellen abrufen
-		verteilstelleComboBox.setItems(FXCollections.observableArrayList(verteilstellen)); // In die ComboBox setzen
-	}
-
-	private void setupNullValueHandling()
-	{
-		// CellFactory für saldoColumn
-		saldoColumn.setCellFactory(column -> new TableCell<Einkauf, Double>()
-		{
-			@Override
-			protected void updateItem(Double item, boolean empty)
-			{
-				super.updateItem(item, empty);
-				if (empty || item == null)
-				{
-					setText("");
-				} else
-				{
-					setText(String.format("%.2f", item));
-				}
-			}
-		});
-
-		// CellFactory für summeEinkaufColumn
-		summeEinkaufColumn.setCellFactory(column -> new TableCell<Einkauf, Float>()
-		{
-			@Override
-			protected void updateItem(Float item, boolean empty)
-			{
-				super.updateItem(item, empty);
-				if (empty || item == null)
-				{
-					setText("");
-				} else
-				{
-					setText(String.format("%.2f", item));
-				}
-			}
-		});
-
-		// CellFactory für summeZahlungColumn
-		summeZahlungColumn.setCellFactory(column -> new TableCell<Einkauf, Float>()
-		{
-			@Override
-			protected void updateItem(Float item, boolean empty)
-			{
-				super.updateItem(item, empty);
-				if (empty || item == null)
-				{
-					setText("");
-				} else
-				{
-					setText(String.format("%.2f", item));
-				}
-			}
-		});
-
-		// CellFactory für anzahlKinderColumn
-		anzahlKinderColumn.setCellFactory(column -> new TableCell<Einkauf, Integer>()
-		{
-			@Override
-			protected void updateItem(Integer item, boolean empty)
-			{
-				super.updateItem(item, empty);
-				setText(empty || item == null ? "" : item.toString());
-			}
-		});
-
-		// CellFactory für anzahlErwachseneColumn
-		anzahlErwachseneColumn.setCellFactory(column -> new TableCell<Einkauf, Integer>()
-		{
-			@Override
-			protected void updateItem(Integer item, boolean empty)
-			{
-				super.updateItem(item, empty);
-				setText(empty || item == null ? "" : item.toString());
-			}
-		});
-	}
+	 public String getCurrentSQLQuery()
+	  {
+	     int verteilstellenId=getSelectedVerteilstelle();
+	     int statistictypId=getSelectedStatisticType();
+	     String query = statistikDAO.buildSqlQueryGuthabenstatistik(verteilstellenId, statistictypId);
+	     statistikDAO.addSqlPar(1,verteilstellenId);
+	      
+	      return query.toString();
+	  }
+	 
+	 public int getSelectedStatisticType()
+	 {
+	    if (typeComboBox.getSelectionModel().getSelectedItem()==null)
+	    {
+	      System.out.println("Combo typeComboBox =null");
+	      return Constants.STATISTIK_AMOUNTS_ALL;
+	    }
+	    int statistictypId=typeComboBox.getSelectionModel().getSelectedItem().getId();
+	    
+	    System.out.printf("V-Id : %d Name : %s\n",statistictypId,typeComboBox.getSelectionModel().getSelectedItem().toString());
+	    return statistictypId;
+	 	   
+	 }
 
 	private void showAlert(String title, String headerText, String contentText)
 	{
@@ -185,7 +104,7 @@ public class GuthabenStatistikController
 		alert.setContentText(contentText);
 		alert.showAndWait();
 	}
-
+/*
 	@FXML
 	private void handleGenerateSQLQuery()
 	{
@@ -257,12 +176,7 @@ public class GuthabenStatistikController
 		// Daten in die Guthabenstatistik speichern
 		einkaufDAO.saveToGuthabenStatistik(einkaeufe);
 	}
+*/
+	
 
-	@FXML
-	private void handleExit()
-	{
-		// Aktuelles Fenster abrufen und schließen
-		Stage stage = (Stage) resultTableView.getScene().getWindow(); // Hole das aktuelle Fenster über eine UI-Komponente
-		stage.close();
-	}
 }
