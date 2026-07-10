@@ -96,8 +96,8 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
       String sqlquery="";
       String sqlhaving=switch (statistictypId) {
         case Constants.STATISTIK_AMOUNTS_ALL -> "";
-        case Constants.STATISTIK_AMOUNTS_CREDITS -> " having saldo>0 " ;
-        case Constants.STATISTIK_AMOUNTS_OUTSTANDING -> " having saldo < 0";
+        case Constants.STATISTIK_AMOUNTS_CREDITS -> " having berechnetersaldo>0 " ;
+        case Constants.STATISTIK_AMOUNTS_OUTSTANDING -> " having berechnetersaldo < 0";
         default -> " ";
       };
       if (statistictypId != Constants.STATISTIK_AMOUNTS_ERROR)
