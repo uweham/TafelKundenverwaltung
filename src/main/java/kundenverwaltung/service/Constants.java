@@ -49,6 +49,7 @@ public class Constants {
   public static final int STATISTIK_AMOUNTS_ALL=0;
   public static final int STATISTIK_AMOUNTS_CREDITS=1;
   public static final int STATISTIK_AMOUNTS_OUTSTANDING = 2;
+  public static final int STATISTIK_AMOUNTS_ERROR = 3;
   
   public static final int WARENTYPID_GUTSCHRIFT = 3; // change this value when change in sql table warentyp
   
