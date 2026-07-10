@@ -14,6 +14,7 @@ import kundenverwaltung.dao.VollmachtDAOimpl;
 import kundenverwaltung.dao.EinstellungenDAOimpl;
 import kundenverwaltung.model.Einstellungen;
 import kundenverwaltung.service.Booking_err_warn_list;
+import kundenverwaltung.service.Constants;
 /**
  * Created by Florian-PC on 02.11.2017.
  * <p>
@@ -297,7 +298,7 @@ public class Haushalt
             }
         }
 
-        if (letzerEinkauf != null && datediff == 0L && warentyp.getWarentypId() != 3)
+        if (letzerEinkauf != null && datediff == 0L && warentyp.getWarentypId() != Constants.WARENTYPID_GUTSCHRIFT)
         {
             warnungen.add(new Booking_err_warn_list(Booking_err_warn_list.ENTRY_WARNING
                 ,"Der Kunde hat heute bereits eingekauft!"));
