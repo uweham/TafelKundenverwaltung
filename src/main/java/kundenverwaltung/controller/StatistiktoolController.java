@@ -1,8 +1,15 @@
 package kundenverwaltung.controller;
 import kundenverwaltung.controller.admintool.StatistiktoolSQLController;
 import kundenverwaltung.controller.statistiktool.ArchivierteKundenStatistikController;
+import kundenverwaltung.controller.statistiktool.GuthabenStatistikController;
 import kundenverwaltung.controller.statistiktool.HerkunftStatistikController;
+import kundenverwaltung.controller.statistiktool.StatistiktoolHeaderController;
+import kundenverwaltung.controller.statistiktool.StatistiktoolMasterClassController;
+import kundenverwaltung.controller.statistiktool.StatistiktoolResultViewController;
 import kundenverwaltung.dao.*;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,32 +24,37 @@ import kundenverwaltung.logger.event.GlobalEventLogger;
 import javafx.stage.FileChooser;
 import javafx.scene.control.Alert.AlertType;
 import kundenverwaltung.model.statistiktool.Statistiktool;
+import kundenverwaltung.service.Constants;
+import kundenverwaltung.service.SQLQuery_to_CSV;
+import kundenverwaltung.service.TableView_to_PDF;
+import kundenverwaltung.service.UtilErrorLog;
+import kundenverwaltung.model.User;
 import kundenverwaltung.model.Verteilstelle;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import javafx.scene.Node;
-import javafx.scene.control.TextField;
-
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
 import java.util.*;
+import javafx.scene.layout.VBox;
+
 
 /**
  * Controller-Klasse für das Statistik-Tool.
  * Diese Klasse steuert die Benutzeroberfläche und die Interaktionen für die Anzeige und Verwaltung der Altersstatistik.
  */
 
-public class StatistiktoolController
+public class StatistiktoolController extends StatistiktoolMasterClassController<StatistiktoolController>
 {
 
     @FXML
-    private ComboBox<String> verteilstelleComboBox;
-    @FXML
-    private Button openSQLQueryToolButton;
+    //private ComboBox<String> verteilstelleComboBox;
+    private ComboBox<Verteilstelle> verteilstelleComboBox;
     @FXML
     private TextField startAgeTextField;
     @FXML
@@ -50,64 +62,47 @@ public class StatistiktoolController
     @FXML
     private TextField yearField;
     @FXML
-    private TextField yearResultField;
-    @FXML
     private VBox dynamicGroupContainer;
-    @FXML
-    private TextField gesamtsummeField;
     @FXML
     private Button addGroupButton;
     @FXML
-    private Button saveButton;
-    @FXML
-    private Button printButton;
-
-    @FXML
-    private MenuItem handleExit;
+    private Button  clearGroupButton;
+    
     @FXML
     private MenuItem handleHelp;
     @FXML
     private MenuItem handleSettings;
     @FXML
     private MenuItem handleViewStatistics;
-    @FXML
-    private ComboBox<String> sqlDropdown;
-
-    @FXML
-    private Button bescheidButton; // Hinzufügen des Bescheid-Buttons
 
     @SuppressWarnings("unused")
-    private HaushaltDAO haushaltDAO;
-    private StatistiktoolDAO statistikDAO;
+    
     private VerteilstelleDAO verteilstelleDAO;
     private List<TextField> dynamicGroupStartFields = new ArrayList<>();
     private List<TextField> dynamicGroupEndFields = new ArrayList<>();
-    private List<TextField> dynamicResultFields = new ArrayList<>();
+    
+    private UtilErrorLog utilerrorlog = new UtilErrorLog();
+    
     /**
      *
      */
 
+    @SuppressWarnings("unchecked")
     @FXML
     public void initialize()
     {
         verteilstelleComboBox.getItems().clear(); // ComboBox leeren
 
         // Initialisiere DAOs
-        statistikDAO = new StatistiktoolDAOimpl();
         verteilstelleDAO = new VerteilstelleDAOimpl();
 
         // Lade Verteilstellen in die ComboBox
         List<Verteilstelle> verteilstelleList = verteilstelleDAO.readAll();
         if (verteilstelleList != null && !verteilstelleList.isEmpty())
         {
-            for (Verteilstelle verteilstelle : verteilstelleList)
-            {
-                String bezeichnung = verteilstelle.getBezeichnung();
-                if (!verteilstelleComboBox.getItems().contains(bezeichnung))
-                {
-                    verteilstelleComboBox.getItems().add(bezeichnung);
-                }
-            }
+          ObservableList<Verteilstelle> vliste = FXCollections.observableArrayList(verteilstelleList);
+          verteilstelleComboBox.getItems().add(new Verteilstelle(Constants.ALL_DISTRIBUTION_POINTS, "Alle","", 0));
+          verteilstelleComboBox.getItems().addAll(vliste);
         } else
         {
             System.out.println("Keine Verteilstellen gefunden oder Fehler beim Abrufen.");
@@ -122,7 +117,7 @@ public class StatistiktoolController
             }
             if (newValue.length() == 4)
             {
-                loadAltersstatistik();
+              //              loadAltersstatistik();
             }
         });
 
@@ -130,12 +125,18 @@ public class StatistiktoolController
         initializeDynamicFields();
 
         // Setze Action-Events für Buttons
-        openSQLQueryToolButton.setOnAction(this::openSQLQueryTool);
         addGroupButton.setOnAction(event -> handleAddGroup());
-        //generateSQLQueryButton.setOnAction(this::handleGenerateSQLQuery);
-        bescheidButton.setOnAction(this::openBescheidStatistik);
-
-        handleLoadData(null);
+        loadheader("Tafel Statistik - Angemeldet als :", "Statistik:Altersstruktur");
+        loadresultview(this,childResultContainer.getPrefWidth(),childResultContainer.getPrefHeight());
+        
+         
+    }
+    
+    @FXML
+    private void handleClearGroup()
+    {
+      initializeDynamicFields();
+      dynamicGroupContainer.getChildren().clear();
     }
 
     private void initializeDynamicFields()
@@ -162,117 +163,20 @@ public class StatistiktoolController
         }
     }
 
-    @FXML
-    private void openSQLQueryTool(ActionEvent actionEvent)
+
+    public String getCurrentSQLQuery()
     {
-        String sqlQuery;
-        try
+        if (!validateInput())
         {
-            sqlQuery = getCurrentSQLQuery();
-        } catch (IllegalArgumentException e)
-        {
-            // Zeige eine Fehlermeldung an und beende die Methode
-            showAlert(Alert.AlertType.ERROR, "Fehler", e.getMessage());
-            return;
+            return "";
         }
-
-        try
-        {
-            // Lade die FXML-Datei und initialisiere den Controller
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/kundenverwaltung/fxml/admintool/StatistiktoolSQL.fxml"));
-            Parent root = fxmlLoader.load();
-
-            // Hol den Controller und setze die SQL-Abfrage
-            StatistiktoolSQLController sqlController = fxmlLoader.getController();
-            sqlController.setSqlQuery(sqlQuery);
-
-            // Erstelle eine neue Stage für das SQL-Abfrage-Tool
-            Stage stage = new Stage();
-            stage.setTitle("SQL-Abfrage Tool");
-
-            Scene scene = new Scene(root);
-            GlobalEventLogger.attachTo("StatistikToolSQL", scene);
-            stage.setScene(scene);
-            sqlController.setStage(stage);
-            stage.show();
-        } catch (IOException e)
-        {
-            // Zeige eine Fehlermeldung an, wenn die FXML-Datei nicht geladen werden kann
-            showAlert(Alert.AlertType.ERROR, "Fehler", "Fehler beim Laden der FXML-Datei: " + e.getMessage());
-        }
-    }
-
-    private String getCurrentSQLQuery()
-    {
-        String year = yearField.getText().trim();
-
-        // Validierung der Eingaben für das Jahr
-        if (year.isEmpty())
-        {
-            throw new IllegalArgumentException("Jahr muss angegeben werden.");
-        }
-
-        // SQL-Abfrage für das Jahr erstellen
-        StringBuilder query = new StringBuilder("SELECT * FROM familienmitglied WHERE (YEAR(gDatum) = " + year);
-
-        // Überprüfen der Altersgruppen-Eingaben
-        boolean hasAgeGroup = false;
-
-        // Begrenzung auf maximal 16 Gruppen
-        int maxGroups = Math.min(dynamicGroupStartFields.size(), 16);
-
-        for (int i = 0; i < maxGroups; i++)
-        {
-            TextField startField = dynamicGroupStartFields.get(i);
-            TextField endField = dynamicGroupEndFields.get(i);
-
-            String startAgeText = startField.getText().trim();
-            String endAgeText = endField.getText().trim();
-
-            if (!startAgeText.isEmpty() && !endAgeText.isEmpty())
-            {
-                int startAge = Integer.parseInt(startAgeText);
-                int endAge = Integer.parseInt(endAgeText);
-
-                if (startAge > endAge)
-                {
-                    throw new IllegalArgumentException("Das Startalter darf nicht größer als das Endalter sein.");
-                }
-
-                // Altersgrenzen zur Abfrage hinzufügen
-                if (hasAgeGroup)
-                {
-                    query.append(" OR ");
-                } else
-                {
-                    query.append(" OR (");
-                    hasAgeGroup = true; // Altersgruppe wurde hinzugefügt
-                }
-
-                // Altersgrenzen korrekt in Klammern setzen
-                query.append("(TIMESTAMPDIFF(YEAR, gDatum, CURDATE()) BETWEEN ")
-                        .append(startAge).append(" AND ").append(endAge).append(")");
-            }
-        }
-
-        // Schließe die Klammer für die Altersgruppenbedingung, falls eine Altersgruppe hinzugefügt wurde
-        if (hasAgeGroup)
-        {
-            query.append(")");
-        }
-
-        // Schließe die Klammer für die WHERE-Bedingung
-        query.append(");");
-
+        List<int[]> altersgruppen = getAltersgruppen();
+        int selectedYear = getSelectedYear(yearField.getText().trim());
+        int verteilstellenId=getSelectedVerteilstelle();
+        String query = statistikDAO.buildSqlQueryAlterstatistik(verteilstellenId,selectedYear, altersgruppen);
+        
         return query.toString();
     }
-
-    /**
-     * @FXML private void handleGenerateSQLQuery(ActionEvent event) {
-     * // Diese Methode öffnet das SQL-Tool und übergibt die SQL-Abfrage
-     * openSQLQueryTool(event);
-     * }
-     **/
 
     @FXML
     private void handleAddGroup()
@@ -288,14 +192,11 @@ public class StatistiktoolController
         startField.setPromptText("Start");
         TextField endField = new TextField();
         endField.setPromptText("Ende");
-        TextField resultField = new TextField();
-        resultField.setEditable(false);
 
         dynamicGroupStartFields.add(startField);
         dynamicGroupEndFields.add(endField);
-        dynamicResultFields.add(resultField);
-
-        groupBox.getChildren().addAll(new Label("Gruppe:"), startField, new Label("bis"), endField, new Label("Ergebnis:"), resultField);
+        
+        groupBox.getChildren().addAll(new Label("Gruppe:"), startField, new Label("bis"), endField);
         dynamicGroupContainer.getChildren().add(groupBox);
 
         startField.textProperty().addListener((observable, oldValue, newValue) ->
@@ -303,9 +204,6 @@ public class StatistiktoolController
             if (!newValue.matches("\\d{0,2}"))
             {  // Erlaubt nur 0 bis 2 Stellen
                 startField.setText(oldValue);
-            } else
-            {
-                loadAltersstatistik();
             }
         });
 
@@ -314,96 +212,10 @@ public class StatistiktoolController
             if (!newValue.matches("\\d{0,2}"))
             {  // Erlaubt nur 0 bis 2 Stellen
                 endField.setText(oldValue);
-            } else
-            {
-                loadAltersstatistik();
             }
         });
     }
-
-    /*
-     public void executeStatistikQuery(String query) {
-     try (Connection connection = statistikDAO.getConnection(); // Verbindung zur Datenbank holen
-     Statement statement = connection.createStatement();
-     ResultSet resultSet = statement.executeQuery(query)) {
-
-     // Zähler für die Ergebnisse
-     int index = 0;
-
-     // Durch die Ergebnismenge iterieren
-     while (resultSet.next()) {
-     if (index >= dynamicResultFields.size()) {
-     // Wenn mehr Ergebnisse als TextFields vorhanden sind, breche ab
-     System.out.println("Mehr Ergebnisse als verfügbare TextFields.");
-     break;
-     }
-
-     // Lese die Daten aus der Ergebnismenge
-     // Ersetze 'someColumnName' durch den tatsächlichen Spaltennamen aus deiner SQL-Abfrage
-     String result = resultSet.getString("someColumnName");
-
-     // Setze das Ergebnis in das entsprechende TextField
-     dynamicResultFields.get(index).setText(result);
-
-     // Weiter zum nächsten TextField
-     index++;
-     }
-
-     // Wenn es noch verbleibende TextFields gibt, setze diese auf leer
-     while (index < dynamicResultFields.size()) {
-     dynamicResultFields.get(index).setText("");
-     index++;
-     }
-
-     } catch (SQLException e) {
-     // Fehlerbehandlung: Fehlermeldung anzeigen
-     showAlert(Alert.AlertType.ERROR, "Fehler", "Fehler beim Ausführen der SQL-Abfrage: " + e.getMessage());
-     }
-     }
-     **/
-
-    /**
-     * Methode zum Laden der Altersstatistik.
-     * Diese Methode lädt die Statistikdaten basierend auf den eingegebenen Jahr, Altersgruppen und Verteilstelle
-    */
-    @FXML
-    private void loadAltersstatistik()
-    {
-        if (!validateInput())
-        {
-            return;
-        }
-        List<int[]> altersgruppen = getAltersgruppen();
-        int selectedYear = getSelectedYear();
-        Optional<Statistiktool> statistikOpt = statistikDAO.loadAltersstatistik(selectedYear, altersgruppen);
-        if (statistikOpt.isPresent())
-        {
-            Statistiktool statistik = statistikOpt.get();
-            int yearResult = statistik.getJahresergebnis();
-            int gesamtsumme = statistik.getGesamtsumme();
-            int[] gruppenErgebnisse = statistik.getGruppen();
-            setResults(yearResult, gesamtsumme, gruppenErgebnisse);
-        }
-    }
-
-    /**
-     * Setzt die Ergebnisse in den entsprechenden Ausgabefeldern.
-     *
-     * @param yearResult        Ergebnis für das Jahr
-     * @param gruppenErgebnisse Ergebnisse für die Altersgruppen
-     */
-    public void setResults(int yearResult, int gesamtsumme, int[] gruppenErgebnisse)
-    {
-        yearResultField.setText(String.valueOf(yearResult));
-        gesamtsummeField.setText(String.valueOf(gesamtsumme));
-        for (int i = 0; i < gruppenErgebnisse.length; i++)
-        {
-            if (i < dynamicResultFields.size())
-            {
-                dynamicResultFields.get(i).setText(String.valueOf(gruppenErgebnisse[i]));
-            }
-        }
-    }
+        
 
     /**
      * Validiert die Benutzereingaben.
@@ -413,30 +225,38 @@ public class StatistiktoolController
      */
     private boolean validateInput()
     {
-        String yearInput = yearField.getText().trim();
-        boolean yearValid = yearInput.matches("\\d{4}");
-
-        int year = yearValid ? Integer.parseInt(yearInput) : -1;
-        if (yearValid && (year < 1900 || year > 2100))
+      utilerrorlog.addError(Constants.ERROR_MSG_CLEAR, null );
+      boolean hasError = false; 
+      String yearInput = yearField.getText().trim();
+      hasError = !(yearInput.matches("\\d{4}") ||  yearInput.isEmpty()) ;
+      if (hasError)
+      {
+        utilerrorlog.addError(Constants.ERROR_MSG_ADD, "Ungültiges Jahresformat: " + yearInput + ". Bitte verwenden Sie das Format JJJJ.");
+      }
+      if (!hasError)
+      {
+        int year=getSelectedYear(yearInput) ; // -1 Error // 0 Empty
+        if (year == Constants.NUMERIC_ERROR)
         {
-            yearValid = false;
+          hasError=true;
+          utilerrorlog.addError(Constants.ERROR_MSG_ADD, "Ungültiges Jahresformat: " + yearInput + ". Bitte verwenden Sie das Format JJJJ.");
         }
-
+        else
+        {
+          if ((year < 1900 || year > 2100) && year != 0)
+          {
+            hasError=true;
+            utilerrorlog.addError(Constants.ERROR_MSG_ADD, "Ungültiges Jahr: " + yearInput + ". Bitte Jahr zwischen 1900 und 2100.");
+          }
+        }
+      }
+      if (!hasError)
+      { 
         List<int[]> altersgruppen = getAltersgruppen();
-
-        boolean hasError = false;
-        StringBuilder errorMessage = new StringBuilder();
-
         if (yearInput.isEmpty() && altersgruppen.isEmpty())
         {
             hasError = true;
-            errorMessage.append("Bitte geben Sie entweder ein Jahr oder mindestens eine Altersgruppe ein.\n");
-        }
-
-        if (!yearInput.isEmpty() && !yearValid)
-        {
-            hasError = true;
-            errorMessage.append("Das Jahr muss eine vierstellige Zahl sein und zwischen 1900 und 2100 liegen.\n");
+            utilerrorlog.addError(Constants.ERROR_MSG_ADD, "Bitte geben Sie entweder ein Jahr oder mindestens eine Altersgruppe ein.");
         }
 
         if (!altersgruppen.isEmpty())
@@ -445,30 +265,34 @@ public class StatistiktoolController
             {
                 int startAge = gruppe[0];
                 int endAge = gruppe[1];
-
+                if (startAge == Constants.INTERNAL_ERROR || startAge == Constants.NUMERIC_ERROR )
+                {
+                  hasError = true;
+                  utilerrorlog.addError(Constants.ERROR_MSG_ADD,"Numerischer Formatfehler Gruppe "+endAge);
+                  break;
+                }
                 // Überprüfe, ob die Alterswerte gültige zwei-stellige Zahlen sind
                 if (startAge < 0 || startAge > 99 || endAge < 0 || endAge > 99)
                 {
                     hasError = true;
-                    errorMessage.append("Alterswerte müssen zwei-stellig sein (0-99).\n");
+                    utilerrorlog.addError(Constants.ERROR_MSG_ADD,"Alterswerte müssen zwei-stellig sein (0-99).");
                     break;
                 }
 
                 if (startAge > endAge)
                 {
                     hasError = true;
-                    errorMessage.append("Das Startalter darf nicht größer als das Endalter sein.\n");
+                    utilerrorlog.addError(Constants.ERROR_MSG_ADD,"Das Startalter darf nicht größer als das Endalter sein.");
                 }
             }
         }
-
-        if (hasError)
-        {
-            showAlert(Alert.AlertType.ERROR, "Fehler", errorMessage.toString());
-            return false;
-        }
-
-        return true;
+      }
+      if (hasError)
+      {
+          showalert.showAlert(Alert.AlertType.ERROR, "Fehler", utilerrorlog.getErrormessage());
+      }
+      return !hasError;
+    
     }
 
     /**
@@ -480,13 +304,10 @@ public class StatistiktoolController
     public List<int[]> getAltersgruppen()
     {
         List<int[]> altersgruppen = new ArrayList<>();
-        boolean hasError = false;
-        StringBuilder errorMessage = new StringBuilder();
-
         // Überprüfen, ob die Listen korrekt synchronisiert sind
         if (dynamicGroupStartFields.size() != dynamicGroupEndFields.size())
         {
-            showAlert(Alert.AlertType.ERROR, "Fehler", "Die Anzahl der Start- und Endfelder stimmt nicht überein.");
+            altersgruppen.add(new int[]{Constants.INTERNAL_ERROR,0});
             return altersgruppen;
         }
 
@@ -503,6 +324,7 @@ public class StatistiktoolController
             // Wenn beide Felder leer sind, überspringen
             if (startText.isEmpty() && endText.isEmpty())
             {
+                System.out.println("Überspringe leere Altersgruppe " + (i + 1) );
                 continue;
             }
 
@@ -513,43 +335,21 @@ public class StatistiktoolController
                 {
                     int start = Integer.parseInt(startText);
                     int end = Integer.parseInt(endText);
+                    altersgruppen.add(new int[]{start, end});
 
-                    // Validierung: Endwert muss mindestens zwei Ziffern haben
-                    if (endText.length() < 2)
-                    {
-                        continue; // Endwert hat weniger als zwei Ziffern, keine Überprüfung nötig
-                    }
-
-                    // Validierung: Startwert darf nicht größer als Endwert sein
-                    if (start > end)
-                    {
-                        hasError = true;
-                        errorMessage.append("Der Startwert in Gruppe ").append(i + 1).append(" darf nicht größer als der Endwert sein.\n");
-                    } else
-                    {
-                        altersgruppen.add(new int[]{start, end});
-                    }
                 } else if (!startText.isEmpty() || !endText.isEmpty())
                 {
-                    // Hier keine Fehlermeldung, wenn nur ein Wert vorhanden ist
-                    continue;
-                }
+                  altersgruppen.clear();
+                  altersgruppen.add(new int[]{Constants.NUMERIC_ERROR,i});
+                  return altersgruppen;
+              }
             } catch (NumberFormatException e)
             {
-                // Die Fehlermeldung wird nur hinzugefügt, wenn beide Werte vorhanden sind
-                if (!startText.isEmpty() && !endText.isEmpty())
-                {
-                    hasError = true;
-                    errorMessage.append("Bitte geben Sie gültige Zahlen für die Altersgruppe ").append(i + 1).append(" ein.\n");
-                }
+                    altersgruppen.clear();
+                    altersgruppen.add(new int[]{Constants.NUMERIC_ERROR,i});
+                    return altersgruppen;
             }
         }
-
-        if (hasError)
-        {
-            showAlert(Alert.AlertType.ERROR, "Fehler", errorMessage.toString());
-        }
-
         return altersgruppen;
     }
 
@@ -558,76 +358,27 @@ public class StatistiktoolController
      *
      * @return Das eingegebene Jahr als int.
      */
-    public int getSelectedYear()
-    {
+    public int getSelectedYear(String input)
+    {   
         try
         {
-            String input = yearField.getText().trim();
-            return Integer.parseInt(input);
+            if (input.isBlank() || input.isEmpty())
+            {
+              return 0;
+            }
+            else
+            {
+              return Integer.parseInt(input);
+            }
         } catch (NumberFormatException e)
         {
-            showAlert(AlertType.ERROR, "Fehler", "Ungültiges Jahresformat: " + yearField.getText() + ". Bitte verwenden Sie das Format JJJJ.");
-            return -1;
+            return Constants.NUMERIC_ERROR;
         }
+        
     }
-
-    /**
-     * Speichert die Ergebnisse in einer CSV-Datei.
-     */
-    @FXML
-    private void handleSaveResults()
-    {
-        List<int[]> altersgruppen = getAltersgruppen();
-        int selectedYear = getSelectedYear();
-        int jahresergebnis = Integer.parseInt(yearResultField.getText());
-
-        List<Integer> ergebnisse = new ArrayList<>();
-        int gesamtsumme = 0; // Initialisierung der Gesamtsumme
-
-        for (TextField resultField : dynamicResultFields)
-        {
-            int ergebnis = Integer.parseInt(resultField.getText());
-            ergebnisse.add(ergebnis);
-            gesamtsumme += ergebnis; // Addiere das Ergebnis zur Gesamtsumme
-        }
-
-        boolean success = statistikDAO.saveAltersgruppen(selectedYear, altersgruppen, jahresergebnis, ergebnisse);
-
-        if (success)
-        {
-            gesamtsummeField.setText(String.valueOf(gesamtsumme)); // Setze die berechnete Gesamtsumme
-            showAlert(AlertType.ERROR, "Erfolg", "Ergebnisse erfolgreich gespeichert.");
-        } else
-        {
-            showAlert(AlertType.ERROR, "Fehler", "Fehler beim Speichern der Ergebnisse.");
-        }
-    }
-
-    /*
-     private void saveJahresergebnis(int year, int jahresergebnis) {
-     String insertQuery = "INSERT INTO jahresergebnisse (year, jahresergebnis) VALUES (?, ?) ON DUPLICATE KEY UPDATE jahresergebnis=VALUES(jahresergebnis)";
-     try (Connection conn = SQLConnection.getCon();
-     PreparedStatement pstmt = conn.prepareStatement(insertQuery)) {
-     pstmt.setInt(1, year);
-     pstmt.setInt(2, jahresergebnis);
-     pstmt.executeUpdate();
-     } catch (SQLException e) {
-     showAlert(AlertType.ERROR, "Fehler", "Fehler beim Speichern des Jahresergebnisses: " + e.getMessage());
-     e.printStackTrace();
-     }
-     }
-     **/
-
-    /**
-     * Beendet das Programm.
-    */
-    @FXML
-    private void handleExit()
-    {
-        Stage stage = (Stage) addGroupButton.getScene().getWindow(); /// Stage stage = (Stage) handleExit.getParentPopup().getOwnerWindow();
-        stage.close();
-    }
-
+    
+ 
+ 
     /**
      * Zeigt die Hilfe an.
      */
@@ -648,160 +399,23 @@ public class StatistiktoolController
                         +
                         "4. Altersgruppen eingeben: Geben Sie das Start- und Endalter für jede Altersgruppe ein. Zum Beispiel '20' und '30' für die Altersgruppe von 20 bis 30 Jahren.\n"
                         +
-                        "5. Ergebnisse anzeigen: Die Ergebnisse der Altersstruktur werden im Ergebnisbereich angezeigt. Die Gesamtsumme zeigt die Gesamtzahl der Personen, die auf die angegebenen Kriterien zutreffen.\n"
+                        "5. Abfrage ausführen: Die Ergebnisse der Altersstruktur werden im Ergebnisbereich angezeigt.\n"
                         +
-                        "6. Ergebnisse speichern: Klicken Sie auf 'Ergebnisse speichern', um die Ergebnisse in einer CSV-Datei zu speichern.\n\n"
+                        "6. CSV/PDF Export : Die Ergebnisse werden in einer CSV oder PDF Datei gespeichert.\n\n"
                         +
-                        "Hinweis: Wenn Sie nur das Jahr und die Verteilstelle eingeben, wird die Gesamtsumme für diese Kriterien angezeigt. Wenn Sie nur Altersgruppen eingeben, wird die Gesamtsumme für die angegebenen Altersgruppen angezeigt. Beides gleichzeitig zu verwenden, ist möglich."
+                        "Hinweis: Wenn Sie nur das Jahr und die Verteilstelle eingeben, wird die Gesamtsumme für diese Kriterien angezeigt. Wenn Sie nur Altersgruppen eingeben, wird die Gesamtsumme für die angegebenen Altersgruppen angezeigt. Beides gleichzeitig zu verwenden, ist nicht möglich."
         );
         alert.showAndWait();
     }
 
-    /**
-     * Öffnet das Admin-Tool.
-     */
-    @FXML
-    private void handleSettings()
-    {
-        System.out.println("Öffne Admin-Tool...");
-    }
-
-    /**
-     * Zeigt die gespeicherte Statistik an.
-     */
-    @FXML
-    private void handleViewStatistics()
-    {
-        List<String[]> statistikData = statistikDAO.loadStatistik("altersstatistik.csv");
-        if (statistikData.isEmpty())
-        {
-            showAlert(AlertType.ERROR, "Fehler", "Fehler beim Lesen der CSV-Datei.");
-            return;
-        }
-
-        StringBuilder content = new StringBuilder();
-        for (String[] row : statistikData)
-        {
-            content.append(String.join(",", row)).append("\n");
-        }
-
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("Gespeicherte Statistik");
-        alert.setHeaderText("Inhalt der CSV-Datei");
-        TextArea textArea = new TextArea(content.toString());
-        textArea.setEditable(false);
-        alert.getDialogPane().setContent(textArea);
-        alert.showAndWait();
-    }
-
-    /**
-     * Druckt die Ergebnisse als PDF.
-     */
-    @FXML
-    private void handlePrint()
-    {
-        try
-        {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("PDF speichern");
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Dateien", "*.pdf"));
-            File file = fileChooser.showSaveDialog(printButton.getScene().getWindow());
-            if (file != null)
-            {
-                saveAsPdf(file);
-            }
-        } catch (Exception e)
-        {
-            showAlert(AlertType.ERROR, "Fehler", "Fehler beim Drucken der Statistik: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Speichert die Ergebnisse als PDF-Datei.
-     *
-     * @param file Die Datei, in die die Ergebnisse gespeichert werden.
-     */
-    private void saveAsPdf(File file)
-    {
-        try (PDDocument document = new PDDocument())
-        {
-            PDPage page = new PDPage();
-            document.addPage(page);
-
-            try (PDPageContentStream contentStream = new PDPageContentStream(document, page))
-            {
-                contentStream.beginText();
-                contentStream.setFont(PDType1Font.HELVETICA, 12);
-                contentStream.setLeading(14.5f);
-                contentStream.newLineAtOffset(25, 725);
-
-                contentStream.showText("Altersstatistik");
-                contentStream.newLine();
-                contentStream.newLine();
-
-                contentStream.showText("Gesamtsumme: " + gesamtsummeField.getText());
-                contentStream.newLine();
-
-                for (int i = 0; i < dynamicGroupStartFields.size(); i++)
-                {
-                    String start = dynamicGroupStartFields.get(i).getText();
-                    String end = dynamicGroupEndFields.get(i).getText();
-                    String result = dynamicResultFields.get(i).getText();
-                    contentStream.showText("Gruppe " + start + " - " + end + ": " + result);
-                    contentStream.newLine();
-                }
-
-                contentStream.endText();
-            }
-
-            document.save(file);
-            showAlert(AlertType.ERROR, "Erfolg", "PDF erfolgreich gespeichert.");
-        } catch (IOException e)
-        {
-            showAlert(AlertType.ERROR, "Fehler", "Fehler beim Speichern des PDFs: " + e.getMessage());
-        }
-    }
+ 
+  
     /**
     */
     // Methode zum Abrufen des Jahres
     public String getYear()
     {
         return yearField.getText().trim();
-    }
-
-    @SuppressWarnings("unused")
-    private String generateAltersgruppenCondition(List<int[]> altersgruppen)
-    {
-        StringBuilder condition = new StringBuilder();
-        if (altersgruppen != null && !altersgruppen.isEmpty())
-        {
-            for (int i = 0; i < altersgruppen.size(); i++)
-            {
-                int startAlter = altersgruppen.get(i)[0];
-                int endAlter = altersgruppen.get(i)[1];
-                condition.append(String.format("(YEAR(CURDATE()) - YEAR(gDatum)) BETWEEN %d AND %d", startAlter, endAlter));
-                if (i < altersgruppen.size() - 1)
-                {
-                    condition.append(" OR ");
-                }
-            }
-        }
-        return condition.toString();
-    }
-
-    /**
-     * Zeigt eine Benachrichtigung an.
-     *
-     * @param title   Der Titel der Benachrichtigung.
-     * @param message Die Nachricht der Benachrichtigung.
-     */
-    private void showAlert(AlertType error, String title, String message)
-    {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 
     /**
@@ -812,41 +426,9 @@ public class StatistiktoolController
     {
     }
 
-    /**
-     */
-    @FXML
-    public void handleLoadData(ActionEvent actionEvent)
-    {
-        try
-        {
-            // Daten aus der Datenbank laden
-            List<Verteilstelle> verteilstellen = verteilstelleDAO.readAll();
-            Set<String> verteilstelleNames = new HashSet<>(); // Verwende Set für eindeutige Werte
 
-            // Überprüfen, ob Daten geladen wurden
-            if (verteilstellen != null && !verteilstellen.isEmpty())
-            {
-                // Namen der Verteilstellen in eine Set umwandeln
-                for (Verteilstelle v : verteilstellen)
-                {
-                    verteilstelleNames.add(v.getBezeichnung());
-                }
-
-                // Die ComboBox mit den geladenen Daten aktualisieren
-                verteilstelleComboBox.getItems().clear(); // Vorherige Einträge löschen
-                verteilstelleComboBox.getItems().addAll(verteilstelleNames); // Neue Einträge hinzufügen
-            } else
-            {
-                showAlert(AlertType.ERROR, "Fehler", "Keine Verteilstellen gefunden oder Fehler beim Abrufen.");
-            }
-        } catch (Exception e)
-        {
-            // Fehlerbehandlung
-            showAlert(AlertType.ERROR, "Fehler", "Fehler beim Laden der Daten: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
+    
+    // 
     @FXML
     private void handleOpenGuthabenWindow(ActionEvent event)
     {
@@ -854,7 +436,8 @@ public class StatistiktoolController
         {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/kundenverwaltung/fxml/statistiktool/GuthabenStatistik.fxml"));
             Parent root = loader.load();
-
+            GuthabenStatistikController controller = loader.getController();
+            controller.setUser(user);
             Stage stage = new Stage();
             stage.setTitle("Guthaben und offene Beträge");
 
@@ -868,7 +451,7 @@ public class StatistiktoolController
         } catch (Exception e)
         {
             e.printStackTrace();
-            showAlert(AlertType.ERROR, "Fehler", "Fehler beim Öffnen des Guthaben-Fensters: " + e.getMessage());
+            showalert.showAlert(AlertType.ERROR, "Fehler", "Fehler beim Öffnen des Guthaben-Fensters: " + e.getMessage());
         }
     }
     /**
@@ -921,11 +504,11 @@ public class StatistiktoolController
         } catch (IOException e)
         {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Fehler", "Fehler beim Öffnen der Herkunft-Statistik Fenster: " + e.getMessage());
+            showalert.showAlert(Alert.AlertType.ERROR, "Fehler", "Fehler beim Öffnen der Herkunft-Statistik Fenster: " + e.getMessage());
         } catch (SQLException e)
         {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Fehler", "Datenbankfehler: " + e.getMessage());
+            showalert.showAlert(Alert.AlertType.ERROR, "Fehler", "Datenbankfehler: " + e.getMessage());
         }
     }
 
@@ -951,7 +534,7 @@ public class StatistiktoolController
             stage.show();
         } catch (IOException e)
         {
-            showAlert(Alert.AlertType.ERROR, "Fehler", "Das FXML konnte nicht geladen werden: " + e.getMessage());
+          showalert.showAlert(Alert.AlertType.ERROR, "Fehler", "Das FXML konnte nicht geladen werden: " + e.getMessage());
         }
     }
     /**
@@ -992,7 +575,7 @@ public class StatistiktoolController
             // 2) Falls fxmlUrl == null, wurde die Datei nicht gefunden
             if (fxmlUrl == null)
             {
-                showAlert(Alert.AlertType.ERROR, "Fehler",
+              showalert.showAlert(Alert.AlertType.ERROR, "Fehler",
                         "Die FXML-Ressource wurde nicht gefunden! "
                       + "Pfad fehlerhaft oder Datei existiert nicht.");
                 return; // Methode beenden, da wir nicht laden können
@@ -1012,7 +595,7 @@ public class StatistiktoolController
         } catch (IOException e)
         {
             // 5) Fehler beim Laden/Parsen der FXML
-            showAlert(Alert.AlertType.ERROR, "Fehler",
+          showalert.showAlert(Alert.AlertType.ERROR, "Fehler",
                     "Fehler beim Öffnen der Bescheidarten Statistik: " + e.getMessage());
             e.printStackTrace();
         }

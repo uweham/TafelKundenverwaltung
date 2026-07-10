@@ -2,7 +2,7 @@ package kundenverwaltung.dao;
 
 import kundenverwaltung.controller.StatistiktoolController;
 import kundenverwaltung.model.statistiktool.Statistiktool;
-
+import kundenverwaltung.service.Constants;
 import java.io.*;
 import java.sql.*;
 import java.time.LocalDate;
@@ -14,79 +14,180 @@ import java.util.*;
  */
 public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolDAO
 {
+  record SQLStringPar(int pos,String value) {};
+  record SQLIntPar(int pos,int value) {};
 
+  List<SQLStringPar>sqlstringpar=new ArrayList<>();
+  List<SQLIntPar>sqlintpar=new ArrayList<>();
+  private int cntpar=0;
+
+   public void clearSQLPar()
+   {
+     sqlstringpar.clear();
+     sqlintpar.clear();
+     cntpar=0;
+   }
+   
+   public void addSqlPar(int pos,String value)
+   {
+     sqlstringpar.add(new SQLStringPar(pos, value));
+     cntpar++;
+   }
+   
+   public void addSqlPar(int pos,int value)
+   {
+     sqlintpar.add(new SQLIntPar(pos, value));
+     cntpar++;
+   }
     /**
      * Lädt die Altersstatistik aus der Datenbank basierend auf dem Jahr und den Altersgruppen.
      * @param year Das Jahr, für das die Statistik geladen werden soll.
      * @param altersgruppen Eine Liste von Altersgruppen, die in der Statistik berücksichtigt werden sollen.
      * @return Ein Optional, das das Statistiktool enthält, falls die Abfrage erfolgreich war.
      */
-
-    public Optional<Statistiktool> loadAltersstatistik(int year, List<int[]> altersgruppen)
+    public String buildSqlQueryAlterstatistik(int verteilstelleId, int year, List<int[]> altersgruppen)
     {
-        if (year < 0 && altersgruppen.isEmpty())
-        {
-            System.out.println("Bitte geben Sie ein gültiges Jahr oder Altersbereiche ein.");
-            return Optional.empty();
+      /* sample query
+       * select b.grp_age_from,b.grp_age_to,count(*) as age_count from 
+         (select haushaltId,TIMESTAMPDIFF(YEAR, gDatum, CURDATE()) as age from familienmitglied) a  
+          join 
+           (select 0 as grp_age_from, 6 as grp_age_to from dual union
+            select 7 as grp_age_from, 99 as grp_age_to from dual ) b
+            on a.age between b.grp_age_from and b.grp_age_to
+            group by b.grp_age_from,b.grp_age_to
+
+       */
+      String sqlsubquery= (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS)?
+                          " true ":
+                          " haushaltId in (select kundennummer from haushalt where verteilstellenId = "+verteilstelleId+" )";
+      String sqlquery="";
+      if (year == 0)
+      {
+         sqlquery = "select b.grp_age_from,b.grp_age_to,count(*) as age_count from "
+                        + "(select haushaltId,TIMESTAMPDIFF(YEAR, gDatum, CURDATE()) as age from familienmitglied "
+                        + "where "
+                        + sqlsubquery
+                        + ") a " 
+                        + "join ( ";
+              for (int i = 0; i < altersgruppen.size(); i++)
+                  {
+                    sqlquery += (i>0)?" union select ":" select ";
+                    sqlquery += altersgruppen.get(i)[0]+" as grp_age_from, "+ altersgruppen.get(i)[1] + " as grp_age_to from dual";
+                  }
+              sqlquery += ") b"
+                          +" on a.age between b.grp_age_from and b.grp_age_to "
+                          +" group by b.grp_age_from,b.grp_age_to ";
         }
+      else
+      {
+        sqlquery="select "+year+" as year_of_birth, "
+                +" count(CASE WHEN YEAR(gDatum) = "+year
+                +" Then 1 END) as year_count from familienmitglied"
+                + " where "
+                + sqlsubquery;
+      }
+      return sqlquery;      
 
-        StringBuilder sqlBuilder = new StringBuilder("SELECT COUNT(*) AS Gesamtsumme");
-        int currentYear = LocalDate.now().getYear();
-
-        for (int i = 0; i < altersgruppen.size(); i++)
-        {
-            sqlBuilder.append(", SUM(CASE WHEN ")
-                    .append(currentYear)
-                    .append(" - YEAR(gDatum) BETWEEN ")
-                    .append(altersgruppen.get(i)[0])
-                    .append(" AND ")
-                    .append(altersgruppen.get(i)[1])
-                    .append(" THEN 1 ELSE 0 END) AS Gruppe")
-                    .append(i);
-        }
-
-        if (year >= 0)
-        {
-            sqlBuilder.append(", SUM(CASE WHEN YEAR(gDatum) = ")
-                    .append(year)
-                    .append(" THEN 1 ELSE 0 END) AS GeburtsjahrErgebnis");
-        }
-
-        sqlBuilder.append(" FROM familienmitglied WHERE ");
-        if (year >= 0)
-        {
-            sqlBuilder.append("YEAR(gDatum) = ").append(year).append(" OR ");
-        }
-
-        sqlBuilder.append("1=1");
-
-        String sql = sqlBuilder.toString();
-        System.out.println("SQL-Abfrage: " + sql);
-
-        try (Connection conn = SQLConnection.getCon();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery())
-        {
-            if (rs.next())
-            {
-                int gesamtsumme = rs.getInt("Gesamtsumme");
-                int[] gruppen = new int[altersgruppen.size()];
-                for (int i = 0; i < altersgruppen.size(); i++)
-                {
-                    gruppen[i] = rs.getInt("Gruppe" + i);
-                }
-                int geburtsjahrErgebnis = year >= 0 ? rs.getInt("GeburtsjahrErgebnis") : 0;
-                return Optional.of(new Statistiktool(gesamtsumme, gruppen, geburtsjahrErgebnis));
-            }
-        } catch (SQLException e)
-        {
-            System.out.println("Datenabfrage fehlgeschlagen: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return Optional.empty();
     }
-    /**
-     */
+    
+    public String buildSqlQueryGuthabenstatistik(int verteilstelleId,  int statistictypId)
+    {
+      
+      String sqlquery="";
+      String sqlhaving=switch (statistictypId) {
+        case Constants.STATISTIK_AMOUNTS_ALL -> "";
+        case Constants.STATISTIK_AMOUNTS_CREDITS -> " having saldo>0 " ;
+        case Constants.STATISTIK_AMOUNTS_OUTSTANDING -> " having saldo < 0";
+        default -> " ";
+      };
+      if (statistictypId != Constants.STATISTIK_AMOUNTS_ERROR)
+      {
+        sqlquery= "SELECT  e.kunde, f.vName,f.nName, "
+            + "    sum(e.summeEinkauf) as summeEinkauf, sum(e.summeZahlung) as summeZahlung, "
+            + "    sum(case when e.warentyp <> "+Constants.WARENTYPID_GUTSCHRIFT+" then e.anzahlKinder+ e.anzahlErwachsene else 0 end) as anzahlPortionen ,"
+            + "    sum(e.summeZahlung-e.summeEinkauf) as berechnetersaldo"
+            + "    FROM einkauf e  JOIN familienmitglied f ON e.person = f.personId "
+          //  + "    JOIN warentyp w ON e.warentyp = w.warentypId "
+            + "    JOIN verteilstelle v ON e.beiVerteilstelle  = v.verteilstellenId "
+            + "    WHERE " 
+            +    ((verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS) ? " true  ":"e.beiVerteilstelle = ? ")
+            + "  AND e.storniertAm IS NULL "
+            + "    AND f.haushaltsVorstand = 1 "
+            + "    group by e.kunde "
+            +  sqlhaving + " ;";
+      }
+      else 
+      {
+        sqlquery="SELECT  e.kunde, f.vName,f.nName,sum(e.summeZahlung-e.summeEinkauf) as berechnetersaldo, h.saldo as haushaltsaldo "
+            +    " FROM einkauf e  JOIN familienmitglied f ON e.person = f.personId "
+            +    " JOIN haushalt h ON e.kunde = h.kundennummer "
+            +    " WHERE "
+            +   ((verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS) ? " true  ":"e.beiVerteilstelle = ? ")
+            +     " AND e.storniertAm IS NULL "
+            +     " AND f.haushaltsVorstand = 1 "
+            +    " group by e.kunde "
+            +    " having berechnetersaldo != haushaltsaldo"
+            +    " ;";
+            
+            
+      }
+      return sqlquery;
+    }
+    
+    @Override
+    public Optional<ResultSet> loadStatistik(String query) {
+      System.out.println("SQL-Abfrage: " + query);
+      Connection conn = null;
+      PreparedStatement pstmt = null;
+      ResultSet rs = null;
+      try 
+        {
+           conn = SQLConnection.getCon();
+           pstmt = conn.prepareStatement(query); 
+           if (cntpar>0)
+           {
+             for (int i=0 ;i<sqlstringpar.size() ;i++)
+             {
+               pstmt.setString(sqlstringpar.get(i).pos  , sqlstringpar.get(i).value);
+             }
+             for (int i=0 ;i<sqlintpar.size() ;i++)
+             {
+               pstmt.setInt(sqlintpar.get(i).pos  , sqlintpar.get(i).value);
+             }
+           }
+           sqlstringpar.clear();
+           cntpar=0;
+           rs = pstmt.executeQuery();
+           return Optional.of(rs);
+          
+      } catch (SQLException e)
+      {
+          System.out.println("Datenabfrage fehlgeschlagen: " + e.getMessage());
+          e.printStackTrace();
+      }
+      finally {
+        // Do not close the ResultSet here, as it is returned to the caller.
+        // The caller is responsible for closing it.
+        if (pstmt != null) {
+            try {
+                pstmt.close();
+            } catch (SQLException e) {
+                System.out.println("Fehler beim Schließen des PreparedStatement: " + e.getMessage());
+            }
+        }
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                System.out.println("Fehler beim Schließen der Connection: " + e.getMessage());
+            }
+        }
+    }
+     return Optional.empty();
+    }
+   
+    
+    
     public void executeSQLVoidQuery(String sqlQuery) throws SQLException
     {
         try (Connection conn = SQLConnection.getCon();
@@ -330,7 +431,7 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
      * @param fileName Der Name der Datei, aus der die Daten geladen werden sollen.
      * @return Eine Liste von String-Arrays, die die geladenen Daten enthalten.
      */
-    @Override
+ /*   @Override
     public List<String[]> loadStatistik(String fileName)
     {
         List<String[]> statistikData = new ArrayList<>();
@@ -347,7 +448,8 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
         }
         return statistikData;
     }
-
+*/
+    
     /**
      * Führt eine benutzerdefinierte SQL-Abfrage aus.
      *
@@ -373,6 +475,12 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
     {
         return null; // Methode implementieren oder entfernen
     }
+
+
+
+
+
+ 
 
 }
 

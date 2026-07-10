@@ -9,6 +9,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -21,7 +22,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="800.0" prefWidth="1040.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.StatistiktoolController">
+<AnchorPane prefHeight="800.0" prefWidth="1040.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.StatistiktoolController">
     <children>
         <!-- Haupt-Container -->
         <VBox prefHeight="800.0" prefWidth="880.0" spacing="10" AnchorPane.leftAnchor="160.0">
@@ -31,42 +32,20 @@
                     <Menu text="Datei">
                         <items>
                             <MenuItem onAction="#handleExit" text="Programm beenden" />
-                            <MenuItem onAction="#handleViewStatistics" text="Statistikansicht" />
                         </items>
                     </Menu>
                     <Menu text="Hilfe">
                         <items>
                             <MenuItem onAction="#handleHelp" text="Anleitung" />
-                            <MenuItem onAction="#handleSettings" text="Einstellungen" />
                         </items>
                     </Menu>
                 </menus>
             </MenuBar>
             <Separator prefHeight="2.0" prefWidth="880.0" />
 
-            <!-- Kopfzeile -->
-            <HBox spacing="10">
-                <ImageView fitHeight="106.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
-                    <image>
-                        <Image url="@tafel.png" />
-                    </image>
-                </ImageView>
-                <VBox spacing="10">
-                    <padding>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                    </padding>
-                    <Text text="Tafel Statistik - Angemeldet als Administrator">
-                        <font>
-                            <Font size="16.0" />
-                        </font>
-                    </Text>
-                    <Text text="Grundeinstellung">
-                        <font>
-                            <Font name="System Italic" size="14.0" />
-                        </font>
-                    </Text>
-                </VBox>
-            </HBox>
+			<!-- <fx:include source="statistiktool/StatistiktoolHeader.fxml" /> -->
+			<HBox fx:id="childHeaderContainer" />
+			
             <Separator prefHeight="2.0" prefWidth="880.0" />
 
             <!-- Filterbereich -->
@@ -74,6 +53,7 @@
                 <padding>
                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                 </padding>
+    
                 <HBox spacing="10">
                     <Text text="Verteilstelle:">
                         <font>
@@ -82,15 +62,7 @@
                     </Text>
                     <ComboBox fx:id="verteilstelleComboBox" promptText="Verteilstelle auswählen" />
                 </HBox>
-                <HBox spacing="10">
-                    <Button fx:id="openSQLQueryToolButton" onAction="#openSQLQueryTool" text="SQL-Abfrage Tool öffnen" />
-                </HBox>
-                <Text text="Altersstruktur der Verteilstelle: Hauptstelle">
-                    <font>
-                        <Font name="System Bold Italic" size="16.0" />
-                    </font>
-                </Text>
-            </VBox>
+          </VBox>
             <Separator prefHeight="2.0" prefWidth="880.0" />
 
             <!-- Eingabe- und Ausgabe-Bereich -->
@@ -112,44 +84,33 @@
                         <GridPane.columnIndex>1</GridPane.columnIndex>
                         <GridPane.rowIndex>0</GridPane.rowIndex>
                     </TextField>
-                    <Label text="Jahresergebnis:">
+                    <Button fx:id="addGroupButton" onAction="#handleAddGroup" text="Gruppe hinzufügen">
                         <GridPane.columnIndex>2</GridPane.columnIndex>
                         <GridPane.rowIndex>0</GridPane.rowIndex>
-                    </Label>
-                    <TextField fx:id="yearResultField" editable="false" promptText="Ergebnis">
+                    </Button>
+                   <Button fx:id="clearGroupButton" onAction="#handleClearGroup" text="Gruppen löschen">
                         <GridPane.columnIndex>3</GridPane.columnIndex>
                         <GridPane.rowIndex>0</GridPane.rowIndex>
-                    </TextField>
-                    <Button fx:id="addGroupButton" onAction="#handleAddGroup" text="Gruppe hinzufügen">
-                        <GridPane.columnIndex>4</GridPane.columnIndex>
-                        <GridPane.rowIndex>0</GridPane.rowIndex>
                     </Button>
+
                     <Label />
+               <columnConstraints>
+                  <ColumnConstraints />
+                  <ColumnConstraints />
+                  <ColumnConstraints />
+                  <ColumnConstraints />
+                  <ColumnConstraints />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints />
+               </rowConstraints>
                 </GridPane>
                 <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="800.0">
                     <VBox fx:id="dynamicGroupContainer" spacing="10" />
                 </ScrollPane>
             </VBox>
-
-            <!-- Ergebnisbereich -->
-            <VBox spacing="10">
-                <padding>
-                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                </padding>
-                <GridPane fx:id="resultGrid" hgap="10" vgap="10">
-                    <Label text="Gesamtsumme:">
-                        <GridPane.columnIndex>0</GridPane.columnIndex>
-                        <GridPane.rowIndex>0</GridPane.rowIndex>
-                    </Label>
-                    <TextField fx:id="gesamtsummeField" editable="false">
-                        <GridPane.columnIndex>1</GridPane.columnIndex>
-                        <GridPane.rowIndex>0</GridPane.rowIndex>
-                    </TextField>
-                </GridPane>
-                <Button fx:id="saveButton" onAction="#handleSaveResults" text="Speichern" />
-                <Button fx:id="printButton" onAction="#handlePrint" text="Drucken" />
-
-            </VBox>
+ 			<VBox fx:id="childResultContainer" prefHeight="350.0" prefWidth="850.0"/>
+ 			<!-- <fx:include source="statistiktool/StatistiktoolResultView.fxml" /> -->		
         </VBox>
 
         <!-- Navigation -->
@@ -163,13 +124,13 @@
                 </font>
             </Text>
             <!-- Button zur Öffnung des Guthaben-Fensters -->
-            <Button prefHeight="31.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Altersstatistik" />
-            <Button prefHeight="31.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Guthaben und offene Beträge" fx:id="guthabenButton" onAction="#handleOpenGuthabenWindow"/>
-            <Button prefHeight="31.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Nationalität" fx:id="nationalitätButton" onAction="#handleOpenNationalitaetStatistik"  />
-            <Button prefHeight="31.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Herkunft der Kunden" onAction="#openHerkunft"/>
-            <Button prefHeight="31.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Kundeninformationen" fx:id="archivierteKundenButton" onAction="#openArchivierteKunden"/>
-            <Button prefHeight="31.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" fx:id="bescheidButton" text="Bescheidarten Statistik" onAction="#openBescheidStatistik"/>
-            <Button prefHeight="31.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Jahresübersicht" onAction="#openJahresuebersicht" />
+            <Button prefHeight="31.0" prefWidth="200.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Altersstruktur" />
+            <Button fx:id="guthabenButton" onAction="#handleOpenGuthabenWindow" prefHeight="31.0" prefWidth="200.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Guthaben und offene Beträge" />
+            <Button fx:id="nationalitätButton" onAction="#handleOpenNationalitaetStatistik" prefHeight="31.0" prefWidth="200.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Nationalität" />
+            <Button onAction="#openHerkunft" prefHeight="31.0" prefWidth="200.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Herkunft der Kunden" />
+            <Button fx:id="archivierteKundenButton" onAction="#openArchivierteKunden" prefHeight="31.0" prefWidth="200.0"  style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Kundeninformationen" />
+            <Button fx:id="bescheidButton" onAction="#openBescheidStatistik" prefHeight="31.0" prefWidth="200.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Bescheidarten Statistik" />
+            <Button onAction="#openJahresuebersicht" prefHeight="31.0" prefWidth="200.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Jahresübersicht" />
         </VBox>
     </children>
 </AnchorPane>
