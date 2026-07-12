@@ -106,25 +106,24 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
             + "    sum(e.summeEinkauf) as summeEinkauf, sum(e.summeZahlung) as summeZahlung, "
             + "    sum(case when e.warentyp <> "+Constants.WARENTYPID_GUTSCHRIFT+" then e.anzahlKinder+ e.anzahlErwachsene else 0 end) as anzahlPortionen ,"
             + "    sum(e.summeZahlung-e.summeEinkauf) as berechnetersaldo"
-            + "    FROM einkauf e  JOIN familienmitglied f ON e.person = f.personId "
-          //  + "    JOIN warentyp w ON e.warentyp = w.warentypId "
+            + "    FROM einkauf e  "
             + "    JOIN verteilstelle v ON e.beiVerteilstelle  = v.verteilstellenId "
+            + "    JOIN familienmitglied f ON e.kunde = f.haushaltId and f.haushaltsVorstand = 1"
             + "    WHERE " 
             +    ((verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS) ? " true  ":"e.beiVerteilstelle = ? ")
             + "  AND e.storniertAm IS NULL "
-            + "    AND f.haushaltsVorstand = 1 "
             + "    group by e.kunde "
             +  sqlhaving + " ;";
       }
       else 
       {
         sqlquery="SELECT  e.kunde, f.vName,f.nName,sum(e.summeZahlung-e.summeEinkauf) as berechnetersaldo, h.saldo as haushaltsaldo "
-            +    " FROM einkauf e  JOIN familienmitglied f ON e.person = f.personId "
+            +    " FROM einkauf e  "
             +    " JOIN haushalt h ON e.kunde = h.kundennummer "
+            +    " JOIN familienmitglied f ON e.kunde = f.haushaltId and f.haushaltsVorstand = 1 "
             +    " WHERE "
             +   ((verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS) ? " true  ":"e.beiVerteilstelle = ? ")
             +     " AND e.storniertAm IS NULL "
-            +     " AND f.haushaltsVorstand = 1 "
             +    " group by e.kunde "
             +    " having berechnetersaldo != haushaltsaldo"
             +    " ;";
