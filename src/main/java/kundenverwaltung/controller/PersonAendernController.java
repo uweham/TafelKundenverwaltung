@@ -517,7 +517,7 @@ public class PersonAendernController
 			{
 				element.setHaushaltsVorstand(false);
 				checkUpdate = new FamilienmitgliedDAOimpl().update(element);
-				break;
+				// break;
 			}
 		}
 
