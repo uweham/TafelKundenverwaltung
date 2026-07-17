@@ -51,6 +51,12 @@ public class Constants {
   public static final int STATISTIK_AMOUNTS_OUTSTANDING = 2;
   public static final int STATISTIK_AMOUNTS_ERROR = 3;
   
+  public static final int STATISTIK_RANGE_ALL=0;
+  public static final int STATISTIK_RANGE_ACTIVE=1;
+  public static final int STATISTIK_RANGE_ARCHIV = 2;
+  public static final int STATISTIK_RANGE_LOCKED = 3;
+  
+  
   public static final int WARENTYPID_GUTSCHRIFT = 3; // change this value when change in sql table warentyp
   
 }
