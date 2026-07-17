@@ -16,6 +16,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import kundenverwaltung.Benachrichtigung;
 import kundenverwaltung.controller.MainController;
+import kundenverwaltung.dao.EinkaufDAO;
+import kundenverwaltung.dao.EinkaufDAOimpl;
 import kundenverwaltung.dao.EinstellungenDAO;
 import kundenverwaltung.dao.EinstellungenDAOimpl;
 import kundenverwaltung.dao.HaushaltDAOimpl;
@@ -62,6 +64,7 @@ public class VerteilstellenController implements Initializable
     private VerteilstelleDAO verteilstelleDAO = new VerteilstelleDAOimpl();
     private ArrayList<Verteilstelle> verteilstellenliste = new ArrayList<>();
     private EinstellungenDAO einstellungenDAO = new EinstellungenDAOimpl();
+    private EinkaufDAO einkaufDAO = new EinkaufDAOimpl();
     private Einstellungen einstellungen;
     private static Verteilstelle verteilstelleChange;
 
@@ -199,6 +202,11 @@ public class VerteilstellenController implements Initializable
 
 				haushaltDAOimpl.update(household);
 			}
+			// records of shopping -> change distribution point
+			int newDistributionPointId=newDistributionPoint.getId();
+			int deleteDistributionsPointId=deleteDistributionsPoint.getId();
+			einkaufDAO.changeverteilstelle( deleteDistributionsPointId,newDistributionPointId);
+			
 			verteilstelleDAO.delete(deleteDistributionsPoint);
 			refreshTableView();
 		}

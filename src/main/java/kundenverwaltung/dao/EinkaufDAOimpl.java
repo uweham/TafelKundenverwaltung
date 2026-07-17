@@ -95,12 +95,36 @@ public class EinkaufDAOimpl implements EinkaufDAO
         }
         return false;
     }
+    
+    public boolean changeverteilstelle(int oldverteilstellenID, int newverteilstellenID)
+    {
+      String sql = "UPDATE einkauf SET beiVerteilstelle = ? WHERE beiVerteilstelle = ?";
+      try
+      {
+          Connection con = SQLConnection.getCon();
+          PreparedStatement smt = con.prepareStatement(sql);
+          smt.setInt(1, newverteilstellenID);
+          smt.setInt(2, oldverteilstellenID);
+          smt.executeUpdate();
+          smt.close();
+          return true;
+
+      } catch (SQLException e)
+      {
+          e.printStackTrace();
+          System.out.println("Einkauf Update Klappt nicht");
+      }
+      return false;
+    
+      
+    }
     /**
      * Updates the person field in the Einkauf record when a person is deleted.
      *
      *
      * @return true if the update was successful, false otherwise
      */
+    
     @Override
     public boolean update(Einkauf einkauf)
     {

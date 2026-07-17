@@ -23,6 +23,8 @@ public interface EinkaufDAO
     boolean create(Einkauf einkauf);
 
     boolean update(Einkauf einkauf);
+    
+    boolean changeverteilstelle(int oldverteilstellenID, int newverteilstellenID);
 
     boolean delete(Einkauf einkauf);
 
