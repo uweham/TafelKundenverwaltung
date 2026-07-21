@@ -23,6 +23,7 @@ public interface FamilienmitgliedDAO
     ArrayList<Familienmitglied> getAllFamilienmitglieder(int haushaltsid);
     ArrayList<Familienmitglied> getAllFamilienmitglieder(String name);
     ArrayList<Familienmitglied> getAllFamilienmitglieder(String suche, int filter, boolean genaueSuche);
+    ArrayList<Familienmitglied> getAllFamilienmitglieder(String suche, int filter,boolean genaueSuche, int verteilstelleId);
     ArrayList<Familienmitglied> getAllFamilienmitglieder(int haushaltsid, boolean einkaufsberechtigt );
     boolean migrate(Connection alteDbCon, Connection conNewdDb);
 

@@ -215,12 +215,11 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
         List<Familienmitglied> familienMitglieder = new ArrayList<>();
         
         // KORREKTUR: Wir verbinden (JOIN) die Tabellen, um die Verteilstelle des Haushalts zu prüfen
-        
         // Select nur einkaufsberechtigte Personen U.P. bzw. haushaltsvorstand     
          String sql =(onlyhouseholddirector)?
                      "SELECT familienmitglied.* FROM familienmitglied " +
                      "INNER JOIN haushalt ON familienmitglied.haushaltId = haushalt.kundennummer " +
-                     "WHERE haushalt.verteilstellenId = ? AND familienmitglied.einkaufsBerechtigt = true AND familienmitglied.haushaltsVorstand=1 "
+                     "WHERE haushalt.verteilstellenId = ? AND  familienmitglied.einkaufsBerechtigt = true AND familienmitglied.haushaltsVorstand=1 "
                      :
                      "SELECT familienmitglied.* FROM familienmitglied " +
                      "INNER JOIN haushalt ON familienmitglied.haushaltId = haushalt.kundennummer " +
@@ -230,7 +229,8 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
              PreparedStatement pstmt = con.prepareStatement(sql))
         {
             // Setzt die ID der ausgewählten Verteilstelle in das SQL
-            pstmt.setInt(1, verteilstelle.getVerteilstellenId());
+        
+             pstmt.setInt(1, verteilstelle.getVerteilstellenId());
             
             try (ResultSet rs = pstmt.executeQuery())
             {
@@ -853,6 +853,12 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
 	@Override
 	public ArrayList<Familienmitglied> getAllFamilienmitglieder(String suche, int filter, boolean genaueSuche)
 	{
+	  return getAllFamilienmitglieder(suche, filter, genaueSuche, Constants.ALL_DISTRIBUTION_POINTS);
+	}
+	
+	@Override
+	public ArrayList<Familienmitglied> getAllFamilienmitglieder(String suche, int filter, boolean genaueSuche, int verteilstelleId)
+	{
 	  int sqlcnt=1;
 	  
 	  String sql = "SELECT * FROM familienmitglied";
@@ -865,19 +871,23 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
 	          sql = "Select * FROM familienmitglied WHERE einkaufsBerechtigt = true ";
 	          sql += (onlyhouseholddirector)?" AND haushaltsVorstand=1 ":"";
 	          sql += "and haushaltId in ";
-	          sql += "(Select kundennummer from haushalt WHERE kundeSeit in ( SELECT max(kundeSeit) as datumlast from haushalt  ))";
+	          sql += "(Select kundennummer from haushalt WHERE kundeSeit in ( SELECT max(kundeSeit) as datumlast from haushalt  ";
+	          sql += (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " ":" WHERE verteilstellenId = "+verteilstelleId+" ");
+	          sql += " ))";
 	          break;
 	        case Constants.SPECIAL_FILTER_HOUSEHOLD_WO_NOTIFICATON_INDEX:
 	          sqlcnt=0;
 	          sql = "Select * FROM familienmitglied WHERE einkaufsBerechtigt = true ";
 	          sql += (onlyhouseholddirector)?" AND haushaltsVorstand=1 ":"";
 	          sql += "and personId not in ";
-	          sql += "(Select personId from bescheid where Date(NOW()) between gueltigAb and gueltigBis)"; 
+	          sql += "(Select personId from bescheid where Date(NOW()) between gueltigAb and gueltigBis)";
+	          sql += (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " ":" AND haushaltId in (select kundennummer from haushalt WHERE verteilstellenId = "+verteilstelleId+") ");
 	          break;
 	        case Constants.SPECIAL_FILTER_ALL_INDEX:
 	          sqlcnt=0;
-	          sql = "Select * FROM familienmitglied WHERE einkaufsBerechtigt = true";
+	          sql = "Select * FROM familienmitglied WHERE einkaufsBerechtigt = true ";
 	          sql += (onlyhouseholddirector)?" AND haushaltsVorstand=1 ":"";
+              sql += (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " ":" AND haushaltId in (select kundennummer from haushalt WHERE verteilstellenId = "+verteilstelleId+") ");
 	          break;
 	      }
 	    } else
@@ -888,32 +898,39 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
     			{
     				case Constants.SEARCH_CUSTOMER_ID_INDEX:
     					sql = "SELECT * FROM familienmitglied WHERE haushaltId = ? and einkaufsBerechtigt = true";
-    					sql += (onlyhouseholddirector)?" AND haushaltsVorstand=1 ":"";
+    					sql += (onlyhouseholddirector)?" AND haushaltsVorstand=1 ":" ";
+    					sql += (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " ":" AND haushaltId in (select kundennummer from haushalt WHERE verteilstellenId = "+verteilstelleId+") ");
     					break;
     				case Constants.SEARCH_SURNAME_INDEX:
     					sql = "SELECT * FROM familienmitglied WHERE nName = ? and einkaufsBerechtigt = true";
-    					sql += (onlyhouseholddirector)?" AND haushaltsVorstand=1 ":"";
+    					sql += (onlyhouseholddirector)?" AND haushaltsVorstand=1 ":" ";
+    					sql += (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " ":" AND haushaltId in (select kundennummer from haushalt WHERE verteilstellenId = "+verteilstelleId+") ");
     					break;
     				case Constants.SEARCH_FIRST_NAME_INDEX:
     					sql = "SELECT * FROM familienmitglied WHERE vName = ? and einkaufsBerechtigt = true";
-    					sql += (onlyhouseholddirector)?" AND haushaltsVorstand=1 ":"";
-    					break;
+    					sql += (onlyhouseholddirector)?" AND haushaltsVorstand=1 ":" ";
+    					sql += (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " ":" AND haushaltId in (select kundennummer from haushalt WHERE verteilstellenId = "+verteilstelleId+") ");
+						break;
     				case Constants.SEARCH_STREET_INDEX:
     					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer Where Strasse = ? and familienmitglied.einkaufsBerechtigt = true";
-    					sql += (onlyhouseholddirector)?" AND familienmitglied.haushaltsVorstand=1 ":"";
+    					sql += (onlyhouseholddirector)?" AND familienmitglied.haushaltsVorstand=1 ":" ";
+    					sql += (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " ":" AND haushalt.verteilstellenId = "+verteilstelleId+" ");
     					break;
     				case Constants.SEARCH_POSTCODE_OR_LOCATION_INDEX:
     					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join plz on haushalt.plz = plz.plzId Where (plz.plz = ? OR ort = ?) and familienmitglied.einkaufsBerechtigt = true";
-    					sql += (onlyhouseholddirector)?" AND familienmitglied.haushaltsVorstand=1 ":"";
+    					sql += (onlyhouseholddirector)?" AND familienmitglied.haushaltsVorstand=1 ":" ";
+                        sql += (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " ":" AND haushalt.verteilstellenId = "+verteilstelleId+" ");
     					sqlcnt=2;
     					break;
     				case Constants.SEARCH_DISTRIBUTION_POINT_INDEX:
     					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join verteilstelle on haushalt.verteilstellenId = verteilstelle.verteilstellenId Where verteilstelle.bezeichnung = ? and familienmitglied.einkaufsBerechtigt = true";
-    					sql += (onlyhouseholddirector)?" AND familienmitglied.haushaltsVorstand=1 ":"";
+    					sql += (onlyhouseholddirector)?" AND familienmitglied.haushaltsVorstand=1 ":" ";
+                        sql += (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " ":" AND haushalt.verteilstellenId = "+verteilstelleId+" ");
     					break;
     				case Constants.SEARCH_OUTPUT_GROUP_INDEX:
     					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join ausgabegruppe on haushalt.ausgabeGruppeId=ausgabegruppe.ausgabegruppeId Where ausgabegruppe.name = ? and familienmitglied.einkaufsBerechtigt = true";
-    					sql += (onlyhouseholddirector)?" AND familienmitglied.haushaltsVorstand=1 ":"";
+    					sql += (onlyhouseholddirector)?" AND familienmitglied.haushaltsVorstand=1 ":" ";
+                        sql += (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " ":" AND haushalt.verteilstellenId = "+verteilstelleId+" ");
             default:
               break;
     			}
@@ -923,43 +940,51 @@ public class FamilienmitgliedDAOimpl implements FamilienmitgliedDAO
     			{
     			    case Constants.SEARCH_ALL_INDEX:
     			        sql = "SELECT * FROM familienmitglied WHERE (haushaltId LIKE ? or  nName LIKE ? OR vName LIKE ?) and einkaufsBerechtigt = true" ;
-    			        sql += (onlyhouseholddirector)?" AND haushaltsVorstand=1 ":"";
-    			        sqlcnt=3;
+    			        sql += (onlyhouseholddirector)?" AND haushaltsVorstand=1 ":" ";
+                        sql += (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " ":" AND haushaltId in (select kundennummer from haushalt WHERE verteilstellenId = "+verteilstelleId+") ");
+                        sqlcnt=3;
     			        break;
     				case Constants.SEARCH_CUSTOMER_ID_INDEX:
     					sql = "SELECT * FROM familienmitglied WHERE haushaltId LIKE ? and einkaufsBerechtigt = true";
-    					sql += (onlyhouseholddirector)?" AND haushaltsVorstand=1 ":"";
-    					break;
+    					sql += (onlyhouseholddirector)?" AND haushaltsVorstand=1 ":" ";
+                        sql += (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " ":" AND haushaltId in (select kundennummer from haushalt WHERE verteilstellenId = "+verteilstelleId+") ");
+                        break;
     				case Constants.SEARCH_SURNAME_INDEX:
     					sql = "SELECT * FROM familienmitglied WHERE nName LIKE ? and einkaufsBerechtigt = true ";
-    					sql += (onlyhouseholddirector)?" AND haushaltsVorstand=1 ":"";
-    					break;
+    					sql += (onlyhouseholddirector)?" AND haushaltsVorstand=1 ":" ";
+                        sql += (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " ":" AND haushaltId in (select kundennummer from haushalt WHERE verteilstellenId = "+verteilstelleId+") ");
+                        break;
     				case Constants.SEARCH_FIRST_NAME_INDEX:
     					sql = "SELECT * FROM familienmitglied WHERE vName LIKE ? and einkaufsBerechtigt = true";
-    					sql += (onlyhouseholddirector)?" AND haushaltsVorstand=1 ":"";
+    					sql += (onlyhouseholddirector)?" AND haushaltsVorstand=1 ":" ";
+                        sql += (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " ":" AND haushaltId in (select kundennummer from haushalt WHERE verteilstellenId = "+verteilstelleId+") ");
     					break;
     				case Constants.SEARCH_STREET_INDEX:
     					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer Where Strasse LIKE ? and familienmitglied.einkaufsBerechtigt = true";
-    					sql += (onlyhouseholddirector)?" AND familienmitglied.haushaltsVorstand=1 ":"";
+    					sql += (onlyhouseholddirector)?" AND familienmitglied.haushaltsVorstand=1 ":" ";
+                        sql += (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " ":" AND haushalt.verteilstellenId = "+verteilstelleId+" ");
     					break;
     				case Constants.SEARCH_POSTCODE_OR_LOCATION_INDEX:
     					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join plz on haushalt.plz = plz.plzId Where (plz.plz LIKE ? OR ort LIKE ?) and familienmitglied.einkaufsBerechtigt = true";
-    					sql += (onlyhouseholddirector)?" AND familienmitglied.haushaltsVorstand=1 ":"";
+    					sql += (onlyhouseholddirector)?" AND familienmitglied.haushaltsVorstand=1 ":" ";
+                        sql += (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " ":" AND haushalt.verteilstellenId = "+verteilstelleId+" ");
     					sqlcnt=2;
     					break;
     				case Constants.SEARCH_DISTRIBUTION_POINT_INDEX:
     					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join verteilstelle on haushalt.verteilstellenId = verteilstelle.verteilstellenId Where verteilstelle.bezeichnung LIKE ? and familienmitglied.einkaufsBerechtigt = true";
-    					sql += (onlyhouseholddirector)?" AND familienmitglied.haushaltsVorstand=1 ":"";
+    					sql += (onlyhouseholddirector)?" AND familienmitglied.haushaltsVorstand=1 ":" ";
+                        sql += (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " ":" AND haushalt.verteilstellenId = "+verteilstelleId+" ");
     					break;
     				case Constants.SEARCH_OUTPUT_GROUP_INDEX:
     					sql = "Select * from familienmitglied inner join haushalt on haushaltId=kundennummer inner join ausgabegruppe on haushalt.ausgabeGruppeId=ausgabegruppe.ausgabegruppeId Where ausgabegruppe.name LIKE ? and familienmitglied.einkaufsBerechtigt = true";
-    					sql += (onlyhouseholddirector)?" AND familienmitglied.haushaltsVorstand=1 ":"";
+    					sql += (onlyhouseholddirector)?" AND familienmitglied.haushaltsVorstand=1 ":" ";
+                        sql += (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " ":" AND haushalt.verteilstellenId = "+verteilstelleId+" ");
     				default:
               break;
     			}
     		}
 	    }
-	    
+	    System.out.println("FamilienmitgliedDAO : "+sql);
 		try
 		{
 			ArrayList<Familienmitglied> familienmitgliedListe = new ArrayList<>();

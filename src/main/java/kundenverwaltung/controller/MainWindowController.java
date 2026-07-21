@@ -49,6 +49,7 @@ import kundenverwaltung.service.WindowService;
 import kundenverwaltung.toolsandworkarounds.ChangeDateFormat;
 import kundenverwaltung.toolsandworkarounds.ExitProgramBackupWarning;
 import kundenverwaltung.toolsandworkarounds.IndeterminateProgressBar;
+import kundenverwaltung.toolsandworkarounds.PropertiesFileController;
 import javafx.scene.layout.AnchorPane;
 import kundenverwaltung.service.GetVersionProperties;   // add U.P. 02.03.2026
 import kundenverwaltung.service.Booking_err_warn_list;
@@ -156,6 +157,8 @@ public class MainWindowController
     private ComboBox<String> cbSpezialfilter;
     @FXML
     private ComboBox<String> cbSucheSortieren;
+    @FXML
+    private CheckBox ckbxFilterVStelle;
     @FXML
     private CheckBox ckbxDSE;
     @FXML
@@ -289,14 +292,21 @@ public class MainWindowController
     private Familienmitglied familienmitglied;
     
     // use only ObservableList<Familienmitglied> familienmitgliederOL for ListView
-    private ObservableList<Familienmitglied> familienmitgliederOL =
-        FXCollections.observableArrayList(new FamilienmitgliedDAOimpl().getAllFamilienmitglieder());
+    private ObservableList<Familienmitglied> familienmitgliederOL ;
+    //=
+    //    FXCollections.observableArrayList(new FamilienmitgliedDAOimpl().getAllFamilienmitglieder());
 
+    private VerteilstelleDAOimpl verteilstelleDAO = new VerteilstelleDAOimpl();
+    private String verteilstelle_name=PropertiesFileController.getTafelLocation();
+    private Verteilstelle aktverteilstelle= verteilstelleDAO.readByName(verteilstelle_name);
     
-    private ArrayList<Familienmitglied> familienmitliederAkt = new ArrayList<>();
-    private ArrayList<Verteilstelle> verteilstellen = new VerteilstelleDAOimpl().readAll();
+    private ArrayList<Verteilstelle> verteilstellen = verteilstelleDAO.readAll();
     private ObservableList<Verteilstelle> verteilstellenOL =
             FXCollections.observableArrayList(verteilstellen);
+    boolean moredistributionpoints=(verteilstellen.size()>1);
+    
+    private ArrayList<Familienmitglied> familienmitliederAkt = new ArrayList<>();
+
 
     private String suche = "";
     private int filter = 1;
@@ -305,9 +315,12 @@ public class MainWindowController
     private TablePreferenceServiceImpl tablePreferenceService = new TablePreferenceServiceImpl();
     
     private GetVersionProperties getversionproperties = new GetVersionProperties()   ;
+   
     
     private boolean tableKeyPress = false;
     private boolean tablereload =false;
+    
+    private boolean ignoreChange = false;
    
     /**
      *.
@@ -359,10 +372,22 @@ public class MainWindowController
         cbErfassungsVerteilstelle.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
           if (newValue != null) {
               refreshCustomerTableView();
+              ignoreChange=true;
+              cbSpezialfilter.getSelectionModel().selectFirst();
+              ignoreChange=false;
           }
-     });
-      
-        cbErfassungsVerteilstelle.getSelectionModel().selectFirst();
+        });
+        
+        if (moredistributionpoints)
+        {
+          System.out.println("Verteilstelle : "+verteilstelle_name);
+          cbErfassungsVerteilstelle.setValue(aktverteilstelle);
+        }
+        else
+        {   
+          cbErfassungsVerteilstelle.getSelectionModel().selectFirst();
+          aktverteilstelle=getcbVerteilstelle() ;
+        }
         fuelleKassenFelder();
         
         cbWarentyp.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
@@ -381,7 +406,9 @@ public class MainWindowController
         txtSucheInput.setOnKeyPressed(e ->  {
            if (cbSpezialfilter.getSelectionModel().getSelectedIndex() !=  Constants.SPECIAL_FILTER_NONE_INDEX)
              {
-             cbSpezialfilter.getSelectionModel().selectFirst();
+               ignoreChange=true;
+               cbSpezialfilter.getSelectionModel().selectFirst();
+               ignoreChange=false;
              }
             }
         );
@@ -397,8 +424,11 @@ public class MainWindowController
         cbSpezialfilter.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
           if (newValue != null) {
             txtSucheInput.setText("");
+            if (ignoreChange)
+            {
+              return ;
+            }
             searchCustomer();
-            
           }
      });
  
@@ -408,7 +438,20 @@ public class MainWindowController
         // Zoom-Menüeinträge initial korrekt (de)aktivieren
         menuItemFontBigger.setDisable(currentFontSize >= MAX_FONT_SIZE);
         menuItemFontSmall.setDisable(currentFontSize <= MIN_FONT_SIZE);
-
+        ckbxFilterVStelle.setSelected(true);
+        ckbxFilterVStelle.selectedProperty().addListener((observable, oldValue, newValue) -> {
+          if (newValue != null) {
+              refreshCustomerTableView();
+              ignoreChange=true;
+              cbSpezialfilter.getSelectionModel().selectFirst();
+              ignoreChange=false;
+           }
+          });
+        refreshCustomerTableView(); 
+        if (!moredistributionpoints)
+        {
+          ckbxFilterVStelle.setVisible(false);
+        }
 
         TablePreferenceServiceImpl.getInstance().setupPersistence(kundensucheOutput, "KundenSucheOutput");
         
@@ -785,6 +828,8 @@ public class MainWindowController
         String userInput = txtSucheInput.getText();
         int indexSpecialFilter=cbSpezialfilter.getSelectionModel().getSelectedIndex();
         int indexSucheFilter = cbSucheFilter.getSelectionModel().getSelectedIndex();
+        boolean bVStelleFilter=getckbxFilterVStelle();
+        int verteilstelleId=(bVStelleFilter)?getcbVerteilstelle().getId():Constants.ALL_DISTRIBUTION_POINTS;
         
         // check if no input and no special filter
         // check if input len > 3 and filter search all 
@@ -810,7 +855,7 @@ public class MainWindowController
         if (!userInput.isBlank() || indexSpecialFilter != Constants.SPECIAL_FILTER_NONE_INDEX)
         {
           familienmitgliederOL.clear();
-          ArrayList<Familienmitglied> aktualisiert = new FamilienmitgliedDAOimpl().getAllFamilienmitglieder(userInput,indexSucheFilter,false);
+          ArrayList<Familienmitglied> aktualisiert = new FamilienmitgliedDAOimpl().getAllFamilienmitglieder(userInput,indexSucheFilter,false, verteilstelleId);
         
           familienmitgliederOL= FXCollections.observableArrayList(aktualisiert);
           kundensucheOutput.setItems(familienmitgliederOL);
@@ -917,7 +962,7 @@ public class MainWindowController
                             new Einkauf(warentyp, null, null, result.getBuchungstext(), haushalt,
                                     familienmitglied, erfassungszeit, summEinkauf,
                                     cbZuZahlen.getValue(),
-                                    cbErfassungsVerteilstelle.getSelectionModel().getSelectedItem(),
+                                    getcbVerteilstelle() ,
                                     anzahlKinder, anzahlErwachsene);
 
                     Boolean updateCheck = new HaushaltDAOimpl().update(haushalt);
@@ -1019,7 +1064,7 @@ public class MainWindowController
                       Einkauf einkauf =
                               new Einkauf(warentyp, null, null, buchungstext, haushalt,
                                       personbuchung, erfassungszeit, summEinkauf, summeZahlung,
-                                      cbErfassungsVerteilstelle.getSelectionModel().getSelectedItem(),
+                                      getcbVerteilstelle(),
                                       anzahlKinder, anzahlErwachsene);
                       Boolean updateCheck = new HaushaltDAOimpl().update(haushalt);
       
@@ -1094,7 +1139,7 @@ public class MainWindowController
                     Einkauf einkauf =
                             new Einkauf(warentyp, null, null, result.getBuchungstext(), haushalt,
                                     familienmitglied, erfassungszeit, summEinkauf, summeZahlung,
-                                    cbErfassungsVerteilstelle.getSelectionModel().getSelectedItem(),
+                                    getcbVerteilstelle() ,
                                     anzahlKinder, anzahlErwachsene);
                     Boolean updateCheck = new HaushaltDAOimpl().update(haushalt);
     
@@ -1432,9 +1477,10 @@ public class MainWindowController
     {
         
         // Hole die aktuell ausgewählte Verteilstelle aus dem Dropdown
-        Verteilstelle selectedVerteilstelle = cbErfassungsVerteilstelle.getSelectionModel().getSelectedItem();
-
-        if (selectedVerteilstelle != null)
+        Verteilstelle selectedVerteilstelle = getcbVerteilstelle();
+        boolean bVStelleFilter=getckbxFilterVStelle();
+        
+        if (selectedVerteilstelle != null && bVStelleFilter)
         {
             // Lade nur Kunden, die zu dieser Verteilstelle gehören
             List<Familienmitglied> gefilterteListe = new FamilienmitgliedDAOimpl().readByVerteilstelle(selectedVerteilstelle);
@@ -1455,7 +1501,7 @@ public class MainWindowController
 
         // WICHTIG: Auch die Liste für die Suchfunktion zurücksetzen, damit die Suche im gefilterten Bereich funktioniert
         //changedFamiliyMemberObservableList = FXCollections.observableArrayList(familienmitglieder);
-        
+        clearKundendaten();
        
       }
     
@@ -1594,5 +1640,22 @@ public class MainWindowController
     public User getUser()
     {
         return user;
+    }
+    
+    public Verteilstelle getcbVerteilstelle()
+    {
+      return cbErfassungsVerteilstelle.getSelectionModel().getSelectedItem();
+    }
+    
+    public boolean getckbxFilterVStelle()
+    {
+      if (moredistributionpoints)
+      {
+        return ckbxFilterVStelle.isSelected();
+      }
+      else
+      {
+        return false;
+      }
     }
 }
