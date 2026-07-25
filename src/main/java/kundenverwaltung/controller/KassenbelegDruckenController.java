@@ -49,6 +49,7 @@ import kundenverwaltung.toolsandworkarounds.ChangeFontSize;
 import kundenverwaltung.toolsandworkarounds.IndeterminateProgressBar;
 import kundenverwaltung.toolsandworkarounds.ParseToEuroFormat;
 import kundenverwaltung.toolsandworkarounds.ReplaceGermanCharacters;
+import kundenverwaltung.model.SumEinkauf;
 
 public class KassenbelegDruckenController extends Thread
 {
@@ -79,6 +80,7 @@ public class KassenbelegDruckenController extends Thread
 
     private static final String FUNCTION_SET_PARAMETER = "setParameter(";
     private static final String FUNCTION_ADD_ROW = "addRow(";
+    private static final String FUNCTION_ADD_TOTALBOOKINGROW = "addtotalperBookingRow(";
     private static final String FUNCTION_SET_TOTAL_SHOPPING_AND_PAYMENT_IN_TABLE_SALES_TODAY = "setTotalShoppingPaymentSalesToday(";
     private static final String FUNCTION_SET_TOTAL_SHOPPING_AND_PAYMENT_IN_TABLE_SALES_AND_CANCELED_TODAY = "setTotalShoppingPaymentSalesCanceledToday(";
     private static final String FUNCTION_SET_TOTAL_SHOPPING_AND_PAYMENT_IN_TABLE_SALES_EARLIER_AND_CANCELED_TODAY = "setTotalShoppingPaymentSalesEarlierCanceledToday(";
@@ -94,6 +96,7 @@ public class KassenbelegDruckenController extends Thread
     private static final String TABLE_ID_SALES_TODAY = "salesToday";
     private static final String TABLE_ID_SALES_AND_CANCELED_TODAY = "salesCanceledToday";
     private static final String TABLE_ID_SALES_EARLIER_AND_CANCELED_TODAY = "salesEarlierCanceledToday";
+    private static final String TABLE_ID_SALES_TOTAL_PER_BOOKING = "salestotalperBooking";
 
     @FXML
     private Label labelHeader;
@@ -323,10 +326,11 @@ public class KassenbelegDruckenController extends Thread
                     {
                         // Get the selected template from the combobox
                         Blob blobFile = cbVorlage.getSelectionModel().getSelectedItem().getDaten();
-
+                        
                         // Convert the template blob to an HTML file
                         blobToTemplate.convertBlobToTemplate(blobFile);
-
+                        String templateVersion = cbVorlage.getSelectionModel().getSelectedItem().getFileVersion();
+                        
                         // Read the template file and prepare for writing a new HTML file
                         BufferedReader bufferedReader = new BufferedReader(new FileReader(blobToTemplate.getBlobTempFileOut()));
                         File tempReadyHtml = File.createTempFile("readyHtml", ".html");
@@ -347,11 +351,11 @@ public class KassenbelegDruckenController extends Thread
                                 row = row.replace(PLACEHOLDER_FOR_FUNCTIONS,
                                     setParameterCashSettlement() + "\n"
                                 +
-                                    addRow(TABLE_ID_SALES_TODAY) + "\n"
+                                    addRow(TABLE_ID_SALES_TODAY,templateVersion) + "\n"
                                         +
-                                    addRow(TABLE_ID_SALES_AND_CANCELED_TODAY) + "\n"
+                                    addRow(TABLE_ID_SALES_AND_CANCELED_TODAY,templateVersion) + "\n"
                                     +
-                                    addRow(TABLE_ID_SALES_EARLIER_AND_CANCELED_TODAY)
+                                    addRow(TABLE_ID_SALES_EARLIER_AND_CANCELED_TODAY,templateVersion)
                                 );
                                 bufferedWriter.write(row + HTML_TAG_CLOSE);
                                 break;
@@ -524,18 +528,25 @@ public class KassenbelegDruckenController extends Thread
      * @param tableId
      * @return
      */
-    private String addRow(String tableId)
+    private String addRow(String tableId,String templateVersion)
     {
+        boolean extensionFlag = templateVersion.startsWith("2.");
+        
         String functionStart = FUNCTION_ADD_ROW;
+        String functionBookingRowStart= FUNCTION_ADD_TOTALBOOKINGROW 
+                        + getFinishedValueForJavaScriptFunction(TABLE_ID_SALES_TOTAL_PER_BOOKING, false);
         String resultString = "";
         String functionSetTotalShoppingPayment = "";
         Double totalShopping = 0.0;
         Double totalPayment = 0.0;
         ArrayList<Einkauf> shoppingArrayList;
+        ArrayList<SumEinkauf> sumeinkauf=null;
         switch (tableId)
         {
             case TABLE_ID_SALES_TODAY:
                 shoppingArrayList = einkaufDAOimpl.getAllSalesToday(periodeStart, periodeEnd, familyMember, distributionPoint, orderBy, ascending, productType, false, false);
+                sumeinkauf = einkaufDAOimpl.getAllSalesSumToday(periodeStart, periodeEnd, familyMember, distributionPoint, orderBy, ascending, productType);
+                
                 functionStart += getFinishedValueForJavaScriptFunction(TABLE_ID_SALES_TODAY, false);
                 functionSetTotalShoppingPayment += FUNCTION_SET_TOTAL_SHOPPING_AND_PAYMENT_IN_TABLE_SALES_TODAY;
                 break;
@@ -575,12 +586,26 @@ public class KassenbelegDruckenController extends Thread
             totalPayment += shoppingArrayList.get(runVar).getSummeZahlung();
         }
 
+        String buildFunctionBookingTotal ="";
+        if (tableId==TABLE_ID_SALES_TODAY & extensionFlag)
+        { 
+          for (int runVar = 0; runVar < sumeinkauf.size(); runVar++)
+          {
+          buildFunctionBookingTotal += functionBookingRowStart
+               + getFinishedValueForJavaScriptFunction(replaceGermanCharacters.replaceGermanUmlauts(sumeinkauf.get(runVar).buchungstext()),false)
+               + getFinishedValueForJavaScriptFunction(parseToEuroFormat.parseFloatToEuroString(sumeinkauf.get(runVar).totalShopping(),false), false)
+               + getFinishedValueForJavaScriptFunction(parseToEuroFormat.parseFloatToEuroString(sumeinkauf.get(runVar).totalPayment() , false), false)
+               + getFinishedValueForJavaScriptFunction(replaceGermanCharacters.replaceGermanUmlauts(sumeinkauf.get(runVar).distributionPointName()), true)
+               + FUNCTION_END;
+          }
+        }
+        
         String buildFunctionSetTotal = functionSetTotalShoppingPayment
                 + getFinishedValueForJavaScriptFunction(parseToEuroFormat.parseFloatToEuroString(totalShopping, false), false)
                 + getFinishedValueForJavaScriptFunction(parseToEuroFormat.parseFloatToEuroString(totalPayment, false), true)
                 + FUNCTION_END;
-
-        return (SCRIPT_TAG_OPEN + resultString + buildFunctionSetTotal +  SCRIPT_TAG_CLOSE);
+        
+        return (SCRIPT_TAG_OPEN + resultString + buildFunctionBookingTotal+buildFunctionSetTotal +  SCRIPT_TAG_CLOSE);
     }
 
 

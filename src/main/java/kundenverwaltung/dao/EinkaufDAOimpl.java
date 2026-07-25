@@ -10,6 +10,7 @@ import kundenverwaltung.model.Einkauf;
 import kundenverwaltung.model.Familienmitglied;
 import kundenverwaltung.model.Haushalt;
 import kundenverwaltung.model.OrderBy;
+import kundenverwaltung.model.SumEinkauf;
 import kundenverwaltung.model.Verteilstelle;
 import kundenverwaltung.model.Warentyp;
 import kundenverwaltung.toolsandworkarounds.PropertiesFileController;
@@ -529,6 +530,50 @@ public class EinkaufDAOimpl implements EinkaufDAO
 
     }
 
+    public ArrayList<SumEinkauf> getAllSalesSumToday(Timestamp periodeStart, Timestamp periodeEnd,
+        Familienmitglied familyMember, Verteilstelle distributionPoint,
+        OrderBy orderBy, Boolean ascending, Warentyp productTyp)
+    {
+      
+      int customerIdDistributionPointId = (familyMember != null) ? familyMember.getKundennummer() : distributionPoint.getVerteilstellenId();
+        String sql = "SELECT v.bezeichnung, e.buchungstext,  "
+          + " SUM(e.summeEinkauf) as totalShopping, SUM(e.summeZahlung) as totalPayment "
+          + " FROM einkauf e "
+          + " JOIN verteilstelle v ON e.beiVerteilstelle = v.verteilstellenId ";
+         sql += (familyMember != null) ? "WHERE e.kunde = ? " : "WHERE e.beiVerteilstelle = ? ";
+         sql += (productTyp.getWarentypId() > ILLEGAL_PRODUCT_TYPE_ID)  ? "AND warentyp = ? " : "AND warentyp > ? ";
+         sql +=  " AND erfassungsZeit BETWEEN ? AND ? ";
+         sql +=  " AND storniertAm is null";
+         sql +=  " GROUP by v.Bezeichnung, e.buchungstext ";
+
+         System.out.println("FERTIGER SUM SQL: " + sql);
+         ArrayList<SumEinkauf> sumeinkauf = new ArrayList<>();
+         try
+         {
+            Connection connection = SQLConnection.getCon();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+             int parameterIndex = 1;
+             preparedStatement.setInt(parameterIndex++, customerIdDistributionPointId);
+             preparedStatement.setInt(parameterIndex++, productTyp.getWarentypId());
+             preparedStatement.setTimestamp(parameterIndex++, periodeStart);
+             preparedStatement.setTimestamp(parameterIndex++, periodeEnd);
+  
+             ResultSet resultSet = preparedStatement.executeQuery();
+             while (resultSet.next())
+             {
+                 sumeinkauf.add(new SumEinkauf(resultSet.getString("buchungsText"), 
+                                               resultSet.getFloat("totalShopping"), 
+                                               resultSet.getFloat("totalPayment"),
+                                               resultSet.getString("bezeichnung")));
+                 }
+             return sumeinkauf;
+
+         } catch (SQLException e)
+         {
+             e.printStackTrace();
+         }
+         return null;
+ }
     //Get fuer die Suche
 
     /**

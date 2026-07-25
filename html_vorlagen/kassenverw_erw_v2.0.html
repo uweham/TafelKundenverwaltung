@@ -1,0 +1,280 @@
+<!--
+Autor=Tafel PJT,Uwe Peiser
+Name=Kassenabrechnung(erw+summen)
+Version=2.0
+Type=kvpKassenabrechnung
+FileTypes=HTML-Datei (*.html)|*.html
+Passwort=0
+DefaultExt=.html
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+
+    <meta http-equiv="Content-Language" content="de">
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <title>Kassenabrechnung</title>
+    <style type="text/css">
+        body {
+            width: 17cm;
+            font-family:verdana;
+            font-size: 12px;
+        }
+        .tabelle {
+            width: 17cm;
+            border-style: solid;
+            border-width: 3px;
+        }
+        .zeile {
+            width: 17cm;
+            border-style: solid;
+            border-width: 1px;
+            font-size: small;
+        }
+
+        td
+        {
+            width: 17cm;
+            border-style: solid;
+            border-width: 1px;
+            font-size: small;
+        }
+
+        #customerOverview
+        {
+            position: absolute;
+            top: 40px;
+            left: 345px;
+
+            width: 300px;
+        }
+    </style>
+</head>
+
+<body>
+    <table style="width: 100%;" >
+        <tr>
+            <td style="border: none"><strong>Kassenabrechnung</strong></td>
+            <td style="border: none" align="right"><strong>Druckdatum: </strong> <span id="dateToday"></span></td>
+        </tr>
+    </table>
+
+    <p>
+        <strong>Ausdruck durch: </strong> <span id="employee"></span>
+        <br>
+        <strong>Verteilstelle: </strong> <span id="distributionPoint"></span>
+        <br>
+        <strong>Listennummer: </strong> <span id="listNumber"></span>
+        <br>
+        <strong>Abrechnung vom: </strong> <span id="periode"></span>
+    </p>
+    <br>
+
+    <fieldset id="customerOverview">
+        <legend>Kunden&uuml;bersicht vom: <span id="date"></span></legend>
+        <strong>Erwachsene: </strong> <span id="customerAdults">0</span>
+        <br>
+        <strong>Kinder: </strong> <span id="customerChildren">0</span>
+        <br>
+        <strong> Gesamt: </strong> <span id="customerTotal">0</span>
+    </fieldset>
+
+    <p>
+        <strong>Ums&auml;tze, heute gebucht:</strong>
+    </p>
+    <table class="tabelle" id="salesToday">
+        <tr>
+            <td class="zeile" style="width: 30px;"><strong>Nr.</strong></td>
+            <td class="zeile" style="width: 77px;"><strong>Datum</strong></td>
+            <td class="zeile" style="width: 71px;"><strong>K.-Nr. / Ortsk.-Nr.</strong></td>
+            <td class="zeile" style="width: 120px;"><strong>Vorname<br>Nachname</strong></td>
+            <td class="zeile"><strong>Warentyp</strong></td>
+            <td class="zeile" style="width: 71px;"><strong>Summe<br>Einkauf</strong></td>
+            <td class="zeile"><strong>Summe<br>Zahlung</strong></td>
+            <td class="zeile"><strong>Kontostand</strong></td>
+            <td class="zeile"><strong>Verteilstelle</strong></td>
+        </tr>
+    </table>
+   <hr> 
+   <table class="tabelle" id="salestotalperBooking">
+        <tr>
+            <td class="zeile" style="width: 70px;"><strong>Buchung</strong></td>
+            <td class="zeile" style="width: 71px;"><strong>Summe<br>Einkauf</strong></td>
+            <td class="zeile" style="width: 71px;"><strong>Summe<br>Zahlung</strong></td>
+            <td class="zeile" style="width: 71px;"><strong>Verteilstelle</strong></td>
+        </tr>
+    </table>
+
+    <p>
+        Summe Eink&auml;ufe: <strong> <span id="totalShoppingSalesToday">0,00</span> Euro</strong>
+        <br>
+        Summe Zahlungen: <strong> <span id="totalPaymentSalesToday">0,00</span> Euro</strong>
+    </p>
+    <hr>
+
+    <p>
+        <strong>Ums&auml;tze, heute gebucht und heute wieder storniert:</strong>
+    </p>
+    <table class="tabelle" id="salesCanceledToday">
+        <tr>
+            <td class="zeile" style="width: 30px;"><strong>Nr.</strong></td>
+            <td class="zeile" style="width: 77px;"><strong>Datum</strong></td>
+            <td class="zeile" style="width: 71px;"><strong>K.-Nr. / Ortsk.-Nr</strong></td>
+            <td class="zeile" style="width: 120px;"><strong>Vorname<br>Nachname</strong></td>
+            <td class="zeile"><strong>Warentyp</strong></td>
+            <td class="zeile" style="width: 71px;"><strong>Summe<br>Einkauf</strong></td>
+            <td class="zeile"><strong>Summe<br>Zahlung</strong></td>
+            <td class="zeile"><strong>Kontostand</strong></td>
+            <td class="zeile"><strong>Verteilstelle</strong></td>
+        </tr>
+    </table>
+    <p>
+        Summe Ums&auml;tze: <strong><span id="totalShopingSalesCanceledToday">0,00</span> Euro</strong>
+        <br>
+        Summe Zahlungen: <strong> <span id="totalPaymentSalesCanceledToday">0,00</span> Euro</strong>
+    </p>
+    <hr>
+
+    <p>
+        <strong>Ums&auml;tze, fr&uuml;her gebucht und heute storniert:</strong>
+    </p>
+    <table class="tabelle" id="salesEarlierCanceledToday">
+        <tr>
+            <td class="zeile" style="width: 30px;"><strong>Nr.</strong></td>
+            <td class="zeile" style="width: 77px;"><strong>Datum</strong></td>
+            <td class="zeile" style="width: 71px;"><strong>K.-Nr. / Ortsk.-Nr</strong></td>
+            <td class="zeile" style="width: 120px;"><strong>Vorname<br>Nachname</strong></td>
+            <td class="zeile"><strong>Warentyp</strong></td>
+            <td class="zeile" style="width: 71px;"><strong>Summe<br>Einkauf</strong></td>
+            <td class="zeile"><strong>Summe<br>Zahlung</strong></td>
+            <td class="zeile"><strong>Kontostand</strong></td>
+            <td class="zeile"><strong>Verteilstelle</strong></td>
+        </tr>
+    </table>
+
+    <p>
+        Summe Ums&auml;tze: <strong> <span id="totalShopingSalesEarlierCanceledToday">0,00</span> Euro</strong><br>
+        Summe Zahlungen: <strong> <span id="totalPaymentSalesEarlierCanceledToday">0,00</span> Euro</strong>
+    </p>
+<p>
+    <br>
+    <strong> Der Kassenbestand betr&auml;gt: <span id="cashInHand">0,00</span> Euro</strong>
+</p>
+
+</body>
+
+
+<script>
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+    var dateString = day + "." + month + "." + year;
+    document.getElementById("dateToday").innerHTML = dateString;
+
+   function setParameter(date, employee, distributionPoint, listNumber, periode)
+   {
+       document.getElementById("date"). innerHTML = date;
+       document.getElementById("employee"). innerHTML = employee;
+       document.getElementById("distributionPoint"). innerHTML = distributionPoint;
+       document.getElementById("listNumber"). innerHTML = listNumber;
+       document.getElementById("periode"). innerHTML = periode;
+   }
+
+    function addRow(tableId, number, date, householdId, name, productType, totalShopping, totalPayment, bankBalance, distributionPoint, householdDirector, text, adult)
+    {
+        var table = document.getElementById(tableId);
+        var firstRow = table.insertRow(table.rows.length);
+        var secondRow = table.insertRow(table.rows.length);
+
+        var cellNumber = firstRow.insertCell(0);
+        cellNumber.rowSpan = 2;
+        cellNumber.innerHTML = number;
+
+        firstRow.insertCell(1).innerHTML = date;
+        firstRow.insertCell(2).innerHTML = householdId;
+        firstRow.insertCell(3).innerHTML = name;
+        firstRow.insertCell(4).innerHTML = productType;
+        firstRow.insertCell(5).innerHTML = totalShopping;
+        firstRow.insertCell(6).innerHTML = totalPayment;
+        firstRow.insertCell(7).innerHTML = bankBalance;
+        firstRow.insertCell(8).innerHTML = distributionPoint;
+
+        var cellHousholdDirector = secondRow.insertCell(0);
+        cellHousholdDirector.colSpan=4;
+        cellHousholdDirector.innerHTML = "<strong>Buchung f&uuml;r </strong>" + householdDirector;
+
+        var cellText = secondRow.insertCell(1);
+        cellText.colSpan = 4;
+        cellText.innerHTML = text;
+
+        if(tableId == "salesToday")
+        {
+            addCustomerOverview(adult);
+        }
+    }
+
+    function addtotalperBookingRow(tableId, booking, totalShopping, totalPayment,distributionPoint)
+    {
+        var table = document.getElementById(tableId);
+        var firstRow = table.insertRow(table.rows.length);
+     
+        firstRow.insertCell(0).innerHTML = booking;
+        firstRow.insertCell(1).innerHTML = totalShopping;
+        firstRow.insertCell(2).innerHTML = totalPayment;
+        firstRow.insertCell(3).innerHTML = distributionPoint;
+    }
+
+    function addCustomerOverview(adult)
+    {
+        var numberTotal = parseInt(document.getElementById("customerTotal").innerHTML) + 1;
+        document.getElementById("customerTotal").innerHTML = numberTotal.toString();
+        if(parseInt(adult) == 1)
+        {
+            var numberAdults = parseInt(document.getElementById("customerAdults").innerHTML) + 1;
+            document.getElementById("customerAdults").innerHTML = numberAdults.toString();
+        }else
+            {
+                var numberChildren = parseInt(document.getElementById("customerChildren").innerHTML) + 1;
+                document.getElementById("customerChildren").innerHTML = numberChildren.toString();
+            }
+    }
+
+    function setCashierValue(value)
+    {
+        document.getElementById("cashInHand").innerHTML = value;
+    }
+
+    function setTotalShoppingPaymentSalesToday(totalShopping, totalPayment)
+    {
+        document.getElementById("totalShoppingSalesToday").innerHTML = totalShopping;
+        document.getElementById("totalPaymentSalesToday").innerHTML = totalPayment;
+    }
+
+   function setTotalShoppingPaymentSalesCanceledToday(totalShopping, totalPayment)
+   {
+       document.getElementById("totalShopingSalesCanceledToday").innerHTML = totalShopping;
+       document.getElementById("totalPaymentSalesCanceledToday").innerHTML = totalPayment;
+   }
+
+   function setTotalShoppingPaymentSalesEarlierCanceledToday(totalShopping, totalPayment)
+   {
+       document.getElementById("totalShopingSalesEarlierCanceledToday").innerHTML = totalShopping;
+       document.getElementById("totalPaymentSalesEarlierCanceledToday").innerHTML = totalPayment;
+   }
+</script>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+               integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+               crossorigin="anonymous"></script>
+<script>
+   $(function ()
+    {
+       window.print();
+    });
+	</script>
+
+%PLACEHOLDER_FOR_FUNCTIONS%
+
+</html>
+%END_OF_FILE%
