@@ -43,8 +43,13 @@ public interface StatistiktoolDAO
 
     boolean saveAltersgruppen(int year, List<int[]> altersgruppen);
 
-    public String buildSqlQueryAlterstatistik(int verteilstelleId, int year, List<int[]> altersgruppen);
-    public String buildSqlQueryGuthabenstatistik(int verteilstelleId,  int statistictypId);
+    public String buildSqlQueryAlterstatistik(int verteilstelleId, int year, List<int[]> altersgruppen,int rangeId);
+    public String buildSqlQueryGuthabenstatistik(int verteilstelleId,  int statistictypId,int rangeId);
+    public String buildSqlQueryNationaltaetenstatistik(int verteilstelleId,int rangeId);
+    public String buildSqlQueryArchivierteKundenstatistik(int verteilstelleId,int rangeId);
+    public String buildSqlQueryBescheidartstatistik(int verteilstelleId,int rangeId,int statusId, boolean summenflg);
+    
+
 }
 
 

@@ -14,6 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import kundenverwaltung.controller.statistiktool.StatistiktoolResultViewController;
+import kundenverwaltung.controller.statistiktool.GuthabenStatistikController.statistictyp;
 import kundenverwaltung.dao.StatistiktoolDAO;
 import kundenverwaltung.dao.StatistiktoolDAOimpl;
 import kundenverwaltung.dao.VerteilstelleDAO;
@@ -25,15 +26,28 @@ import kundenverwaltung.service.ShowAlert;
 import kundenverwaltung.service.UtilErrorLog;
 
 public class StatistiktoolMasterClassController<T> {
+  
+  record rangestatistic(int pos,String value) {
+    @Override
+    public String toString() {
+        return value;
+    }
+    public int getId() {
+      return pos;
+    }
+  };
+  
 
   public UtilErrorLog utilerrorlog = new UtilErrorLog();
   
   public ShowAlert showalert=new ShowAlert();
   public  StatistiktoolDAO statistikDAO = new StatistiktoolDAOimpl();
   @FXML
-
   public ComboBox<Verteilstelle> verteilstelleComboBox;
-
+  
+  @FXML
+  public ComboBox<rangestatistic> rangeComboBox;
+  
   @FXML
   public VBox childResultContainer;
   @FXML
@@ -150,6 +164,24 @@ public class StatistiktoolMasterClassController<T> {
       return query.toString();
   }
   
+  public void initVerteilstelle()
+  {
+     verteilstelleComboBox.getItems().clear(); // ComboBox leeren
+     VerteilstelleDAO verteilstelleDAO = new VerteilstelleDAOimpl(); // DAO für Verteilstellen
+      // Lade Verteilstellen in die ComboBox
+     List<Verteilstelle> verteilstelleList = verteilstelleDAO.readAll();
+     if (verteilstelleList != null && !verteilstelleList.isEmpty())
+     {
+       ObservableList<Verteilstelle> vliste = FXCollections.observableArrayList(verteilstelleList);
+       verteilstelleComboBox.getItems().add(new Verteilstelle(Constants.ALL_DISTRIBUTION_POINTS, "Alle","", 0));
+       verteilstelleComboBox.getItems().addAll(vliste);
+     } else
+     {
+         System.out.println("Keine Verteilstellen gefunden oder Fehler beim Abrufen.");
+     }
+  }
+
+  
   public int getSelectedVerteilstelle()
   {
     if (verteilstelleComboBox.getSelectionModel().getSelectedItem()==null)
@@ -163,4 +195,27 @@ public class StatistiktoolMasterClassController<T> {
     return verteilstellenId;
     
   }
+  public void initRange()
+  {
+    rangeComboBox.getItems().add(new rangestatistic(Constants.STATISTIK_AMOUNTS_ALL,"Alle Kunden"));
+    rangeComboBox.getItems().add(new rangestatistic(Constants.STATISTIK_RANGE_ACTIVE,"Aktive Kunden"));
+    rangeComboBox.getItems().add(new rangestatistic(Constants.STATISTIK_RANGE_ARCHIV,"Archivierte Kunden"));
+    rangeComboBox.getItems().add(new rangestatistic(Constants.STATISTIK_RANGE_LOCKED,"Gesperrte Kunden"));
+
+  }
+  public int getSelectedRange()
+  {
+    if (rangeComboBox.getSelectionModel().getSelectedItem()==null)
+    {
+      System.out.println("Combo Range=null");
+      return Constants.STATISTIK_RANGE_ALL;
+    }
+    int rangeId=rangeComboBox.getSelectionModel().getSelectedItem().getId();
+    
+    System.out.printf("V-Id : %d Name : %s\n",rangeId,rangeComboBox.getSelectionModel().getSelectedItem().toString());
+    return rangeId;
+    
+  }
+
+  
 }

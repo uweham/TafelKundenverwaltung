@@ -57,16 +57,8 @@ public class GuthabenStatistikController extends StatistiktoolMasterClassControl
         
 	 
 	       // Lade Verteilstellen in die ComboBox
-        List<Verteilstelle> verteilstelleList = verteilstelleDAO.readAll();
-        if (verteilstelleList != null && !verteilstelleList.isEmpty())
-        {
-          ObservableList<Verteilstelle> vliste = FXCollections.observableArrayList(verteilstelleList);
-          verteilstelleComboBox.getItems().add(new Verteilstelle(Constants.ALL_DISTRIBUTION_POINTS, "Alle","", 0));
-          verteilstelleComboBox.getItems().addAll(vliste);
-        } else
-        {
-            System.out.println("Keine Verteilstellen gefunden oder Fehler beim Abrufen.");
-        }
+	    initVerteilstelle();
+	    initRange();
         loadheader("Tafel Statistik - Angemeldet als :","Statistik:Guthaben/offene Beträge");
         loadresultview(this,childResultContainer.getPrefWidth(),childResultContainer.getPrefHeight()) ;
    
@@ -76,7 +68,8 @@ public class GuthabenStatistikController extends StatistiktoolMasterClassControl
 	  {
 	     int verteilstellenId=getSelectedVerteilstelle();
 	     int statistictypId=getSelectedStatisticType();
-	     String query = statistikDAO.buildSqlQueryGuthabenstatistik(verteilstellenId, statistictypId);
+	     int rangeId=getSelectedRange();
+	     String query = statistikDAO.buildSqlQueryGuthabenstatistik(verteilstellenId, statistictypId,rangeId);
 	     statistikDAO.addSqlPar(1,verteilstellenId);
 	      
 	      return query.toString();

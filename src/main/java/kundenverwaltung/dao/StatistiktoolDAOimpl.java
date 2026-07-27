@@ -1,6 +1,7 @@
 package kundenverwaltung.dao;
 
 import kundenverwaltung.controller.StatistiktoolController;
+import kundenverwaltung.model.Einstellungen;
 import kundenverwaltung.model.statistiktool.Statistiktool;
 import kundenverwaltung.service.Constants;
 import java.io.*;
@@ -45,7 +46,7 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
      * @param altersgruppen Eine Liste von Altersgruppen, die in der Statistik berücksichtigt werden sollen.
      * @return Ein Optional, das das Statistiktool enthält, falls die Abfrage erfolgreich war.
      */
-    public String buildSqlQueryAlterstatistik(int verteilstelleId, int year, List<int[]> altersgruppen)
+    public String buildSqlQueryAlterstatistik(int verteilstelleId, int year, List<int[]> altersgruppen,int rangeId)
     {
       /* sample query
        * select b.grp_age_from,b.grp_age_to,count(*) as age_count from 
@@ -57,14 +58,17 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
             group by b.grp_age_from,b.grp_age_to
 
        */
-      String sqlsubquery= (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS)?
+      String sqlsubquery=buildSQLSubquery(verteilstelleId, rangeId);
+      
+      /*String sqlsubquery= (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS)?
                           " true ":
                           " haushaltId in (select kundennummer from haushalt where verteilstellenId = "+verteilstelleId+" )";
+                          */
       String sqlquery="";
       if (year == 0)
       {
          sqlquery = "select b.grp_age_from,b.grp_age_to,count(*) as age_count from "
-                        + "(select haushaltId,TIMESTAMPDIFF(YEAR, gDatum, CURDATE()) as age from familienmitglied "
+                        + "(select f.haushaltId,TIMESTAMPDIFF(YEAR, f.gDatum, CURDATE()) as age from familienmitglied f "
                         + "where "
                         + sqlsubquery
                         + ") a " 
@@ -82,7 +86,7 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
       {
         sqlquery="select "+year+" as year_of_birth, "
                 +" count(CASE WHEN YEAR(gDatum) = "+year
-                +" Then 1 END) as year_count from familienmitglied"
+                +" Then 1 END) as year_count from familienmitglied f "
                 + " where "
                 + sqlsubquery;
       }
@@ -90,7 +94,7 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
 
     }
     
-    public String buildSqlQueryGuthabenstatistik(int verteilstelleId,  int statistictypId)
+    public String buildSqlQueryGuthabenstatistik(int verteilstelleId,  int statistictypId ,int rangeId)
     {
       
       String sqlquery="";
@@ -133,6 +137,140 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
       return sqlquery;
     }
     
+    public String buildSqlQueryNationaltaetenstatistik(int verteilstelleId, int rangeId)
+    {
+      
+      /* Samples SQL 
+       * all distribution points and all customers
+       * SELECT n.nationId, n.name, COUNT(f.nation) AS anzahl ,
+       *    SUM(case when TIMESTAMPDIFF(YEAR, f.gDatum, CURDATE()) < 18 then 1 else 0 end) as anzahl_kinder 
+       *    FROM nation n INNER JOIN familienmitglied f ON n.nationId = f.nation 
+       *    WHERE  (true ) GROUP BY n.nationId, n.name ORDER BY n.name
+       * 
+       * all distribution points and locked customers
+       * SELECT n.nationId, n.name, COUNT(f.nation) AS anzahl ,
+       *     SUM(case when TIMESTAMPDIFF(YEAR, f.gDatum, CURDATE()) < 18 then 1 else 0 end) as anzahl_kinder 
+       *     FROM nation n INNER JOIN familienmitglied f ON n.nationId = f.nation 
+       *     WHERE  f.haushaltId in (select kundennummer from haushalt where  true  AND istGesperrt = 1 ) 
+       *     GROUP BY n.nationId, n.name ORDER BY n.name
+       * 
+       * one distribution point and all customers    
+       * SELECT n.nationId, n.name, COUNT(f.nation) AS anzahl ,
+       *     SUM(case when TIMESTAMPDIFF(YEAR, f.gDatum, CURDATE()) < 18 then 1 else 0 end) as anzahl_kinder 
+       *     FROM nation n INNER JOIN familienmitglied f ON n.nationId = f.nation 
+       *     WHERE  f.haushaltId in (select kundennummer from haushalt where  verteilstellenId = ?  ) 
+       *     GROUP BY n.nationId, n.name ORDER BY n.name  
+       * 
+       * one distribution point and archieved customers    
+       * SELECT n.nationId, n.name, COUNT(f.nation) AS anzahl ,
+       *     SUM(case when TIMESTAMPDIFF(YEAR, f.gDatum, CURDATE()) < 18 then 1 else 0 end) as anzahl_kinder 
+       *     FROM nation n INNER JOIN familienmitglied f ON n.nationId = f.nation 
+       *     WHERE  f.haushaltId in (select kundennummer from haushalt where  verteilstellenId = ?    AND istArchiviert = 1 ) 
+       *     GROUP BY n.nationId, n.name ORDER BY n.name     
+       */
+      Einstellungen einstellungen = new EinstellungenDAOimpl().read();
+      
+      String sqlsubquery=buildSQLSubquery(verteilstelleId, rangeId);
+      
+
+      String sqlquery="";
+        sqlquery="SELECT n.nationId, n.name, COUNT(f.nation) AS anzahl ,SUM(case when TIMESTAMPDIFF(YEAR, f.gDatum, CURDATE()) < "
+              +  ((einstellungen.getAlterErwachsener() > 0) ? einstellungen.getAlterErwachsener() : 18)
+              +  " then 1 else 0 end) as anzahl_kinder "
+              +  "FROM nation n INNER JOIN familienmitglied f ON n.nationId = f.nation "
+              +  "WHERE "+sqlsubquery 
+              +  "GROUP BY n.nationId, n.name "
+              +  "ORDER BY n.name";
+      return sqlquery;
+      
+    };
+    
+    public String buildSqlQueryArchivierteKundenstatistik(int verteilstelleId,int rangeId)
+    {
+      String sqlsubquery=buildSQLSubquery(verteilstelleId, rangeId);
+      String sqlquery="";
+      sqlquery="SELECT  f.haushaltId, concat_ws(\" \",f.vName,f.nName) as name, n.name as nationalitaet, f.gDatum as geburtsdatum, "
+            +  " TIMESTAMPDIFF(YEAR, f.gDatum, CURDATE()) as lebensalter, a.name as ausgabegruppe, h.istArchiviert, h.istGesperrt, "
+            +  " v.bezeichnung as verteilstelle , "
+            +  " p.plz, concat_ws(\" \",h.strasse,h.hausnummer) as adresse "
+            +  "FROM familienmitglied f "
+            +  "  JOIN nation n ON n.nationId = f.nation "
+            +  "  JOIN haushalt h ON f.haushaltId = h.kundennummer "
+            +  "  JOIN plz p on h.plz = p.plzId "
+            +  "  JOIN ausgabegruppe a on h.ausgabegruppeId=a.ausgabegruppeId "
+            +  "  JOIN verteilstelle v on h.verteilstellenId = v.verteilstellenId "
+            +  "WHERE "+sqlsubquery 
+            +  " ORDER BY f.haushaltId";
+      
+      return sqlquery;
+    }
+    
+    public String buildSqlQueryBescheidartstatistik(int verteilstelleId,int rangeId,int statusId, boolean summenflg)
+    {
+      String sqlsubquery=buildSQLSubquery(verteilstelleId, rangeId);
+      String sqlquery="";
+      if (summenflg)
+      {
+        sqlquery="select ifnull(result.name,\"Kein Bescheid eingetragen\") as bescheidname,ifnull(result.gueltig,0) as gueltig,count(result.personId) as anzahl from "
+                    +" ("
+                    +"   select f.personId,b.bescheidId,b.bescheidartId, ba.name, b.gueltigAb,b.gueltigBis, "
+                    +"   (b.gueltigAb <= CURRENT_DATE AND b.gueltigBis >= CURRENT_DATE) as gueltig from familienmitglied f"
+                    +"   left join "
+                    +"   (select a.bescheidId,a.personId,a.bescheidartId,a.gueltigAb,a.gueltigBis from bescheid a "
+                    +"   JOIN (select personId,max(gueltigBis) as maxgueltigBis from bescheid group by personId) aktb "
+                    +"   ON a.personId=aktb.personId and a.gueltigBis=aktb.maxgueltigBis ) b "
+                    +"   ON f.personId=b.personId "
+                    +"   LEFT JOIN bescheidart ba ON b.bescheidartId=ba.bescheidartId "
+                    +"   WHERE "+sqlsubquery
+                    + switch (statusId) {
+                      case Constants.STATISTIK_NOTIFICATION_TYPE_ALL -> " ";
+                      case Constants.STATISTIK_NOTIFICATION_TYPE_INVALID -> " HAVING (gueltig = 0 OR gueltig IS NULL) " ;
+                      case Constants.STATISTIK_NOTIFICATION_TYPE_VALID -> "  HAVING gueltig = 1  ";
+                      default -> " ";
+                      }
+                    +"   ) result "
+                    +"   group by result.name,result.gueltig ";
+      }
+      else
+      {
+        sqlquery= "select f.haushaltId, concat_ws(\" \",f.vName,f.nName) as name,ba.name as bescheidname, b.gueltigAb,b.gueltigBis, "
+              +"   (b.gueltigAb <= CURRENT_DATE AND b.gueltigBis >= CURRENT_DATE) as gueltig from familienmitglied f"
+              +"   left join "
+              +"   (select a.bescheidId,a.personId,a.bescheidartId,a.gueltigAb,a.gueltigBis from bescheid a "
+              +"   JOIN (select personId,max(gueltigBis) as maxgueltigBis from bescheid group by personId) aktb "
+              +"   ON a.personId=aktb.personId and a.gueltigBis=aktb.maxgueltigBis ) b "
+              +"   ON f.personId=b.personId "
+              +"   LEFT JOIN bescheidart ba ON b.bescheidartId=ba.bescheidartId "
+              +"   WHERE "+sqlsubquery
+              + switch (statusId) {
+                case Constants.STATISTIK_NOTIFICATION_TYPE_ALL -> " ";
+                case Constants.STATISTIK_NOTIFICATION_TYPE_INVALID -> " HAVING (gueltig = 0 OR gueltig IS NULL) " ;
+                case Constants.STATISTIK_NOTIFICATION_TYPE_VALID -> "  HAVING gueltig = 1  ";
+                default -> " ";
+                };
+      }
+        return sqlquery;
+    }
+    
+
+    private String buildSQLSubquery(int verteilstelleId, int rangeId)
+    {
+      String sqlsubquery= (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS && rangeId == Constants.STATISTIK_RANGE_ALL )?
+          " (true ":
+          " f.haushaltId in (select kundennummer from haushalt where "
+           + (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " true ":" verteilstellenId = ?  ");
+            
+            
+            sqlsubquery +=   
+            switch (rangeId) {
+            case Constants.STATISTIK_RANGE_ALL -> ") ";
+            case Constants.STATISTIK_RANGE_ACTIVE -> " AND istArchiviert = 0 AND istGesperrt =0) " ;
+            case Constants.STATISTIK_RANGE_ARCHIV -> " AND istArchiviert = 1 ) ";
+            case Constants.STATISTIK_RANGE_LOCKED -> " AND istGesperrt = 1 ) ";
+            default -> ") ";
+            };
+        return sqlsubquery;      
+    }
     @Override
     public Optional<ResultSet> loadStatistik(String query) {
       System.out.println("SQL-Abfrage: " + query);

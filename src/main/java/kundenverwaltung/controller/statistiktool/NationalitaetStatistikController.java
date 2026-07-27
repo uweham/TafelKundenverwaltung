@@ -2,104 +2,52 @@ package kundenverwaltung.controller.statistiktool;
 
 import kundenverwaltung.dao.NationDAO;
 import kundenverwaltung.dao.NationDAOimpl;
+import kundenverwaltung.dao.VerteilstelleDAO;
+import kundenverwaltung.dao.VerteilstelleDAOimpl;
 import kundenverwaltung.model.Nation;
+import kundenverwaltung.model.Verteilstelle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import kundenverwaltung.service.Constants;
 import kundenverwaltung.service.TablePreferenceServiceImpl;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class NationalitaetStatistikController
+public class NationalitaetStatistikController extends StatistiktoolMasterClassController<NationalitaetStatistikController>
 {
 
 	@FXML
-	private ComboBox<String> verteilstelleComboBox;
-
-	@FXML
-	private TableView<Nation> nationalitaetTableView;
-
-	@FXML
-	private TableColumn<Nation, String> nationalitaetColumn;
-
-	@FXML
-	private TableColumn<Nation, Integer> anzahlColumn;
-
-	@FXML
-	private Button loadButton;
+	private ComboBox<Verteilstelle> verteilstelleComboBox;
 
 	@FXML
 	private MenuItem handleExit;
 
-	private NationDAO nationDAO;
+	
 	/**
      */
 	@FXML
 	public void initialize()
 	{
-		// NationDAO-Implementierung initialisieren
-		nationDAO = new NationDAOimpl();
-
-		// Setze die Zell-Factory für die Spalten
-		nationalitaetColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-		nationalitaetColumn.setId("name");
-
-		anzahlColumn.setCellValueFactory(new PropertyValueFactory<>("anzahl"));
-		anzahlColumn.setId("anzahl");
-
-		// Beispiel für das Hinzufügen von Verteilstellen zur ComboBox
-		verteilstelleComboBox.getItems().addAll("Hauptstelle",
-				"AWO",
-				"Stroot",
-				"Bringdienst",
-				"Freren",
-				"Haren",
-				"Lathen",
-				"Spelle",
-				"Twist");
-
-		// Event-Handler für den Button festlegen
-		loadButton.setOnAction(event -> handleLoadNationalitaeten());
-		TablePreferenceServiceImpl.getInstance().setupPersistence(nationalitaetTableView, "NationalitaetStatistik");
+	  initRange();
+	  initVerteilstelle();	
+      loadheader("Tafel Statistik - Angemeldet als :","Statistik:Nationalitätenstatistik");
+      loadresultview(this,childResultContainer.getPrefWidth(),childResultContainer.getPrefHeight()) ;
 	}
+	
+    public String getCurrentSQLQuery()
+    {
+       int verteilstellenId=getSelectedVerteilstelle();
+       int rangeId=getSelectedRange();
+       String query = statistikDAO.buildSqlQueryNationaltaetenstatistik(verteilstellenId,rangeId);
+       statistikDAO.addSqlPar(1,verteilstellenId);
+             
+        return query.toString();
+    }
 
-	@FXML
-	private void handleLoadNationalitaeten()
-	{
-		String selectedVerteilstelle = verteilstelleComboBox.getSelectionModel().getSelectedItem();
-		if (selectedVerteilstelle != null)
-		{
-			System.out.println("Nationalitäten für " + selectedVerteilstelle + " anzeigen.");
-
-			// Daten aus der DAO abrufen
-			ArrayList<Nation> nationList = nationDAO.getAllNationenMitAnzahl();
-			if (nationList != null)
-			{
-				ObservableList<Nation> data = FXCollections.observableArrayList(nationList);
-				// Füge die Daten zur TableView hinzu
-				nationalitaetTableView.setItems(data);
-
-				// Statistiken speichern
-				nationDAO.saveNationStatistics(nationList);
-			} else
-			{
-				System.out.println("Keine Nationen gefunden.");
-			}
-		} else
-		{
-			System.out.println("Bitte eine Verteilstelle auswählen.");
-		}
-	}
-
-	@FXML
-	private void handleExit()
-	{
-		Stage stage = (Stage) nationalitaetTableView.getScene().getWindow();
-		stage.setOnHidden(event -> handleLoadNationalitaeten()); // Tabelle beim Schließen aktualisieren
-		stage.close();
-	}
 
 }

@@ -55,12 +55,11 @@
                 </padding>
     
                 <HBox spacing="10">
-                    <Text text="Verteilstelle:">
-                        <font>
-                            <Font name="System Italic" size="14.0" />
-                        </font>
-                    </Text>
-                    <ComboBox fx:id="verteilstelleComboBox" promptText="Verteilstelle auswählen" />
+                    <Label text="Verteilstelle:" />
+  	                <ComboBox fx:id="verteilstelleComboBox" promptText="Verteilstelle auswählen" />
+               	  	<Label text="Basis:"/>
+                	<ComboBox fx:id="rangeComboBox" promptText="Basis auswählen" prefWidth="250" />
+               
                 </HBox>
           </VBox>
             <Separator prefHeight="2.0" prefWidth="880.0" />

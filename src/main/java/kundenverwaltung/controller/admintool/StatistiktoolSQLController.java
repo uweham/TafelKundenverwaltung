@@ -436,7 +436,7 @@ public class StatistiktoolSQLController
 			for (int i = 1; i <= columnCount; i++)
 			{
 				final int j = i;
-				TableColumn<ObservableList<String>, String> column = new TableColumn<>(rsmd.getColumnName(i));
+				TableColumn<ObservableList<String>, String> column = new TableColumn<>(rsmd.getColumnLabel(i));  //rmsd. getColumnName(i));
 				column.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().get(j - 1)));
 				queryResultTable.getColumns().add(column);
 			}

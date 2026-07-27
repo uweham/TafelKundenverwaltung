@@ -1,8 +1,10 @@
 package kundenverwaltung.controller;
 import kundenverwaltung.controller.admintool.StatistiktoolSQLController;
 import kundenverwaltung.controller.statistiktool.ArchivierteKundenStatistikController;
+import kundenverwaltung.controller.statistiktool.BescheidartStatistikController;
 import kundenverwaltung.controller.statistiktool.GuthabenStatistikController;
 import kundenverwaltung.controller.statistiktool.HerkunftStatistikController;
+import kundenverwaltung.controller.statistiktool.NationalitaetStatistikController;
 import kundenverwaltung.controller.statistiktool.StatistiktoolHeaderController;
 import kundenverwaltung.controller.statistiktool.StatistiktoolMasterClassController;
 import kundenverwaltung.controller.statistiktool.StatistiktoolResultViewController;
@@ -52,9 +54,9 @@ import javafx.scene.layout.VBox;
 public class StatistiktoolController extends StatistiktoolMasterClassController<StatistiktoolController>
 {
 
-    @FXML
+   // @FXML
     //private ComboBox<String> verteilstelleComboBox;
-    private ComboBox<Verteilstelle> verteilstelleComboBox;
+   // private ComboBox<Verteilstelle> verteilstelleComboBox;
     @FXML
     private TextField startAgeTextField;
     @FXML
@@ -91,23 +93,8 @@ public class StatistiktoolController extends StatistiktoolMasterClassController<
     @FXML
     public void initialize()
     {
-        verteilstelleComboBox.getItems().clear(); // ComboBox leeren
-
-        // Initialisiere DAOs
-        verteilstelleDAO = new VerteilstelleDAOimpl();
-
-        // Lade Verteilstellen in die ComboBox
-        List<Verteilstelle> verteilstelleList = verteilstelleDAO.readAll();
-        if (verteilstelleList != null && !verteilstelleList.isEmpty())
-        {
-          ObservableList<Verteilstelle> vliste = FXCollections.observableArrayList(verteilstelleList);
-          verteilstelleComboBox.getItems().add(new Verteilstelle(Constants.ALL_DISTRIBUTION_POINTS, "Alle","", 0));
-          verteilstelleComboBox.getItems().addAll(vliste);
-        } else
-        {
-            System.out.println("Keine Verteilstellen gefunden oder Fehler beim Abrufen.");
-        }
-
+        initRange();
+        initVerteilstelle();
         // Füge Listener zum Jahrfeld hinzu
         yearField.textProperty().addListener((observable, oldValue, newValue) ->
         {
@@ -173,8 +160,9 @@ public class StatistiktoolController extends StatistiktoolMasterClassController<
         List<int[]> altersgruppen = getAltersgruppen();
         int selectedYear = getSelectedYear(yearField.getText().trim());
         int verteilstellenId=getSelectedVerteilstelle();
-        String query = statistikDAO.buildSqlQueryAlterstatistik(verteilstellenId,selectedYear, altersgruppen);
-        
+        int rangeId=getSelectedRange();
+        String query = statistikDAO.buildSqlQueryAlterstatistik(verteilstellenId,selectedYear, altersgruppen,rangeId);
+        statistikDAO.addSqlPar(1,verteilstellenId);
         return query.toString();
     }
 
@@ -462,6 +450,9 @@ public class StatistiktoolController extends StatistiktoolMasterClassController<
         {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/kundenverwaltung/fxml/statistiktool/NationalitaetStatistik.fxml"));
             Parent root = loader.load();
+            NationalitaetStatistikController controller = loader.getController();
+            controller.setUser(user);
+ 
             Stage stage = new Stage();
             stage.setTitle("Nationalitäten Statistik");
 
@@ -523,11 +514,10 @@ public class StatistiktoolController extends StatistiktoolMasterClassController<
 
             // Den Controller abrufen und das DAO setzen
             ArchivierteKundenStatistikController controller = loader.getController();
-            controller.setHaushaltDAO(new HaushaltDAOimpl());
-            System.out.println("setHaushaltDAO() aufgerufen");
-
+            controller.setUser(user);
+ 
             Stage stage = new Stage();
-            stage.setTitle("Archivierte Kunden");
+            stage.setTitle("Statistik Kunden");
             Scene scene = new Scene(root);
             GlobalEventLogger.attachTo("ArchivierteKundenStatistik.fxml", scene);
             stage.setScene(scene);
@@ -568,24 +558,11 @@ public class StatistiktoolController extends StatistiktoolMasterClassController<
     {
         try
         {
-            // 1) Test: Ressource abfragen und in der Konsole ausgeben
-            URL fxmlUrl = getClass().getResource("/kundenverwaltung/fxml/statistiktool/BescheidartStatistik.fxml");
-            System.out.println("Pfad: " + fxmlUrl);
-
-            // 2) Falls fxmlUrl == null, wurde die Datei nicht gefunden
-            if (fxmlUrl == null)
-            {
-              showalert.showAlert(Alert.AlertType.ERROR, "Fehler",
-                        "Die FXML-Ressource wurde nicht gefunden! "
-                      + "Pfad fehlerhaft oder Datei existiert nicht.");
-                return; // Methode beenden, da wir nicht laden können
-            }
-
-            // 3) Ansonsten normal laden
-            FXMLLoader loader = new FXMLLoader(fxmlUrl);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/kundenverwaltung/fxml/statistiktool/BescheidartStatistik.fxml"));
             Parent root = loader.load();
-
-            // 4) Fenster aufbauen und anzeigen
+            BescheidartStatistikController controller = loader.getController();
+            controller.setUser(user);
+ 
             Stage stage = new Stage();
             stage.setTitle("Bescheidarten Statistik");
             Scene scene = new Scene(root);

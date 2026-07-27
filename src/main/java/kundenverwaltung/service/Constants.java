@@ -56,7 +56,11 @@ public class Constants {
   public static final int STATISTIK_RANGE_ARCHIV = 2;
   public static final int STATISTIK_RANGE_LOCKED = 3;
   
+  public static final int STATISTIK_NOTIFICATION_TYPE_ALL = 0;
+  public static final int STATISTIK_NOTIFICATION_TYPE_VALID = 1;
+  public static final int STATISTIK_NOTIFICATION_TYPE_INVALID = 2;
   
+   
   public static final int WARENTYPID_GUTSCHRIFT = 3; // change this value when change in sql table warentyp
   
 }

@@ -31,7 +31,7 @@ public class ArchivierteKundenStatistikControllerTest extends ApplicationTest {
         controller = loader.getController();
 
         var mockDao = mock(kundenverwaltung.dao.HaushaltDAO.class);
-        controller.setHaushaltDAO(mockDao);
+        //controller.setHaushaltDAO(mockDao);
 
         javafx.scene.Scene scene = new javafx.scene.Scene(root);
         stage.setScene(scene);
