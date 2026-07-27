@@ -207,6 +207,9 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
     
     public String buildSqlQueryBescheidartstatistik(int verteilstelleId,int rangeId,int statusId, boolean summenflg)
     {
+      Einstellungen einstellungen = new EinstellungenDAOimpl().read();
+      int agelimit=(einstellungen.getAlterErwachsener() > 0) ? einstellungen.getAlterErwachsener() : 18;
+      
       String sqlsubquery=buildSQLSubquery(verteilstelleId, rangeId);
       String sqlquery="";
       if (summenflg)
@@ -214,7 +217,9 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
         sqlquery="select ifnull(result.name,\"Kein Bescheid eingetragen\") as bescheidname,ifnull(result.gueltig,0) as gueltig,count(result.personId) as anzahl from "
                     +" ("
                     +"   select f.personId,b.bescheidId,b.bescheidartId, ba.name, b.gueltigAb,b.gueltigBis, "
-                    +"   (b.gueltigAb <= CURRENT_DATE AND b.gueltigBis >= CURRENT_DATE) as gueltig from familienmitglied f"
+                    +"   (b.gueltigAb <= CURRENT_DATE AND b.gueltigBis >= CURRENT_DATE) as gueltig, "
+                    +"   TIMESTAMPDIFF(YEAR, f.gDatum, CURDATE()) as lebensalter "
+                    +"   from familienmitglied f "
                     +"   left join "
                     +"   (select a.bescheidId,a.personId,a.bescheidartId,a.gueltigAb,a.gueltigBis from bescheid a "
                     +"   JOIN (select personId,max(gueltigBis) as maxgueltigBis from bescheid group by personId) aktb "
@@ -223,10 +228,10 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
                     +"   LEFT JOIN bescheidart ba ON b.bescheidartId=ba.bescheidartId "
                     +"   WHERE "+sqlsubquery
                     + switch (statusId) {
-                      case Constants.STATISTIK_NOTIFICATION_TYPE_ALL -> " ";
-                      case Constants.STATISTIK_NOTIFICATION_TYPE_INVALID -> " HAVING (gueltig = 0 OR gueltig IS NULL) " ;
-                      case Constants.STATISTIK_NOTIFICATION_TYPE_VALID -> "  HAVING gueltig = 1  ";
-                      default -> " ";
+                      case Constants.STATISTIK_NOTIFICATION_TYPE_ALL -> " HAVING lebensalter>="+agelimit+" ";
+                      case Constants.STATISTIK_NOTIFICATION_TYPE_INVALID -> " HAVING (gueltig = 0 OR gueltig IS NULL) and lebensalter>="+agelimit+" " ;
+                      case Constants.STATISTIK_NOTIFICATION_TYPE_VALID -> "  HAVING gueltig = 1 and lebensalter>= "+agelimit+" ";
+                      default -> " HAVING lebensalter>="+agelimit+" ";
                       }
                     +"   ) result "
                     +"   group by result.name,result.gueltig ";
@@ -234,7 +239,9 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
       else
       {
         sqlquery= "select f.haushaltId, concat_ws(\" \",f.vName,f.nName) as name,ba.name as bescheidname, b.gueltigAb,b.gueltigBis, "
-              +"   (b.gueltigAb <= CURRENT_DATE AND b.gueltigBis >= CURRENT_DATE) as gueltig from familienmitglied f"
+              +"   (b.gueltigAb <= CURRENT_DATE AND b.gueltigBis >= CURRENT_DATE) as gueltig, "
+              +"   TIMESTAMPDIFF(YEAR, f.gDatum, CURDATE()) as lebensalter "
+              +  " from familienmitglied f "
               +"   left join "
               +"   (select a.bescheidId,a.personId,a.bescheidartId,a.gueltigAb,a.gueltigBis from bescheid a "
               +"   JOIN (select personId,max(gueltigBis) as maxgueltigBis from bescheid group by personId) aktb "
@@ -243,10 +250,10 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
               +"   LEFT JOIN bescheidart ba ON b.bescheidartId=ba.bescheidartId "
               +"   WHERE "+sqlsubquery
               + switch (statusId) {
-                case Constants.STATISTIK_NOTIFICATION_TYPE_ALL -> " ";
-                case Constants.STATISTIK_NOTIFICATION_TYPE_INVALID -> " HAVING (gueltig = 0 OR gueltig IS NULL) " ;
-                case Constants.STATISTIK_NOTIFICATION_TYPE_VALID -> "  HAVING gueltig = 1  ";
-                default -> " ";
+                case Constants.STATISTIK_NOTIFICATION_TYPE_ALL -> " HAVING lebensalter>="+agelimit+" ";
+                case Constants.STATISTIK_NOTIFICATION_TYPE_INVALID -> " HAVING (gueltig = 0 OR gueltig IS NULL) and lebensalter>="+agelimit+" " ;
+                case Constants.STATISTIK_NOTIFICATION_TYPE_VALID -> "  HAVING gueltig = 1 and lebensalter>= "+agelimit+" ";
+                default -> " HAVING lebensalter>="+agelimit+" ";
                 };
       }
         return sqlquery;
