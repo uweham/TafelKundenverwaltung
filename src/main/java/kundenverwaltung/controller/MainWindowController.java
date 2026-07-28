@@ -601,20 +601,20 @@ public class MainWindowController
     @FXML public void oeffneKassenabrechnung()
     {
       // Überprüfen, ob ein Kunde ausgewählt wurde
-      if (familienmitglied != null)
-      {
+ //     if (familienmitglied != null)
+ //     {
           // Controller für das Kassenbeleg-Drucken-Fenster öffnen und den ausgewählten Kunden übergeben
           KassenbelegDruckenController kassenbelegController = MainController.getInstance().oeffneKassenbelegDrucken(familienmitglied, currentFontSize);
           kassenbelegController.setSelectedCustomer(familienmitglied);  // Kunde an den neuen Controller übergeben
-      } else
-      {
+ //     } else
+ //     {
           // Warnmeldung anzeigen, wenn kein Kunde ausgewählt wurde
-          Alert alert = new Alert(Alert.AlertType.WARNING);
-          alert.setTitle("Kein Kunde ausgewählt");
-          alert.setHeaderText(null);
-          alert.setContentText("Bitte wählen Sie zuerst einen Kunden aus.");
-          alert.showAndWait();
-      }
+//          Alert alert = new Alert(Alert.AlertType.WARNING);
+//          alert.setTitle("Kein Kunde ausgewählt");
+//          alert.setHeaderText(null);
+//          alert.setContentText("Bitte wählen Sie zuerst einen Kunden aus.");
+//          alert.showAndWait();
+//      }
   }
 
     /**

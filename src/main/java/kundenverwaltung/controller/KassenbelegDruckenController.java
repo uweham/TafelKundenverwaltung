@@ -50,6 +50,7 @@ import kundenverwaltung.toolsandworkarounds.IndeterminateProgressBar;
 import kundenverwaltung.toolsandworkarounds.ParseToEuroFormat;
 import kundenverwaltung.toolsandworkarounds.ReplaceGermanCharacters;
 import kundenverwaltung.model.SumEinkauf;
+import kundenverwaltung.model.User;
 
 public class KassenbelegDruckenController extends Thread
 {
@@ -84,6 +85,7 @@ public class KassenbelegDruckenController extends Thread
     private static final String FUNCTION_SET_TOTAL_SHOPPING_AND_PAYMENT_IN_TABLE_SALES_TODAY = "setTotalShoppingPaymentSalesToday(";
     private static final String FUNCTION_SET_TOTAL_SHOPPING_AND_PAYMENT_IN_TABLE_SALES_AND_CANCELED_TODAY = "setTotalShoppingPaymentSalesCanceledToday(";
     private static final String FUNCTION_SET_TOTAL_SHOPPING_AND_PAYMENT_IN_TABLE_SALES_EARLIER_AND_CANCELED_TODAY = "setTotalShoppingPaymentSalesEarlierCanceledToday(";
+    private static final String FUNCTION_SET_CUSTOMER_OVERVIEW="addCustomerOverview(";
     @SuppressWarnings("unused")
     private static final String FUNCTION_SET_CASHIER_VALUE = "setCashierValue(";
     private static final String FUNCTION_END = ");";
@@ -174,6 +176,19 @@ public class KassenbelegDruckenController extends Thread
 
     private IndeterminateProgressBar indeterminateProgressBar = new IndeterminateProgressBar();
     private BlobToTemplate blobToTemplate = new BlobToTemplate();
+    
+    private Vorlage selectTemplate=null;
+    
+    public User user;
+    
+    public User getUser() {
+      return user;
+    }
+
+    public void setUser(User user) {
+      this.user = user;
+      System.out.println("Set User "+user.toString());
+    }
     /**
      * initialize of GUI elements.
      */
@@ -185,8 +200,8 @@ public class KassenbelegDruckenController extends Thread
         waehleKunde = new ToggleGroup();
         rbAktuellerKunde.setToggleGroup(waehleKunde);
         rbAlleKunden.setToggleGroup(waehleKunde);
-        buttonCreate.setDisable(true);  // Initially disable the "Erstellen" button
-
+        rbAlleKunden.setSelected(true);
+        
         // Add the toggle listener for customer selection
         waehleKunde.selectedToggleProperty().addListener((observable, oldValue, newValue) ->
         {
@@ -330,6 +345,7 @@ public class KassenbelegDruckenController extends Thread
                         // Convert the template blob to an HTML file
                         blobToTemplate.convertBlobToTemplate(blobFile);
                         String templateVersion = cbVorlage.getSelectionModel().getSelectedItem().getFileVersion();
+                        selectTemplate=cbVorlage.getSelectionModel().getSelectedItem();
                         
                         // Read the template file and prepare for writing a new HTML file
                         BufferedReader bufferedReader = new BufferedReader(new FileReader(blobToTemplate.getBlobTempFileOut()));
@@ -492,9 +508,9 @@ public class KassenbelegDruckenController extends Thread
     private String setParameterCashSettlement()
     {
         String date = changeDateFormat.changeDateToDefaultString(datum.getValue());
-        String employee = "Administrator";
-        String distributionPoint = "Hauptstelle";
-        String listNumber = "K.A. was hier stehen soll.";
+        String employee = user.getUserName();
+        String distributionPoint = this.distributionPoint.getName();
+        String listNumber = selectTemplate.getName()+":"+selectTemplate.getFileVersion();
         String periode = cbZeitraum.getSelectionModel().getSelectedItem();
 
         String result = SCRIPT_TAG_OPEN + FUNCTION_SET_PARAMETER
@@ -539,6 +555,10 @@ public class KassenbelegDruckenController extends Thread
         String functionSetTotalShoppingPayment = "";
         Double totalShopping = 0.0;
         Double totalPayment = 0.0;
+        int totalHousholds =0;
+        int totalAdults=0;
+        int totalChildren=0;
+        
         ArrayList<Einkauf> shoppingArrayList;
         ArrayList<SumEinkauf> sumeinkauf=null;
         switch (tableId)
@@ -581,12 +601,18 @@ public class KassenbelegDruckenController extends Thread
                     + getFinishedValueForJavaScriptFunction(replaceGermanCharacters.replaceGermanUmlauts(shoppingArrayList.get(runVar).getBuchungstext()), false)
                     + getFinishedValueForJavaScriptFunction(String.valueOf((shoppingArrayList.get(runVar).getPerson().isAdult()) ? INT_TRUE : INT_FALSE), true)
                     + FUNCTION_END;
-
+            if (tableId==TABLE_ID_SALES_TODAY)
+            {
+              totalHousholds +=1;
+              totalAdults += shoppingArrayList.get(runVar).getAnzahlErwachsene();
+              totalChildren += shoppingArrayList.get(runVar).getAnzahlKinder();
+            }
             totalShopping += shoppingArrayList.get(runVar).getSummeEinkauf();
             totalPayment += shoppingArrayList.get(runVar).getSummeZahlung();
         }
 
         String buildFunctionBookingTotal ="";
+        String buildFunctionCustomerOverview="";
         if (tableId==TABLE_ID_SALES_TODAY & extensionFlag)
         { 
           for (int runVar = 0; runVar < sumeinkauf.size(); runVar++)
@@ -598,6 +624,13 @@ public class KassenbelegDruckenController extends Thread
                + getFinishedValueForJavaScriptFunction(replaceGermanCharacters.replaceGermanUmlauts(sumeinkauf.get(runVar).distributionPointName()), true)
                + FUNCTION_END;
           }
+          buildFunctionCustomerOverview=FUNCTION_SET_CUSTOMER_OVERVIEW
+               +getFinishedValueForJavaScriptFunction(String.valueOf(totalHousholds), false)
+               +getFinishedValueForJavaScriptFunction(String.valueOf(totalAdults), false)
+               +getFinishedValueForJavaScriptFunction(String.valueOf(totalChildren), true)
+               + FUNCTION_END;
+          
+              
         }
         
         String buildFunctionSetTotal = functionSetTotalShoppingPayment
@@ -605,7 +638,7 @@ public class KassenbelegDruckenController extends Thread
                 + getFinishedValueForJavaScriptFunction(parseToEuroFormat.parseFloatToEuroString(totalPayment, false), true)
                 + FUNCTION_END;
         
-        return (SCRIPT_TAG_OPEN + resultString + buildFunctionBookingTotal+buildFunctionSetTotal +  SCRIPT_TAG_CLOSE);
+        return (SCRIPT_TAG_OPEN + resultString + buildFunctionBookingTotal+buildFunctionSetTotal +buildFunctionCustomerOverview +  SCRIPT_TAG_CLOSE);
     }
 
 

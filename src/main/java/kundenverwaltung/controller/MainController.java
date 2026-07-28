@@ -241,7 +241,7 @@ public class MainController
 
           // Controller holen
           KassenbelegDruckenController kassenbelegDruckenController = loader.getController();
-
+          kassenbelegDruckenController.setUser(user);
           // FamilyMember und RadioButton-Einstellungen setzen
           if (familyMember != null)
           {
