@@ -42,13 +42,13 @@ public class ReplaceGermanCharacters
         String character = null;
         String switchResult = string;
 
-        System.out.println("INPUT:" + string);
+        //System.out.println("INPUT:" + string);
 
         for (int runVar = 0; runVar < string.length(); runVar++)
         {
             character = String.valueOf(string.charAt(runVar));
 
-            System.out.println("Char: " + character);
+            //System.out.println("Char: " + character);
 
             switch (character)
             {
