@@ -1,7 +1,7 @@
 <!--
 Autor=Tafel PJT,Uwe Peiser
 Name=Kassenabrechnung(norm+summen)
-Version=2.0
+Version=2.1
 Type=kvpKassenabrechnung
 FileTypes=HTML-Datei (*.html)|*.html
 Passwort=0
@@ -64,7 +64,7 @@ DefaultExt=.html
     <br>
     <strong>Verteilstelle: </strong> <span id="distributionPoint"></span>
     <br>
-    <strong>Listennummer: </strong> <span id="listNumber"></span>
+    <strong>Listennr: </strong> <span id="listNumber"></span>
     <br>
     <strong>Abrechnung vom: </strong> <span id="periode"></span>
 </p>
@@ -72,12 +72,14 @@ DefaultExt=.html
 
 <fieldset id="customerOverview">
     <legend>Kunden&uuml;bersicht vom: <span id="date"></span></legend>
+    <strong>Haushalte: </strong> <span id="customerHouseholds">0</span>
+    <br>   
     <strong>Erwachsene: </strong> <span id="customerAdults">0</span>
     <br>
     <strong>Kinder: </strong> <span id="customerChildren">0</span>
     <br>
     <strong> Gesamt: </strong> <span id="customerTotal">0</span>
-</fieldset>
+ </fieldset>
 
 <p>
     <strong>Ums&auml;tze, heute gebucht:</strong>
@@ -196,11 +198,6 @@ DefaultExt=.html
         firstRow.insertCell(7).innerHTML = bankBalance;
         firstRow.insertCell(8).innerHTML = distributionPoint;
 
-
-        if(tableId == "salesToday")
-        {
-            addCustomerOverview(adult);
-        }
     }
     
     function addtotalperBookingRow(tableId, booking, totalShopping, totalPayment,distributionPoint)
@@ -214,19 +211,18 @@ DefaultExt=.html
         firstRow.insertCell(3).innerHTML = distributionPoint;
     }
 
-    function addCustomerOverview(adult)
+    function addCustomerOverview(cnthouseholds,cntadults=null,cntchildren=null)
     {
-        var numberTotal = parseInt(document.getElementById("customerTotal").innerHTML) + 1;
-        document.getElementById("customerTotal").innerHTML = numberTotal.toString();
-        if(parseInt(adult) == 1)
-        {
-            var numberAdults = parseInt(document.getElementById("customerAdults").innerHTML) + 1;
-            document.getElementById("customerAdults").innerHTML = numberAdults.toString();
-        }else
-        {
-            var numberChildren = parseInt(document.getElementById("customerChildren").innerHTML) + 1;
-            document.getElementById("customerChildren").innerHTML = numberChildren.toString();
-        }
+    	const adults = cntadults === null || cntadults === undefined ? 0 : parseInt(cntadults);
+        const children = cntchildren === null || cntchildren === undefined ? 0 : parseInt(cntchildren);
+
+        const numberTotal = adults + children;
+        
+    	document.getElementById("customerHouseholds").innerHTML = cnthouseholds;
+    	document.getElementById("customerAdults").innerHTML =cntadults;
+    	document.getElementById("customerChildren").innerHTML = cntchildren;
+    	document.getElementById("customerTotal").innerHTML = numberTotal;
+    	
     }
 
     function setCashierValue(value)
