@@ -235,7 +235,7 @@ CREATE TABLE `deleted_MemberOfTheFamily` (
 CREATE TABLE `einkauf` (
   `einkaufId` int(10) NOT NULL,
   `warentyp` int(10) DEFAULT NULL,
-  `storniertAm` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
+  `storniertAm` timestamp NULL DEFAULT NULL ,
   `stornoText` text DEFAULT NULL,
   `buchungstext` text DEFAULT NULL,
   `kunde` int(10) DEFAULT NULL,
