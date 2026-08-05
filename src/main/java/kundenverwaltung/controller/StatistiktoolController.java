@@ -4,6 +4,7 @@ import kundenverwaltung.controller.statistiktool.ArchivierteKundenStatistikContr
 import kundenverwaltung.controller.statistiktool.BescheidartStatistikController;
 import kundenverwaltung.controller.statistiktool.GuthabenStatistikController;
 import kundenverwaltung.controller.statistiktool.HerkunftStatistikController;
+import kundenverwaltung.controller.statistiktool.JahresuebersichtStatistikController;
 import kundenverwaltung.controller.statistiktool.NationalitaetStatistikController;
 import kundenverwaltung.controller.statistiktool.StatistiktoolHeaderController;
 import kundenverwaltung.controller.statistiktool.StatistiktoolMasterClassController;
@@ -537,7 +538,10 @@ public class StatistiktoolController extends StatistiktoolMasterClassController<
             // FXML-Datei laden
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/kundenverwaltung/fxml/statistiktool/JahresuebersichtStatistik.fxml"));
             Parent root = loader.load();
-
+            // Den Controller abrufen und das DAO setzen
+            JahresuebersichtStatistikController controller = loader.getController();
+            controller.setUser(user);
+ 
             // Neue Stage (Fenster) erstellen
             Stage stage = new Stage();
             stage.setTitle("Jahresübersicht");

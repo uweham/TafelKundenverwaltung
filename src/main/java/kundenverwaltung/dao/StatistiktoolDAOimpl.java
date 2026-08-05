@@ -259,6 +259,60 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
         return sqlquery;
     }
     
+    public String buildSqlQueryJahresstatistik(int verteilstelleId, int year, boolean summenflg)
+    {
+     String sqlquery ="";
+      if (summenflg) 
+      {
+        sqlquery =" select ek.Jahr,ek.Monat, ek.summeEinkauf,ek.summeZahlung,ek.anzahlHaushalte,ek.anzahlErwachsene, ek.anzahlKinder, ek.AnzahlGesamt, ha.anzahlNeuHaushalte from "
+            +" (select YEAR(e.erfassungszeit) as Jahr,MONTH(e.erfassungszeit) as Monat,  "
+            +" sum(e.summeEinkauf) as summeEinkauf, sum(e.summeZahlung) as summeZahlung, "
+            +" sum(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then (e.anzahlKinder+ e.anzahlErwachsene) else 0 end) as anzahlGesamt, "
+            +" sum(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then (e.anzahlErwachsene) else 0 end) as anzahlErwachsene, "
+            +" sum(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then (e.anzahlKinder) else 0 end) as anzahlKinder, "
+            +" count(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then 1 else 0 end) as anzahlHaushalte "
+            +" from einkauf e "
+            +" where e.storniertAm IS NULL AND YEAR(e.erfassungszeit) = "+year+" AND " 
+            +(verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " true ":" beiVerteilstelle = "+verteilstelleId+ "  ")
+            +" group by YEAR(e.erfassungszeit) , MONTH(e.erfassungszeit)) ek " 
+            +"   LEFT JOIN ( "
+            +"  select YEAR(h.kundeSeit) as Jahr,MONTH(h.kundeSeit) as Monat,  "
+            +"  count(*) as anzahlNeuHaushalte "
+            +"  from haushalt h "
+            +"  where YEAR(h.kundeSeit) = "+year+ " AND "
+            + (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " true ":" verteilstellenId = "+verteilstelleId+ "  ")
+            +"  group by YEAR(h.kundeSeit) ,MONTH(h.kundeSeit)  "   
+            +"  ) ha " 
+            +"   ON ek.Jahr=ha.jahr and ek.Monat=ha.Monat ";
+        
+      }
+      else 
+      {
+        sqlquery =" select ek.Jahr,ek.Monat,ek.Woche, ek.summeEinkauf,ek.summeZahlung,ek.anzahlHaushalte,ek.anzahlErwachsene, ek.anzahlKinder, ek.AnzahlGesamt, ha.anzahlNeuHaushalte from "
+            +" (select YEAR(e.erfassungszeit) as Jahr,MONTH(e.erfassungszeit) as Monat, WEEKOFYEAR(e.erfassungszeit) as Woche, "
+            +" sum(e.summeEinkauf) as summeEinkauf, sum(e.summeZahlung) as summeZahlung, "
+            +" sum(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then (e.anzahlKinder+ e.anzahlErwachsene) else 0 end) as anzahlGesamt, "
+            +" sum(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then (e.anzahlErwachsene) else 0 end) as anzahlErwachsene, "
+            +" sum(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then (e.anzahlKinder) else 0 end) as anzahlKinder, "
+            +" count(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then 1 else 0 end) as anzahlHaushalte "
+            +" from einkauf e "
+            +" where e.storniertAm IS NULL AND YEAR(e.erfassungszeit) = "+year+" AND " 
+            +(verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " true ":" beiVerteilstelle = "+verteilstelleId+ "  ")
+            +" group by YEAR(e.erfassungszeit) , MONTH(e.erfassungszeit) ,WEEKOFYEAR(e.erfassungszeit)) ek " 
+            +"   LEFT JOIN ( "
+            +"  select YEAR(h.kundeSeit) as Jahr,MONTH(h.kundeSeit) as Monat, WEEKOFYEAR(h.kundeSeit) as Woche, "
+            +"  count(*) as anzahlNeuHaushalte "
+            +"  from haushalt h "
+            +"  where YEAR(h.kundeSeit) = "+year+ " AND "
+            + (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " true ":" verteilstellenId = "+verteilstelleId+ "  ")
+            +"  group by YEAR(h.kundeSeit) ,MONTH(h.kundeSeit), WEEKOFYEAR(h.kundeSeit) "   
+            +"  ) ha " 
+            +"   ON ek.Jahr=ha.jahr and ek.Monat=ha.Monat and ek.Woche=ha.woche ";
+        }
+
+      return sqlquery;
+    };
+
 
     private String buildSQLSubquery(int verteilstelleId, int rangeId)
     {
@@ -331,7 +385,7 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
     }
    
     
-    
+    /* unused 
     public void executeSQLVoidQuery(String sqlQuery) throws SQLException
     {
         try (Connection conn = SQLConnection.getCon();
@@ -352,8 +406,11 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
             throw e; // Exception weiterwerfen
         }
     }
+    */
+    
     /**
      */
+    /* unused
     public List<Map<String, String>> executeSQLQuery(String sqlQuery) throws SQLException
     {
         List<Map<String, String>> results = new ArrayList<>();
@@ -377,8 +434,11 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
         }
         return results;
     }
+    */
+    
     /**
      */
+    /* unused
     @Override
     public boolean saveAltersgruppen(int year, List<int[]> altersgruppen, int jahresergebnis)
     {
@@ -389,8 +449,12 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
         }
         return saveAltersgruppen(year, altersgruppen, jahresergebnis, ergebnisse);
     }
+    */
+    
+    
     /**
      */
+    /* unused
     @Override
     public boolean saveAltersgruppen(int year, List<int[]> altersgruppen, int jahresergebnis, List<Integer> ergebnisse)
     {
@@ -429,8 +493,11 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
         }
         return false;
     }
+    */
+    
     /**
      */
+    /*unused 
     @Override
     public boolean saveAltersgruppen(int year, List<int[]> altersgruppen)
     {
@@ -459,13 +526,16 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
         }
         return 0;
     }
-
+    */
+    
     /**
      * Berechnet das Jahresergebnis basierend auf dem gegebenen Jahr.
      *
      * @param year Das Jahr, für das das Ergebnis berechnet werden soll.
      * @return Die Anzahl der Einträge für das gegebene Jahr.
      */
+    /* unused
+
     public int getYearResult(int year)
     {
         if (year < 0)
@@ -491,35 +561,47 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
         }
         return 0;  // Rückgabe 0, wenn keine Ergebnisse gefunden wurden oder ein Fehler aufgetreten ist
     }
+    */
 
+    
     /**
      * Diese Methode wird nicht implementiert.
      */
+    /*unused
     @Override
     public Optional<Statistiktool> loadAltersstatistik(int year, List<int[]> altersgruppen, String verteilstelle)
     {
         return Optional.empty();
     }
-
+    */
+    
     /**
      * Diese Methode wird nicht implementiert.
      */
+    /*unused
     @Override
     public List<Statistiktool> loadAltersstatistik(LocalDate selectedDate, List<int[]> altersgruppen)
     {
         return null;
     }
-
+    */
+    
     /**
      * Diese Methode wird nicht implementiert.
      */
+    /*unused
+
     @Override
     public List<Statistiktool> loadAltersstatistik(StatistiktoolController controller)
     {
         return null;
     }
+    */
+    
     /**
      */
+    /*unused
+
     @Override
     public List<Statistiktool> loadNationalitaeten()
     {
@@ -547,12 +629,16 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
 
         return nationalitaetenList;
     }
+    */
+    
     /**
      * Speichert die Statistikdaten in einer CSV-Datei.
      *
      * @param statistikData Die zu speichernden Statistikdaten.
      * @param fileName      Der Name der Datei, in die die Daten gespeichert werden sollen.
      */
+    /*unused
+
     @Override
     public void saveStatistik(List<String[]> statistikData, String fileName)
     {
@@ -568,7 +654,8 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
             System.out.println("Fehler beim Speichern der CSV-Datei: " + e.getMessage());
         }
     }
-
+    */
+    
     /**
      * Lädt die Statistikdaten aus einer CSV-Datei.
      *
@@ -599,6 +686,8 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
      *
      * @param query Die auszuführende SQL-Abfrage.
      */
+    /*unused
+
     public void executeCustomQuery(String query)
     {
         try (Connection conn = SQLConnection.getCon();
@@ -612,14 +701,17 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
             e.printStackTrace();
         }
     }
+    */
     /**
      */
+    /*unused
+
     @Override
     public Connection getConnection()
     {
         return null; // Methode implementieren oder entfernen
     }
-
+    */
 
 
 
