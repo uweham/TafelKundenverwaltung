@@ -130,6 +130,8 @@
             <Button fx:id="archivierteKundenButton" onAction="#openArchivierteKunden" prefHeight="31.0" prefWidth="200.0"  style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Kundeninformationen" />
             <Button fx:id="bescheidButton" onAction="#openBescheidStatistik" prefHeight="31.0" prefWidth="200.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Bescheidarten Statistik" />
             <Button onAction="#openJahresuebersicht" prefHeight="31.0" prefWidth="200.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Jahresübersicht" />
+            <Button onAction="#openAusgabegruppen" prefHeight="31.0" prefWidth="200.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Ausgabegruppen" />
+
         </VBox>
     </children>
 </AnchorPane>

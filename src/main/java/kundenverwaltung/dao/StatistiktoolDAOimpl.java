@@ -58,7 +58,7 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
             group by b.grp_age_from,b.grp_age_to
 
        */
-      String sqlsubquery=buildSQLSubquery(verteilstelleId, rangeId);
+      String sqlsubquery=buildSQLSubquery(verteilstelleId, rangeId, "f.haushaltId");
       
       /*String sqlsubquery= (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS)?
                           " true ":
@@ -170,7 +170,7 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
        */
       Einstellungen einstellungen = new EinstellungenDAOimpl().read();
       
-      String sqlsubquery=buildSQLSubquery(verteilstelleId, rangeId);
+      String sqlsubquery=buildSQLSubquery(verteilstelleId, rangeId, "f.haushaltId");
       
 
       String sqlquery="";
@@ -187,7 +187,7 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
     
     public String buildSqlQueryArchivierteKundenstatistik(int verteilstelleId,int rangeId)
     {
-      String sqlsubquery=buildSQLSubquery(verteilstelleId, rangeId);
+      String sqlsubquery=buildSQLSubquery(verteilstelleId, rangeId,"f.haushaltId");
       String sqlquery="";
       sqlquery="SELECT  f.haushaltId, concat_ws(\" \",f.vName,f.nName) as name, n.name as nationalitaet, f.gDatum as geburtsdatum, "
             +  " TIMESTAMPDIFF(YEAR, f.gDatum, CURDATE()) as lebensalter, a.name as ausgabegruppe, h.istArchiviert, h.istGesperrt, "
@@ -210,7 +210,7 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
       Einstellungen einstellungen = new EinstellungenDAOimpl().read();
       int agelimit=(einstellungen.getAlterErwachsener() > 0) ? einstellungen.getAlterErwachsener() : 18;
       
-      String sqlsubquery=buildSQLSubquery(verteilstelleId, rangeId);
+      String sqlsubquery=buildSQLSubquery(verteilstelleId, rangeId, "f.haushaltId");
       String sqlquery="";
       if (summenflg)
       {
@@ -313,15 +313,46 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
       return sqlquery;
     };
 
-
-    private String buildSQLSubquery(int verteilstelleId, int rangeId)
+    public String buildSqlQueryAusgabegruppenstatistik(int verteilstellenId,int rangeId, boolean dynamicflg)
+    {
+      String sqlsubquery=buildSQLSubquery(verteilstellenId, rangeId, "h.kundennummer");
+      String sqlquery="";
+      if (dynamicflg)
+      {
+        sqlquery =" select a.name as ausgabegruppe,count(*) as anzahlGruppe from haushalt h "
+            +" LEFT JOIN ausgabegruppe a "
+            +" ON h.ausgabegruppeId = a.ausgabegruppeId"
+            +" where "+sqlsubquery
+            +" and h.kundennummer in "
+            +" (select e.kunde from einkauf e where e.storniertAm IS NULL and"
+            +"      e.erfassungszeit "
+            +"        BETWEEN DATE_SUB( "
+            +"            (SELECT MAX(erfassungszeit) FROM einkauf), "
+            +"            INTERVAL 3 MONTH "
+            +"        ) "
+            +"        AND (SELECT MAX(erfassungszeit) FROM einkauf)) "
+            +" group by a.name";
+      }
+      else
+      {  
+        sqlquery =" select a.name as ausgabegruppe,count(*) as anzahlGruppe from haushalt h "
+              +" LEFT JOIN ausgabegruppe a "
+              +" ON h.ausgabegruppeId = a.ausgabegruppeId"
+              +" where "+sqlsubquery
+              +" group by a.name";
+      }
+      
+      return sqlquery;
+      
+    }
+    
+     
+    private String buildSQLSubquery(int verteilstelleId, int rangeId, String namekundenId)
     {
       String sqlsubquery= (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS && rangeId == Constants.STATISTIK_RANGE_ALL )?
           " (true ":
-          " f.haushaltId in (select kundennummer from haushalt where "
+          " "+namekundenId+" in (select kundennummer from haushalt where "
            + (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " true ":" verteilstellenId = ?  ");
-            
-            
             sqlsubquery +=   
             switch (rangeId) {
             case Constants.STATISTIK_RANGE_ALL -> ") ";
@@ -332,6 +363,7 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
             };
         return sqlsubquery;      
     }
+    
     @Override
     public Optional<ResultSet> loadStatistik(String query) {
       System.out.println("SQL-Abfrage: " + query);

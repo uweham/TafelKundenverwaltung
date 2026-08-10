@@ -1,6 +1,7 @@
 package kundenverwaltung.controller;
 import kundenverwaltung.controller.admintool.StatistiktoolSQLController;
 import kundenverwaltung.controller.statistiktool.ArchivierteKundenStatistikController;
+import kundenverwaltung.controller.statistiktool.AusgabegruppenStatistikController;
 import kundenverwaltung.controller.statistiktool.BescheidartStatistikController;
 import kundenverwaltung.controller.statistiktool.GuthabenStatistikController;
 import kundenverwaltung.controller.statistiktool.HerkunftStatistikController;
@@ -530,6 +531,7 @@ public class StatistiktoolController extends StatistiktoolMasterClassController<
     }
     /**
      */
+    @FXML
     // Methode, um das Jahresübersicht-Fenster zu öffnen
     public void openJahresuebersicht()
     {
@@ -556,7 +558,33 @@ public class StatistiktoolController extends StatistiktoolMasterClassController<
             e.printStackTrace();
         }
     }
+    @FXML
+    // Methode, um das Jahresübersicht-Fenster zu öffnen
+    public void openAusgabegruppen()
+    {
+        try
+        {
+            // FXML-Datei laden
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/kundenverwaltung/fxml/statistiktool/AusgabegruppenStatistik.fxml"));
+            Parent root = loader.load();
+            // Den Controller abrufen und das DAO setzen
+            AusgabegruppenStatistikController controller = loader.getController();
+            controller.setUser(user);
+ 
+            // Neue Stage (Fenster) erstellen
+            Stage stage = new Stage();
+            stage.setTitle("Ausgabegruppen");
 
+            // Szene setzen und anzeigen
+            Scene scene = new Scene(root);
+            GlobalEventLogger.attachTo("AusgabegruppenStatistik.fxml", scene);
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
     @FXML
     private void openBescheidStatistik(ActionEvent event)
     {

@@ -49,6 +49,8 @@ public interface StatistiktoolDAO
     public String buildSqlQueryArchivierteKundenstatistik(int verteilstelleId,int rangeId);
     public String buildSqlQueryBescheidartstatistik(int verteilstelleId,int rangeId,int statusId, boolean summenflg);
     public String buildSqlQueryJahresstatistik(int verteilstelleId, int year, boolean summenflg);
+    public String buildSqlQueryAusgabegruppenstatistik(int verteilstellenId,int rangeId, boolean dynamicflg);
+    
     
 
 }
