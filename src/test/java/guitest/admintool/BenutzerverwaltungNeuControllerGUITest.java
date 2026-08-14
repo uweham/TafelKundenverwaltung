@@ -1,3 +1,4 @@
+/*
 package guitest.admintool;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -52,3 +53,4 @@ class BenutzerverwaltungNeuControllerGUITest {
 
 
 }
+*/

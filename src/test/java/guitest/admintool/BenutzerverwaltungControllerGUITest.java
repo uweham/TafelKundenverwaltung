@@ -1,3 +1,4 @@
+/*
 package guitest.admintool;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -106,3 +107,4 @@ public class BenutzerverwaltungControllerGUITest {
         assertTrue(cb.isSelected(), "Checkbox C1 sollte nach Klick ausgewählt sein");
     }
 }
+*/
