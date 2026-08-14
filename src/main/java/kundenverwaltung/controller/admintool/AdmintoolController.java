@@ -54,6 +54,7 @@ public class AdmintoolController
         return instance;
     }
 
+    /*not used 
     private static BenutzerverwaltungController benutzerverwaltungController;
 
     public static BenutzerverwaltungController getBenutzerverwaltungController()
@@ -62,7 +63,8 @@ public class AdmintoolController
     public static void setBenutzerverwaltungController(BenutzerverwaltungController c)
     { benutzerverwaltungController = c;
     }
-
+    */
+    
     /**
     *
     */
@@ -77,6 +79,7 @@ public class AdmintoolController
     /**
     *
     */
+    /*not used 
     @FXML
     public void openBenutzerverwaltung(ActionEvent event) throws IOException
     {
@@ -84,7 +87,8 @@ public class AdmintoolController
         mainPane.getChildren().add(FXMLLoader
                 .load(getClass().getResource("/kundenverwaltung/fxml/admintool/Benutzerverwaltung.fxml")));
     }
-
+    */
+    
     /**
     *
     */
