@@ -63,4 +63,12 @@ public class Constants {
    
   public static final int WARENTYPID_GUTSCHRIFT = 3; // change this value when change in sql table warentyp
   
+  public static final String ADMIN_USER_RIGHT = "Administrator";
+  public static final String DISTRIBUTION_POINT_LEADER_USER_RIGHT = "Verteilstellenleiter";
+  public static final String CASH_PERSONAL_USER_RIGHT = "Kassenpersonal";
+  /*Remove role statistik (uncomment if you want
+  public static final String STATISTIK_PERSONAL_USER_RIGHT = "Statistik";
+  */
+
+  
 }

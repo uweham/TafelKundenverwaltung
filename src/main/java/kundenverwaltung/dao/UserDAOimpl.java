@@ -106,14 +106,23 @@ public class UserDAOimpl implements UserDAO
 		{
 			return false;
 		}
-		String sql = "DELETE FROM users WHERE userId = ?";
+		String sql = "DELETE FROM table_column_preferences WHERE userId = ?";
 		try
 		{
 			Connection connection = SQLConnection.getCon();
+			
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
 			preparedStatement.setInt(1, userId);
 			preparedStatement.executeUpdate();
 			preparedStatement.close();
+			System.out.println("Benutzer aus preferences geloescht");
+			sql = "DELETE FROM users WHERE userId = ?";
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, userId);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+            System.out.println("Benutzer geloescht");
+
 			return true;
 		} catch (SQLException e)
 			{

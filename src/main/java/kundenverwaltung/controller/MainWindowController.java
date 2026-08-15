@@ -1445,31 +1445,122 @@ public class MainWindowController
 
     public void setUserRights(User user)
     {
-        this.user = user;
-
-        if (user.getUserRights().equals(DISTRIBUTION_POINT_LEADER_USER_RIGHT)
-             || user.getUserRights().equals(CASH_PERSONAL_USER_RIGHT))
-        {
+      
+       this.user = user;
+        String userRight = user.getUserRights();
+        
+        switch (userRight) {
+          case Constants.ADMIN_USER_RIGHT -> {
+              menuItemDbSettings.setDisable(false);
+              menuItemAdminTool.setDisable(false);
+              menuItemStatistikTool.setDisable(false);
+              menuItemAddHousehold.setDisable(false);
+              btnHaushaltHinzufuegen.setDisable(false);
+              menuItemManageHousehold.setDisable(false);
+              btnHaushaltVerwalten.setDisable(false);
+              menuItemCommentEdit.setDisable(false);
+              btnBermerkungAendern.setDisable(false);
+              menuItemDecisionEdit.setDisable(false);
+              btnWeitereInformationen.setDisable(false);
+              menuItemPowerOfAttorneyEdit.setDisable(false);
+              btnDiesesBezahlt.setDisable(false);
+              btnDiesesBarBezahlt.setDisable(false);
+              btnDiesesNullBezahlt.setDisable(false);
+              btnDiesesKarteBezahlt.setDisable(false);
+              menuItemBookingEdit.setDisable(false);
+              btnInfosAendern.setDisable(false);
+              }
+          case Constants.DISTRIBUTION_POINT_LEADER_USER_RIGHT -> {
+              menuItemDbSettings.setDisable(true);
+              menuItemAdminTool.setDisable(true);
+              menuItemStatistikTool.setDisable(true);
+              menuItemAddHousehold.setDisable(false);
+              btnHaushaltHinzufuegen.setDisable(false);
+              menuItemManageHousehold.setDisable(false);
+              btnHaushaltVerwalten.setDisable(false);
+              menuItemCommentEdit.setDisable(false);
+              btnBermerkungAendern.setDisable(false);
+              menuItemDecisionEdit.setDisable(false);
+              btnWeitereInformationen.setDisable(false);
+              menuItemPowerOfAttorneyEdit.setDisable(false);
+              btnDiesesBezahlt.setDisable(false);
+              btnDiesesBarBezahlt.setDisable(false);
+              btnDiesesNullBezahlt.setDisable(false);
+              btnDiesesKarteBezahlt.setDisable(false);
+              menuItemBookingEdit.setDisable(false);
+              btnInfosAendern.setDisable(false);
+              }
+          case Constants.CASH_PERSONAL_USER_RIGHT -> {
+              menuItemDbSettings.setDisable(true);
+              menuItemAdminTool.setDisable(true);
+              menuItemStatistikTool.setDisable(true);
+              menuItemAddHousehold.setDisable(true);
+              btnHaushaltHinzufuegen.setDisable(true);
+              menuItemManageHousehold.setDisable(true);
+              btnHaushaltVerwalten.setDisable(true);
+              menuItemCommentEdit.setDisable(true);
+              btnBermerkungAendern.setDisable(true);
+              menuItemDecisionEdit.setDisable(true);
+              btnWeitereInformationen.setDisable(true);
+              menuItemPowerOfAttorneyEdit.setDisable(true);
+              btnDiesesBezahlt.setDisable(false);
+              btnDiesesBarBezahlt.setDisable(false);
+              btnDiesesNullBezahlt.setDisable(false);
+              btnDiesesKarteBezahlt.setDisable(false);
+              menuItemBookingEdit.setDisable(false);
+              btnInfosAendern.setDisable(false);
+  
+              }
+          /*Remove role statistik (uncomment if you want
+          case Constants.STATISTIK_PERSONAL_USER_RIGHT -> {
             menuItemDbSettings.setDisable(true);
             menuItemAdminTool.setDisable(true);
-
-
-            if (user.getUserRights().equals(CASH_PERSONAL_USER_RIGHT))
-            {
-                menuItemStatistikTool.setDisable(true);
-                menuItemAddHousehold.setDisable(true);
-                btnHaushaltHinzufuegen.setDisable(true);
-                menuItemManageHousehold.setDisable(true);
-                btnHaushaltVerwalten.setDisable(true);
-                menuItemCommentEdit.setDisable(true);
-                btnBermerkungAendern.setDisable(true);
-                menuItemDecisionEdit.setDisable(true);
-                btnWeitereInformationen.setDisable(true);
-                menuItemPowerOfAttorneyEdit.setDisable(true);
+            menuItemStatistikTool.setDisable(false);
+            menuItemAddHousehold.setDisable(true);
+            btnHaushaltHinzufuegen.setDisable(true);
+            menuItemManageHousehold.setDisable(true);
+            btnHaushaltVerwalten.setDisable(true);
+            menuItemCommentEdit.setDisable(true);
+            btnBermerkungAendern.setDisable(true);
+            menuItemDecisionEdit.setDisable(true);
+            btnWeitereInformationen.setDisable(true);
+            menuItemPowerOfAttorneyEdit.setDisable(true);
+            btnDiesesBezahlt.setDisable(true);
+            btnDiesesBarBezahlt.setDisable(true);
+            btnDiesesNullBezahlt.setDisable(true);
+            btnDiesesKarteBezahlt.setDisable(true);
+            menuItemBookingEdit.setDisable(true);
+            btnInfosAendern.setDisable(true);
+            }     
+           */
+          
+          default -> { 
+            menuItemDbSettings.setDisable(true);
+            menuItemAdminTool.setDisable(true);
+            menuItemStatistikTool.setDisable(true);
+            menuItemAddHousehold.setDisable(true);
+            btnHaushaltHinzufuegen.setDisable(true);
+            menuItemManageHousehold.setDisable(true);
+            btnHaushaltVerwalten.setDisable(true);
+            menuItemCommentEdit.setDisable(true);
+            btnBermerkungAendern.setDisable(true);
+            menuItemDecisionEdit.setDisable(true);
+            btnWeitereInformationen.setDisable(true);
+            menuItemPowerOfAttorneyEdit.setDisable(true);
+            btnDiesesBezahlt.setDisable(true);
+            btnDiesesBarBezahlt.setDisable(true);
+            btnDiesesNullBezahlt.setDisable(true);
+            btnDiesesKarteBezahlt.setDisable(true);
+            menuItemBookingEdit.setDisable(true);
+            btnInfosAendern.setDisable(true);
+ 
             }
-        }
-    }
+      }
 
+  
+    }
+    
+ 
     /**
      * Aktualisiert die Kunden-Tabelle basierend auf der ausgewählten Verteilstelle.
      */

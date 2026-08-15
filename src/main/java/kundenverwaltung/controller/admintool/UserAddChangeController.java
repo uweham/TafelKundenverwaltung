@@ -2,6 +2,8 @@ package kundenverwaltung.controller.admintool;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -13,9 +15,11 @@ import javafx.stage.Stage;
 import kundenverwaltung.Benachrichtigung;
 import kundenverwaltung.dao.UserDAOimpl;
 import kundenverwaltung.model.User;
+import kundenverwaltung.model.Verteilstelle;
 import kundenverwaltung.toolsandworkarounds.ChangeDateFormat;
 import kundenverwaltung.toolsandworkarounds.CheckUserInput;
 import kundenverwaltung.toolsandworkarounds.PasswordEncoding;
+import kundenverwaltung.toolsandworkarounds.UserRights;
 import kundenverwaltung.toolsandworkarounds.IndividualExceptions.ConfirmPassword;
 import kundenverwaltung.toolsandworkarounds.IndividualExceptions.DuplicateUserName;
 import kundenverwaltung.toolsandworkarounds.IndividualExceptions.InvalidPasswordLength;
@@ -61,7 +65,7 @@ public class UserAddChangeController
 	private DatePicker datePickerBirthday;
 	@SuppressWarnings("rawtypes")
 	@FXML
-	private ComboBox comboboxUserRights;
+	private ComboBox<String> comboboxUserRights;
 	@FXML
 	private CheckBox checkboxDefaultPassword;
 
@@ -71,6 +75,8 @@ public class UserAddChangeController
 	private PasswordEncoding passwordEncoding = new PasswordEncoding();
 	private ArrayList<User> userArrayList = new UserDAOimpl().getAllUsers();
 	private User user;
+	private UserRights userrights=new UserRights();
+	private ObservableList<String> userrightslistOL=FXCollections.observableArrayList(userrights.getUserrights());
 
 	/**
      * Initializes the controller class. Sets up the necessary elements and event handlers.
@@ -79,7 +85,7 @@ public class UserAddChangeController
 	{
 		datePickerBirthday.setConverter(changeDateFormat.convertDatePickerFormat());
 		changeDateFormat.checkUserInputDate(datePickerBirthday);
-
+		comboboxUserRights.setItems(userrightslistOL);  
 		comboboxUserRights.getSelectionModel().selectFirst();
 
 		checkboxDefaultPassword.setOnAction(event ->

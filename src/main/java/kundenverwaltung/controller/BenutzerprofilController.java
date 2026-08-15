@@ -49,10 +49,6 @@ public class BenutzerprofilController
     @FXML
     private Label labelPasswordHeader;
     @FXML
-    private Label labelSettingsHeader;
-    @FXML
-    private Label labelAuthorizationHeader;
-    @FXML
     private Label labelHeader;
     @FXML
     private Label labelUserName;
@@ -77,10 +73,7 @@ public class BenutzerprofilController
     private Button buttonSaveUserName;
     @FXML
     private Button buttonSavePassword;
-    @FXML
-    private Button buttonSaveSettings;
-    @FXML
-    private Button buttonResetSettings;
+
 
     @FXML
     private TextField txtBenutzername;
@@ -88,29 +81,6 @@ public class BenutzerprofilController
     private TextField txtVorname;
     @FXML
     private TextField txtNachname;
-
-    @FXML
-    private CheckBox cbxEinstellungenSpeichern;
-    @FXML
-    private CheckBox cbxMehrerePersonen;
-    @FXML
-    private CheckBox cbxAmpeldarstellung;
-    @FXML
-    private CheckBox cbxUmsatzspeicherung;
-    @FXML
-    private CheckBox cbxPositionierungSpeichern;
-    @FXML
-    private CheckBox cbxSuchvorgaengeAutomatisch;
-
-    @FXML
-    private Tab tabInformation;
-    @FXML
-    private Tab tabSettings;
-    @FXML
-    private Tab tabAuthorization;
-
-    @FXML
-    private ListView<String> lwBerechtigungen;
 
     @FXML
     private PasswordField passwordFieldConfirm;
@@ -224,7 +194,7 @@ public class BenutzerprofilController
                     ArrayList<User> userArrayList = userDAO.getAllUsers();
                     for (User element : userArrayList)
                     {
-                        if (txtBenutzername.getText().toUpperCase().equals(element.getUserName().toUpperCase()))
+                        if (txtBenutzername.getText().equals(element.getUserName()))
                         {
                             Benachrichtigung.warnungBenachrichtigung(NOTIFICATION_TITEL_DEFAULT, NOTIFICATION_DUPLICATE_USER_NAME);
                             txtBenutzername.requestFocus();
@@ -262,7 +232,35 @@ public class BenutzerprofilController
                 return true;
             }
     }
-
+/*
+ *                         "labelUserHeader" #      
+ *                         "labelUserName" #
+ *                         "labelShowFirstName" 
+ *                         "txtBenutzername" 
+ *                         "txtVorname"
+ *                         "buttonSaveUserName" 
+ *                         "labelPasswordHeader" # 
+                           "labelOldPassword" 
+                           "labelNewPassword" 
+                           "labelRepeatNewPassword"
+                           "buttonSavePassword"
+                           "labelShowSurname" 
+                           "txtNachname" 
+                           "labelUserRightHeader" 
+                           "labelWriteUserRight"
+                           "passwordFieldConfirm" 
+                           "lablePassword"
+                           "passwordFieldOldPassword"
+                           "passwordFieldNewPassword"
+                           "passwordFieldRepeatNewPassword" 
+                        <Label layoutX="227.0" layoutY="381.0" prefHeight="87.0" prefWidth="198.0" text="Hinweise: &#10; - Verwenden Sie mind. 6 Zeichen&#10; - Verwenden Sie kombination aus&#10;    klein/groß Buchstaben,&#10;    Zahlen und Sonderzeichen" wrapText="true">
+                           <font>
+                              <Font size="11.0" />
+                           </font></Label>
+                     </children>
+                  </AnchorPane>
+      <Label fx:id="labelHeader" #
+ */
     /**
      * This function set the correct font size.
      * @param fontSize
@@ -274,8 +272,7 @@ public class BenutzerprofilController
         DoubleProperty headerFontSize = new SimpleDoubleProperty(fontSize + ChangeFontSize.getDifferenceBetweenDefaultHeaderFontsize());
 
         ArrayList<Label> headerLabelArrayList = new ArrayList<>(Arrays.asList(
-                    labelUserHeader, labelPasswordHeader, labelAuthorizationHeader, labelSettingsHeader
-                ));
+                    labelUserHeader, labelPasswordHeader));
         changeFontSize.changeFontSizeFromLabelArrayList(headerLabelArrayList, headerFontSize);
 
         ArrayList<Label> labelArrayList = new ArrayList<>(Arrays.asList(
@@ -285,8 +282,7 @@ public class BenutzerprofilController
         changeFontSize.changeFontSizeFromLabelArrayList(labelArrayList, newFontSize);
 
         ArrayList<Button> buttonArrayList = new ArrayList<>(Arrays.asList(
-                    buttonSaveUserName, buttonSavePassword, buttonSaveSettings, buttonResetSettings
-                ));
+                    buttonSaveUserName, buttonSavePassword));
         changeFontSize.changeFontSizeFromButtonArrayList(buttonArrayList, newFontSize);
 
         ArrayList<TextField> textFieldArrayList = new ArrayList<>(Arrays.asList(
@@ -294,18 +290,7 @@ public class BenutzerprofilController
                 ));
         changeFontSize.changeFontSizeFromTextFieldArrayList(textFieldArrayList, newFontSize);
 
-        ArrayList<CheckBox> checkBoxArrayList = new ArrayList<>(Arrays.asList(
-                        cbxEinstellungenSpeichern, cbxMehrerePersonen, cbxAmpeldarstellung, cbxUmsatzspeicherung,
-                        cbxPositionierungSpeichern, cbxSuchvorgaengeAutomatisch
-                ));
-        changeFontSize.changeFontSizeFromCheckBoxArrayList(checkBoxArrayList, newFontSize);
-
-        ArrayList<ListView> listViewArrayList = new ArrayList<>(Arrays.asList(lwBerechtigungen));
-        changeFontSize.changeFontSizeFromListViewArrayList(listViewArrayList, newFontSize);
-
-        ArrayList<Tab> tabArrayList = new ArrayList<>(Arrays.asList(tabAuthorization, tabInformation, tabSettings));
-        changeFontSize.changeFontSizeFromTabArrayList(tabArrayList, newFontSize);
-    }
+     }
 
 
 

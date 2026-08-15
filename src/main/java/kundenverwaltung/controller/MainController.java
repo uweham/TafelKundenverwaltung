@@ -19,7 +19,7 @@ import javafx.stage.StageStyle;
 import kundenverwaltung.controller.admintool.AdmintoolController;
 import kundenverwaltung.controller.admintool.AusgabetagZeitController;
 import kundenverwaltung.controller.admintool.AusgabetageVerwaltenController;
-import kundenverwaltung.controller.admintool.BenutzerverwaltungNeuController;
+// import kundenverwaltung.controller.admintool.BenutzerverwaltungNeuController;
 import kundenverwaltung.controller.admintool.ChangeVerteilstelleController;
 import kundenverwaltung.controller.admintool.NeueAusgabegruppeController;
 import kundenverwaltung.controller.admintool.NeueVerteilstelleController;
@@ -443,6 +443,7 @@ public class MainController
     /**
      * Opens the window for creating a new user.
      */
+    /* not used
     public void oeffneNeuerBenutzer()
     {
         try
@@ -469,11 +470,14 @@ public class MainController
             e.printStackTrace();
         }
     }
+    */
+    
     /**
      * Opens the window for modifying an existing user.
      *
      * @param benutzer the user data to modify.
      */
+    /* not used
     public void oeffneChangeBenutzer(Benutzer benutzer)
     {
         try
@@ -500,6 +504,7 @@ public class MainController
             e.printStackTrace();
         }
     }
+    */
 
     /**
      * Opens the window for creating a new issue date and time.
