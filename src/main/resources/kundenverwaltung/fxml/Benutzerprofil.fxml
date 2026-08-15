@@ -18,11 +18,7 @@
 
 <AnchorPane prefHeight="628.0" prefWidth="453.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="kundenverwaltung.controller.BenutzerprofilController">
    <children>
-      <TabPane layoutX="5.0" layoutY="47.0" prefHeight="386.0" prefWidth="450.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="47.0">
-         <tabs>
-            <Tab fx:id="tabInformation" text="Informationen">
-               <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="476.0" prefWidth="451.0">
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="476.0" prefWidth="451.0"  AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="47.0">
                      <children>
                         <Label fx:id="labelUserHeader" layoutX="14.0" layoutY="19.0" text="Benutzer" underline="true">
                            <font>
@@ -59,49 +55,6 @@
                            </font></Label>
                      </children>
                   </AnchorPane>
-               </content>
-            </Tab>
-            <Tab fx:id="tabSettings" text="Einstellungen">
-               <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <Pane layoutX="18.0" layoutY="47.0" prefHeight="197.0" prefWidth="428.0">
-                           <children>
-                              <CheckBox fx:id="cbxEinstellungenSpeichern" layoutY="25.0" lineSpacing="10.0" mnemonicParsing="false" text="Sucheinstellungen speichern" />
-                              <CheckBox fx:id="cbxMehrerePersonen" layoutY="53.0" lineSpacing="10.0" mnemonicParsing="false" text="Anzeige mehrere Personen eines Haushalts vermeiden" />
-                              <CheckBox fx:id="cbxAmpeldarstellung" layoutY="80.0" lineSpacing="10.0" mnemonicParsing="false" text="Ampeldarstellung (Kundenstatus in Hauptfenster farbig darstellen)" />
-                              <CheckBox fx:id="cbxUmsatzspeicherung" layoutY="107.0" lineSpacing="10.0" mnemonicParsing="false" text="Weiterspringen zum nächsten Kunden nach Umsatzspeicherung" />
-                              <CheckBox fx:id="cbxPositionierungSpeichern" layoutY="135.0" lineSpacing="10.0" mnemonicParsing="false" text="Positionierung von Dialogfenstern speichern" />
-                              <CheckBox fx:id="cbxSuchvorgaengeAutomatisch" layoutY="163.0" lineSpacing="10.0" mnemonicParsing="false" prefHeight="21.0" prefWidth="398.0" text="Suchvorgänge mit mehr als 5 Zeichen autom. starten" />
-                           </children>
-                        </Pane>
-                        <Label fx:id="labelSettingsHeader" layoutX="14.0" layoutY="15.0" text="Einstellungen">
-                           <font>
-                              <Font name="System Bold" size="14.0" />
-                           </font>
-                        </Label>
-                        <Button fx:id="buttonResetSettings" layoutX="14.0" layoutY="296.0" mnemonicParsing="false"  text="Einstellung zurücksetzen" />
-                        <Button fx:id="buttonSaveSettings" layoutX="348.0" layoutY="296.0" mnemonicParsing="false"  text="Speichern" />
-                     </children>
-                  </AnchorPane>
-               </content>
-            </Tab>
-            <Tab fx:id="tabAuthorization" text="Berechtigungen">
-               <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <Label fx:id="labelAuthorizationHeader" layoutX="14.0" layoutY="14.0" text="Berechtigungen">
-                           <font>
-                              <Font name="System Bold" size="15.0" />
-                           </font>
-                        </Label>
-                        <ListView fx:id="lwBerechtigungen" layoutX="14.0" layoutY="49.0" prefHeight="277.0" prefWidth="423.0" />
-                     </children>
-                  </AnchorPane>
-               </content>
-            </Tab>
-         </tabs>
-      </TabPane>
       <Label fx:id="labelHeader" layoutX="14.0" layoutY="18.0" text="Hier können Sie ihr Benutzerprofil ändern" textFill="#ee6f00" />
    </children>
 </AnchorPane>

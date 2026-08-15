@@ -32,10 +32,7 @@
               <menus>
                 <Menu mnemonicParsing="false" text="Datei">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="Benutzer wechseln" />
-                        <MenuItem mnemonicParsing="false" text="Verbindungseinstellungen" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" onAction="#exit" text="Beenden" />
+                      <MenuItem mnemonicParsing="false" onAction="#exit" text="Beenden" />
                   </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="?">
