@@ -4,6 +4,7 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import kundenverwaltung.service.GetVersionProperties;
 import kundenverwaltung.toolsandworkarounds.CustomPropertiesStore;
 import kundenverwaltung.toolsandworkarounds.PropertiesFileController;
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ import java.util.*;
 
 import static kundenverwaltung.toolsandworkarounds.PropertiesFileController.PROPERTIES_LOCATION_TAFEL_INFO;
 import static kundenverwaltung.toolsandworkarounds.PropertiesFileController.loadTafelInfoPropertiesFile;
+import kundenverwaltung.service.GetVersionProperties;
 
 public class LogFileService
 {
@@ -31,7 +33,8 @@ public class LogFileService
             "Tafel Kundenverwaltung",
             "logs"
     );
-
+    private static GetVersionProperties getversionproperties = new GetVersionProperties()   ;
+    
     /**
      * Sets up the logging environment for a specific user.
      * This includes setting system properties for the user's name and ID,
@@ -175,7 +178,14 @@ public class LogFileService
                 {
                     try
                     {
+                      if (!getversionproperties.isNoErrorReport()) 
+                      {
                         decryptedMessages.add(LogMessageCipher.decryptMessage(line, useDefaultEncryptionKey));
+                      }
+                      else
+                      {
+                        decryptedMessages.add(line);
+                      } 
                     }
                     catch (Exception e)
                     {
@@ -183,7 +193,7 @@ public class LogFileService
                     }
                 }
             }
-
+            
             return decryptedMessages.isEmpty() ? fallbackMessage : decryptedMessages.toArray(new String[0]);
         }
         catch (IOException e)
