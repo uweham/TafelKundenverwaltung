@@ -369,7 +369,7 @@ public class HaushaltDAOimpl implements HaushaltDAO
     {
         ArrayList<Haushalt> resultArrayList = new ArrayList<>();
 
-        String sql = "SELECT kundennummer, nName, vName, strasse, hausnummer, haushalt.plz, plz.plz AS plzTemp, plz.ort "
+        String sql = "SELECT kundennummer, nName, vName, strasse, hausnummer, haushalt.plz, plz.plz AS plzTemp, plz.ort, "
                 + "telefonnummer, mobilnummer, haushalt.bemerkung, kundeSeit, saldo, haushalt.verteilstellenId, "
                 + "verteilstelle.bezeichnung, istArchiviert, istGesperrt, haushalt.ausgabeGruppeId, ausgabegruppe.name, "
                 + "belieferung, datenschutzerklaerung "
