@@ -60,7 +60,7 @@
                 <Separator layoutY="391.0" prefWidth="445.0"/>
                 <Separator layoutY="187.0" prefHeight="3.0" prefWidth="447.0"/>
                 <Button fx:id="buttonRun" layoutX="15.0" layoutY="448.0" mnemonicParsing="false"
-                        onAction="#createAllConsentForms" prefHeight="31.0" prefWidth="82.0"
+                        onAction="#chooseConsentFormType" prefHeight="31.0" prefWidth="82.0"
                         text="Ausführen"/>
                 <Button fx:id="buttonCancel" layoutX="350.0" layoutY="448.0" mnemonicParsing="false"
                         onAction="#cancelPrintOthers" prefHeight="31.0" prefWidth="82.0"

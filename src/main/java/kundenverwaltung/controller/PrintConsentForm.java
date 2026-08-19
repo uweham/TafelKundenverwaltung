@@ -360,6 +360,8 @@ public class PrintConsentForm extends Thread
         Stage stage = (Stage) cbVorlage.getScene().getWindow();
         stage.close();
     }
+
+    
     /**
      * This function creates Consent Forms for one choosen Customer.
      */
@@ -379,6 +381,8 @@ public class PrintConsentForm extends Thread
             {
                 gender = "keine Angabe";
             }
+            String phone=familymember.getHaushalt().getTelefonnummer();
+            
             Boolean state = familymember.getHaushalt().getIstGesperrt();
             String stateString;
 
@@ -391,7 +395,7 @@ public class PrintConsentForm extends Thread
             }
 
             resultString += FUNCTION_CREATE_TABLE + getFinishedValueForJavaScriptFunction(
-                    String.valueOf(familymember.getPersonId()), false) + getFinishedValueForJavaScriptFunction(
+                    String.valueOf(familymember.getKundennummer()), false) + getFinishedValueForJavaScriptFunction(
                     replaceGermanCharacters.replaceGermanUmlauts(familymember.getAnredeString()), false) + getFinishedValueForJavaScriptFunction(
                     replaceGermanCharacters.replaceGermanUmlauts(familymember.getNachname()),
                     false) + getFinishedValueForJavaScriptFunction(replaceGermanCharacters
@@ -408,7 +412,7 @@ public class PrintConsentForm extends Thread
                             false) + getFinishedValueForJavaScriptFunction(replaceGermanCharacters
                     .replaceGermanUmlauts(familymember.getNationString()), false)
                             +
-                    getFinishedValueForJavaScriptFunction(city, false)
+                    getFinishedValueForJavaScriptFunction(phone, false)
                             +
                     getFinishedValueForJavaScriptFunction(stateString, true) + FUNCTION_END + " "
                             +
@@ -522,30 +526,28 @@ public class PrintConsentForm extends Thread
 
         for (Haushalt element : customerArrayList)
         {
-            readyTableFm = createStringForJsArray(element
+         /*   readyTableFm = createStringForJsArray(element
                     .getHaushaltsvorstand(familienmitgliedDAOimpl.getAllFamilienmitglieder(
                             element.getKundennummer())).getHaushalt()
                     .getKundennummer());
-
-            String city = String.valueOf(element.getHaushaltsvorstand(
-                    familienmitgliedDAOimpl.getAllFamilienmitglieder(
-                            element.getKundennummer())).getPlz()) + " "
+        */
+            readyTableFm = createStringForJsArray(element.getKundennummer());
+            
+            Familienmitglied familienmitgliedHV= element.getHaushaltsvorstand(
+                                  familienmitgliedDAOimpl.getAllFamilienmitglieder(element.getKundennummer()));
+            
+            String city = String.valueOf(element.getPlz().getPlz()) + " "
                     +
-                    replaceGermanCharacters.replaceGermanUmlauts(element
-                            .getHaushaltsvorstand(familienmitgliedDAOimpl.getAllFamilienmitglieder(
-                                    element.getKundennummer())).getWohnort());
-
-            String gender = element.getHaushaltsvorstand(
-                    familienmitgliedDAOimpl.getAllFamilienmitglieder(
-                            element.getKundennummer())).getGenderString();
+                    replaceGermanCharacters.replaceGermanUmlauts(element.getPlz().getOrt());
+            
+            String phone = element.getTelefonnummer();
+            
+            String gender = familienmitgliedHV.getGenderString();
             if (gender == null)
             {
                 gender = "keine Angabe";
             }
-            Boolean state = element.getHaushaltsvorstand(
-                    familienmitgliedDAOimpl.getAllFamilienmitglieder(
-                            element.getKundennummer())).getHaushalt()
-                    .getIstGesperrt();
+            Boolean state = element.getIstGesperrt();
             String stateString;
 
             if (state)
@@ -556,52 +558,35 @@ public class PrintConsentForm extends Thread
                 stateString = "Nicht gesperrt";
             }
 
+                
             resultString += FUNCTION_CREATE_TABLE + getFinishedValueForJavaScriptFunction(
-                    String.valueOf(element.getHaushaltsvorstand(
-                            familienmitgliedDAOimpl.getAllFamilienmitglieder(
-                                    element.getKundennummer()))
-                            .getPersonId()), false) + getFinishedValueForJavaScriptFunction(
-                    replaceGermanCharacters.replaceGermanUmlauts(element
-                            .getHaushaltsvorstand(familienmitgliedDAOimpl.getAllFamilienmitglieder(
-                                    element.getKundennummer()))
-                            .getAnredeString()), false) + getFinishedValueForJavaScriptFunction(
-                    replaceGermanCharacters.replaceGermanUmlauts(element
-                            .getHaushaltsvorstand(familienmitgliedDAOimpl.getAllFamilienmitglieder(
-                                    element.getKundennummer())).getnName()),
+                    String.valueOf(element.getKundennummer())
+                             , false) + getFinishedValueForJavaScriptFunction(
+                    replaceGermanCharacters.replaceGermanUmlauts(familienmitgliedHV.getAnredeString()), false) 
+                             + getFinishedValueForJavaScriptFunction(
+                    replaceGermanCharacters.replaceGermanUmlauts(familienmitgliedHV.getnName()),
                     false) + getFinishedValueForJavaScriptFunction(replaceGermanCharacters
-                            .replaceGermanUmlauts(element.getHaushaltsvorstand(
-                                    familienmitgliedDAOimpl.getAllFamilienmitglieder(
-                                            element.getKundennummer())).getvName()),
+                            .replaceGermanUmlauts(familienmitgliedHV.getvName()),
                     false) + getFinishedValueForJavaScriptFunction(gender, false)
                     +
                     getFinishedValueForJavaScriptFunction(replaceGermanCharacters
-                            .replaceGermanUmlauts(element
-                                    .getHaushaltsvorstand(familienmitgliedDAOimpl
-                                            .getAllFamilienmitglieder(element
-                                                    .getKundennummer())).getAdresse()), false)
+                            .replaceGermanUmlauts(familienmitgliedHV.getAdresse()), false)
                     +
                     getFinishedValueForJavaScriptFunction(city, false)
                                                     +
                     getFinishedValueForJavaScriptFunction(changeDateFormat
-                                    .changeDateToDefaultString(element
-                                            .getHaushaltsvorstand(familienmitgliedDAOimpl
-                                                    .getAllFamilienmitglieder(element
-                                                            .getKundennummer())).getGeburtsdatum()),
+                                    .changeDateToDefaultString(familienmitgliedHV.getGeburtsdatum()),
                             false) + getFinishedValueForJavaScriptFunction(replaceGermanCharacters
-                    .replaceGermanUmlauts(element.getHaushaltsvorstand(
-                            familienmitgliedDAOimpl.getAllFamilienmitglieder(
-                                    element.getKundennummer()))
-                            .getNationString()), false)
+                    .replaceGermanUmlauts(familienmitgliedHV.getNationString()), false)
                             +
-                    getFinishedValueForJavaScriptFunction(city, false)
+                    getFinishedValueForJavaScriptFunction(phone, false)
                             +
                     getFinishedValueForJavaScriptFunction(stateString, true) + FUNCTION_END + " "
                             +
                     readyTableFm;
-
-
+                  
         }
-
+        
         return (SCRIPT_TAG_OPEN + resultString + " " + SCRIPT_TAG_CLOSE);
 
     }
@@ -693,6 +678,7 @@ public class PrintConsentForm extends Thread
      *
      * @throws IOException if an I/O error occurs
      */
+    @FXML
     public void chooseConsentFormType() throws IOException
     {
         if (rbAktuellerKunde.isSelected())
@@ -760,7 +746,7 @@ public class PrintConsentForm extends Thread
             {
 
                 resultAddRow += FUNCTION_CREATE_FM_ARRAY + getFinishedValueForJavaScriptFunction(
-                        String.valueOf(familymembersArrayList.get(i).getPersonId()), false)
+                        String.valueOf(familymembersArrayList.get(i).getKundennummer()), false)
                 +
                         getFinishedValueForJavaScriptFunction(replaceGermanCharacters
                                         .replaceGermanUmlauts(familymembersArrayList.get(i).getnName()),
@@ -776,7 +762,7 @@ public class PrintConsentForm extends Thread
                         + FUNCTION_END;
 
             }
-            System.out.println("Row: " + SCRIPT_TAG_OPEN + resultAddRow + SCRIPT_TAG_CLOSE);
+           // System.out.println("Row: " + SCRIPT_TAG_OPEN + resultAddRow + SCRIPT_TAG_CLOSE);
             return SCRIPT_TAG_OPEN + resultAddRow + " " + SCRIPT_TAG_CLOSE;
         }
     }
@@ -803,7 +789,7 @@ public class PrintConsentForm extends Thread
                 resultArray += ARRAY_OBJECT_START + CUSTOMER_ID_ARRAY_VALUE
                     +
                         getFinishedValueForJavaScriptFunction(
-                                String.valueOf(familymembersArrayList.get(i).getPersonId()),
+                                String.valueOf(familymembersArrayList.get(i).getKundennummer()),
                                 false) + SURNAME_ARRAY_VALUE
                         +
                         getFinishedValueForJavaScriptFunction(replaceGermanCharacters
@@ -829,7 +815,7 @@ public class PrintConsentForm extends Thread
 
         resultArray += ARRAY_END;
 
-        System.out.println("Row: " + SCRIPT_TAG_OPEN + resultArray + SCRIPT_TAG_CLOSE);
+        // System.out.println("Row: " + SCRIPT_TAG_OPEN + resultArray + SCRIPT_TAG_CLOSE);
         return resultArray + " " + FUNCTION_NEW_FM_TABLE;
     }
     /*private String createJavaScriptFunction()
