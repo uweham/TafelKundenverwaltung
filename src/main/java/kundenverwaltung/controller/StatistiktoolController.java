@@ -472,8 +472,15 @@ public class StatistiktoolController extends StatistiktoolMasterClassController<
     @FXML
     private void openHerkunft(ActionEvent event)
     {
+      // not used 
+      // uncomment if you want use 
+      // and implement button in Statistiktool.fxml
+      //             <Button onAction="#openHerkunft" prefHeight="31.0" prefWidth="200.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Herkunft der Kunden" />
+
+      /*
         try
         {
+           
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/kundenverwaltung/fxml/statistiktool/HerkunftStatistik.fxml"));
             Parent root = loader.load();
 
@@ -503,6 +510,7 @@ public class StatistiktoolController extends StatistiktoolMasterClassController<
             e.printStackTrace();
             showalert.showAlert(Alert.AlertType.ERROR, "Fehler", "Datenbankfehler: " + e.getMessage());
         }
+        */
     }
 
     // Beispiel im übergeordneten Controller, der das FXML lädt

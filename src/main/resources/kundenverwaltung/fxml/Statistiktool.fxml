@@ -126,7 +126,6 @@
             <Button prefHeight="31.0" prefWidth="200.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Altersstruktur" />
             <Button fx:id="guthabenButton" onAction="#handleOpenGuthabenWindow" prefHeight="31.0" prefWidth="200.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Guthaben und offene Beträge" />
             <Button fx:id="nationalitätButton" onAction="#handleOpenNationalitaetStatistik" prefHeight="31.0" prefWidth="200.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Nationalität" />
-            <Button onAction="#openHerkunft" prefHeight="31.0" prefWidth="200.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Herkunft der Kunden" />
             <Button fx:id="archivierteKundenButton" onAction="#openArchivierteKunden" prefHeight="31.0" prefWidth="200.0"  style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Kundeninformationen" />
             <Button fx:id="bescheidButton" onAction="#openBescheidStatistik" prefHeight="31.0" prefWidth="200.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Bescheidarten Statistik" />
             <Button onAction="#openJahresuebersicht" prefHeight="31.0" prefWidth="200.0" style="-fx-background-color: #9ba5c4; -fx-text-fill: white;" text="Jahresübersicht" />
