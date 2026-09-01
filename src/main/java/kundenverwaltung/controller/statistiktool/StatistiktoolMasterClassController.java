@@ -201,7 +201,7 @@ public class StatistiktoolMasterClassController<T> {
     rangeComboBox.getItems().add(new rangestatistic(Constants.STATISTIK_RANGE_ACTIVE,"Aktive Kunden"));
     rangeComboBox.getItems().add(new rangestatistic(Constants.STATISTIK_RANGE_ARCHIV,"Archivierte Kunden"));
     rangeComboBox.getItems().add(new rangestatistic(Constants.STATISTIK_RANGE_LOCKED,"Gesperrte Kunden"));
-
+    rangeComboBox.getItems().add(new rangestatistic(Constants.STATISTIK_RANGE_DYNAMIC,"Dynamisch(letzte 3 Monate aktiv)"));
   }
   public int getSelectedRange()
   {

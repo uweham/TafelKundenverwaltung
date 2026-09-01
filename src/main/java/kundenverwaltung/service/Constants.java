@@ -55,6 +55,7 @@ public class Constants {
   public static final int STATISTIK_RANGE_ACTIVE=1;
   public static final int STATISTIK_RANGE_ARCHIV = 2;
   public static final int STATISTIK_RANGE_LOCKED = 3;
+  public static final int STATISTIK_RANGE_DYNAMIC = 4;
   
   public static final int STATISTIK_NOTIFICATION_TYPE_ALL = 0;
   public static final int STATISTIK_NOTIFICATION_TYPE_VALID = 1;

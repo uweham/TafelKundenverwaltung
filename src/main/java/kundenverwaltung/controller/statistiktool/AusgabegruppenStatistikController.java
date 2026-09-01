@@ -30,10 +30,7 @@ public class AusgabegruppenStatistikController extends StatistiktoolMasterClassC
     @FXML
     private MenuItem handleExit;
     
-    @FXML
-    private CheckBox ckbxDynamic;
     
-     
     /**
      */
     @FXML
@@ -41,7 +38,6 @@ public class AusgabegruppenStatistikController extends StatistiktoolMasterClassC
     {
       initRange();
       initVerteilstelle();  
-      ckbxDynamic.setSelected(true);
       loadheader("Tafel Statistik - Angemeldet als :","Statistik:Ausgabegruppenstatistik");
       loadresultview(this,childResultContainer.getPrefWidth(),childResultContainer.getPrefHeight()) ;
     }
@@ -50,8 +46,8 @@ public class AusgabegruppenStatistikController extends StatistiktoolMasterClassC
     {
        int verteilstellenId=getSelectedVerteilstelle();
        int rangeId=getSelectedRange();
-       boolean dynamicflg=ckbxDynamic.isSelected();
-       String query = statistikDAO.buildSqlQueryAusgabegruppenstatistik(verteilstellenId,rangeId, dynamicflg);
+       
+       String query = statistikDAO.buildSqlQueryAusgabegruppenstatistik(verteilstellenId,rangeId);
        statistikDAO.addSqlPar(1,verteilstellenId);
              
         return query.toString();

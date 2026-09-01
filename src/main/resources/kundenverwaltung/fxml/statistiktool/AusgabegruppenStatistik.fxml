@@ -45,9 +45,7 @@
                 <ComboBox fx:id="rangeComboBox" promptText="Basis auswählen" prefWidth="150">
  	            </ComboBox>
  	            
-               <CheckBox fx:id="ckbxDynamic"  maxHeight="17.0" maxWidth="204.0" minHeight="17.0" minWidth="50.0" mnemonicParsing="false" opacity="1" prefHeight="17.0" prefWidth="158.0" text="Dynamisch (3Monate)" >
-               </CheckBox>
- 
+    
                 <padding>
 	            <Insets bottom="10.0" left="10.0" right="10.0" />
            		 </padding>

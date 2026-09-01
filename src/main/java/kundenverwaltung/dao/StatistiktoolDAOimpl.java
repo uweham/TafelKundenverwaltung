@@ -97,6 +97,7 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
     public String buildSqlQueryGuthabenstatistik(int verteilstelleId,  int statistictypId ,int rangeId)
     {
       
+      String sqlsubquery=buildSQLSubquery(verteilstelleId, rangeId, "e.kunde");
       String sqlquery="";
       String sqlhaving=switch (statistictypId) {
         case Constants.STATISTIK_AMOUNTS_ALL -> "";
@@ -116,6 +117,7 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
             + "    WHERE " 
             +    ((verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS) ? " true  ":"e.beiVerteilstelle = ? ")
             + "  AND e.storniertAm IS NULL "
+            + "  AND "+sqlsubquery 
             + "    group by e.kunde "
             +  sqlhaving + " ;";
       }
@@ -128,6 +130,7 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
             +    " WHERE "
             +   ((verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS) ? " true  ":"e.beiVerteilstelle = ? ")
             +     " AND e.storniertAm IS NULL "
+            +     "  AND "+sqlsubquery 
             +    " group by e.kunde "
             +    " having berechnetersaldo != haushaltsaldo"
             +    " ;";
@@ -313,34 +316,17 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
       return sqlquery;
     };
 
-    public String buildSqlQueryAusgabegruppenstatistik(int verteilstellenId,int rangeId, boolean dynamicflg)
+    public String buildSqlQueryAusgabegruppenstatistik(int verteilstellenId,int rangeId)
     {
       String sqlsubquery=buildSQLSubquery(verteilstellenId, rangeId, "h.kundennummer");
       String sqlquery="";
-      if (dynamicflg)
-      {
-        sqlquery =" select a.name as ausgabegruppe,count(*) as anzahlGruppe from haushalt h "
-            +" LEFT JOIN ausgabegruppe a "
-            +" ON h.ausgabegruppeId = a.ausgabegruppeId"
-            +" where "+sqlsubquery
-            +" and h.kundennummer in "
-            +" (select e.kunde from einkauf e where e.storniertAm IS NULL and"
-            +"      e.erfassungszeit "
-            +"        BETWEEN DATE_SUB( "
-            +"            (SELECT MAX(erfassungszeit) FROM einkauf), "
-            +"            INTERVAL 3 MONTH "
-            +"        ) "
-            +"        AND (SELECT MAX(erfassungszeit) FROM einkauf)) "
-            +" group by a.name";
-      }
-      else
-      {  
+
         sqlquery =" select a.name as ausgabegruppe,count(*) as anzahlGruppe from haushalt h "
               +" LEFT JOIN ausgabegruppe a "
               +" ON h.ausgabegruppeId = a.ausgabegruppeId"
               +" where "+sqlsubquery
               +" group by a.name";
-      }
+      
       
       return sqlquery;
       
@@ -359,6 +345,14 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
             case Constants.STATISTIK_RANGE_ACTIVE -> " AND istArchiviert = 0 AND istGesperrt =0) " ;
             case Constants.STATISTIK_RANGE_ARCHIV -> " AND istArchiviert = 1 ) ";
             case Constants.STATISTIK_RANGE_LOCKED -> " AND istGesperrt = 1 ) ";
+            case Constants.STATISTIK_RANGE_DYNAMIC ->" AND " +namekundenId+" IN  "
+                +" (select e.kunde from einkauf e where e.storniertAm IS NULL and"
+                +"      e.erfassungszeit "
+                +"        BETWEEN DATE_SUB( "
+                +"            (SELECT MAX(erfassungszeit) FROM einkauf), "
+                +"            INTERVAL 3 MONTH "
+                +"        ) "
+                +"        AND (SELECT MAX(erfassungszeit) FROM einkauf))) " ;
             default -> ") ";
             };
         return sqlsubquery;      
