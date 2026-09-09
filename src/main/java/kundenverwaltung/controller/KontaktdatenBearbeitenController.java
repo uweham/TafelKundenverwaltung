@@ -170,16 +170,16 @@ public class KontaktdatenBearbeitenController
      */
 
     public Boolean pruefeFelderHaushalt()
-    {
+    {   boolean check_addr = false;     // false no check Hausnummer + Strasse 
         return !(txtKDWohnort.getText().trim().isEmpty()
             ||
-                txtKDStrasse.getText().trim().isEmpty()
+                (check_addr && txtKDStrasse.getText().trim().isEmpty())
                 ||
                 txtKDPostleitzahl.getText().trim().isEmpty()
                 ||
-                txtKDHausnummer.getText().trim().isEmpty());
+                (check_addr && txtKDHausnummer.getText().trim().isEmpty()));
     }
-
+ 
     /**
      * Converts the first letters of each word in a string to uppercase.
      *
