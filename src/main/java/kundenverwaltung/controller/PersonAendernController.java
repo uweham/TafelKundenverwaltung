@@ -267,6 +267,10 @@ public class PersonAendernController
 		Anrede anrede = null;
 		Gender gender = null;
 		Nation nation = dynamicNationDropDownMenu.getAndCheckNationValue(cbPANationalitaet, nationen);   //cbPANationalitaet.getValue();
+		if (nation== null)
+		{
+		  return ;
+		}
 		Berechtigung berechtigung = cbPABesBerechtigungen.getValue();
 
         anrede = switch (cbPAAnrede.getSelectionModel().getSelectedIndex())
