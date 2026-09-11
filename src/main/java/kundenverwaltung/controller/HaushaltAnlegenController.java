@@ -769,6 +769,10 @@ public class HaushaltAnlegenController
 
             ArrayList<Nation> nationen = new NationDAOimpl().getAllEnabledNationen();
             Nation nation = dynamicNationDropDownMenu.getAndCheckNationValue(cbNation, nationen);
+            if (nation == null)
+            {
+              return null;
+            }
             Berechtigung berechtigung;
             if (cbBesBerechtigung.getSelectionModel().getSelectedItem() == null)
             {
