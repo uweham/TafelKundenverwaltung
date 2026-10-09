@@ -267,13 +267,13 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
      String sqlquery ="";
       if (summenflg) 
       {
-        sqlquery =" select ek.Jahr,ek.Monat, ek.summeEinkauf,ek.summeZahlung,ek.anzahlHaushalte,ek.anzahlErwachsene, ek.anzahlKinder, ek.AnzahlGesamt, ha.anzahlNeuHaushalte from "
+        sqlquery =" select ek.Jahr,ek.Monat, ek.summeEinkauf,ek.summeZahlung,ek.anzahlHaushalte,ek.anzahlErwachsene, ek.anzahlKinder, ek.AnzahlGesamt, ha.anzahlNeuHaushalte, ek1.anzahlAlleinerz from "
             +" (select YEAR(e.erfassungszeit) as Jahr,MONTH(e.erfassungszeit) as Monat,  "
             +" sum(e.summeEinkauf) as summeEinkauf, sum(e.summeZahlung) as summeZahlung, "
             +" sum(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then (e.anzahlKinder+ e.anzahlErwachsene) else 0 end) as anzahlGesamt, "
             +" sum(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then (e.anzahlErwachsene) else 0 end) as anzahlErwachsene, "
             +" sum(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then (e.anzahlKinder) else 0 end) as anzahlKinder, "
-            +" count(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then 1 else 0 end) as anzahlHaushalte "
+            +" count(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then 1 else NULL end) as anzahlHaushalte "
             +" from einkauf e "
             +" where e.storniertAm IS NULL AND YEAR(e.erfassungszeit) = "+year+" AND " 
             +(verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " true ":" beiVerteilstelle = "+verteilstelleId+ "  ")
@@ -286,18 +286,28 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
             + (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " true ":" verteilstellenId = "+verteilstelleId+ "  ")
             +"  group by YEAR(h.kundeSeit) ,MONTH(h.kundeSeit)  "   
             +"  ) ha " 
-            +"   ON ek.Jahr=ha.jahr and ek.Monat=ha.Monat ";
+            +"   ON ek.Jahr=ha.jahr and ek.Monat=ha.Monat "
+            +"   LEFT JOIN ( "
+            +"  select YEAR(ek.erfassungsZeit) as Jahr,MONTH(ek.erfassungsZeit) as Monat, "
+            +"  count(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then 1 else NULL end) as anzahlAlleinerz "
+            +"  from einkauf ek "
+            +"  where ek.storniertAm IS NULL AND YEAR(ek.erfassungsZeit) = "+year+ " AND "
+            + (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " true ":" beiVerteilstelle = "+verteilstelleId+ "  ")
+            + " AND ek.anzahlErwachsene=1 AND ek.anzahlKinder>0 "
+            +"  group by YEAR(ek.erfassungsZeit) ,MONTH(ek.erfassungsZeit)  "   
+            +"  ) ek1 " 
+            +"  ON ek.Jahr=ek1.jahr and ek.Monat=ek1.Monat ";
         
       }
       else 
       {
-        sqlquery =" select ek.Jahr,ek.Monat,ek.Woche, ek.summeEinkauf,ek.summeZahlung,ek.anzahlHaushalte,ek.anzahlErwachsene, ek.anzahlKinder, ek.AnzahlGesamt, ha.anzahlNeuHaushalte from "
+        sqlquery =" select ek.Jahr,ek.Monat,ek.Woche, ek.summeEinkauf,ek.summeZahlung,ek.anzahlHaushalte,ek.anzahlErwachsene, ek.anzahlKinder, ek.AnzahlGesamt, ha.anzahlNeuHaushalte, ek1.anzahlAlleinerz from "
             +" (select YEAR(e.erfassungszeit) as Jahr,MONTH(e.erfassungszeit) as Monat, WEEKOFYEAR(e.erfassungszeit) as Woche, "
             +" sum(e.summeEinkauf) as summeEinkauf, sum(e.summeZahlung) as summeZahlung, "
             +" sum(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then (e.anzahlKinder+ e.anzahlErwachsene) else 0 end) as anzahlGesamt, "
             +" sum(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then (e.anzahlErwachsene) else 0 end) as anzahlErwachsene, "
             +" sum(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then (e.anzahlKinder) else 0 end) as anzahlKinder, "
-            +" count(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then 1 else 0 end) as anzahlHaushalte "
+            +" count(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then 1 else NULL end) as anzahlHaushalte "
             +" from einkauf e "
             +" where e.storniertAm IS NULL AND YEAR(e.erfassungszeit) = "+year+" AND " 
             +(verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " true ":" beiVerteilstelle = "+verteilstelleId+ "  ")
@@ -309,8 +319,18 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
             +"  where YEAR(h.kundeSeit) = "+year+ " AND "
             + (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " true ":" verteilstellenId = "+verteilstelleId+ "  ")
             +"  group by YEAR(h.kundeSeit) ,MONTH(h.kundeSeit), WEEKOFYEAR(h.kundeSeit) "   
-            +"  ) ha " 
-            +"   ON ek.Jahr=ha.jahr and ek.Monat=ha.Monat and ek.Woche=ha.woche ";
+            +"  ) ha "
+            +"   ON ek.Jahr=ha.jahr and ek.Monat=ha.Monat and ek.Woche=ha.woche "
+            +"   LEFT JOIN ( "
+            +"  select YEAR(ek.erfassungsZeit) as Jahr,MONTH(ek.erfassungsZeit) as Monat, WEEKOFYEAR(ek.erfassungsZeit) as Woche, "
+            +"  count(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then 1 else NULL end) as anzahlAlleinerz "
+            +"  from einkauf ek "
+            +"  where ek.storniertAm IS NULL AND YEAR(ek.erfassungsZeit) = "+year+ " AND "
+            + (verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " true ":" beiVerteilstelle = "+verteilstelleId+ "  ")
+            + " AND ek.anzahlErwachsene=1 AND ek.anzahlKinder>0 "
+            +"  group by YEAR(ek.erfassungsZeit) ,MONTH(ek.erfassungsZeit) , WEEKOFYEAR(ek.erfassungsZeit) "   
+            +"  ) ek1 " 
+            +"  ON ek.Jahr=ek1.jahr and ek.Monat=ek1.Monat and ek.Woche=ek1.woche";
         }
 
       return sqlquery;
