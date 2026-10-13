@@ -335,6 +335,79 @@ public class StatistiktoolDAOimpl implements kundenverwaltung.dao.StatistiktoolD
 
       return sqlquery;
     };
+    
+    public String buildSqlQueryJahresstatistikDetail(int verteilstelleId, int year, int selectedData, boolean summenflg)
+    {
+      String sqlquery ="";
+      String sqlgroup="";
+      String sqlfields="";
+      switch (selectedData)
+      { case Constants.STATISTIK_FIELD_ALL:
+          sqlgroup=" ,ba.name, nationname ";
+          sqlfields=" n.name as nationName ,COALESCE(ba.name,' ungültig ') AS bescheidName, ";
+          break;
+        case Constants.STATISTIK_FIELD_NATION:
+          sqlgroup=" ,nationname ";
+          sqlfields=" n.name as nationName, ";
+          break;
+        case Constants.STATISTIK_FIELD_BESCHEID:
+          sqlgroup=" ,ba.name ";
+          sqlfields=" COALESCE(ba.name,' ungültig ') AS bescheidName, ";
+          break;          
+      };
+      if (summenflg) 
+      {
+        sqlquery ="select YEAR(e.erfassungszeit) as Jahr,MONTH(e.erfassungszeit) as Monat,  "
+            + sqlfields 
+            +" count(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then 1 else NULL end) as anzahlHaushalte, "
+            +" sum(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then (e.anzahlKinder+ e.anzahlErwachsene) else 0 end) as anzahlGesamt, "
+            +" sum(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then (e.anzahlErwachsene) else 0 end) as anzahlErwachsene, "
+            +" sum(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then (e.anzahlKinder) else 0 end) as anzahlKinder "
+            +" from einkauf e "
+            + "inner join haushalt h "
+            + "  on e.kunde = h.kundennummer "
+            + "inner join familienmitglied f "
+            + " on e.person = f.personID "
+            + "inner join nation n "
+            + "   on f.nation = n.nationID "
+            + "left join bescheid b " 
+            + " on f.personID=b.personID and " 
+            + " DATE(e.erfassungsZeit) BETWEEN b.gueltigAb AND b.gueltigBis "
+            + " left join bescheidart ba " 
+            + " on b.bescheidArtId=ba.bescheidArtId " 
+            +" where e.storniertAm IS NULL AND YEAR(e.erfassungszeit) = "+year+" AND " 
+            +(verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " true ":" beiVerteilstelle = "+verteilstelleId+ "  ")
+            +" group by YEAR(e.erfassungszeit) , MONTH(e.erfassungszeit) "+sqlgroup; 
+           
+      }
+      else 
+      {
+        sqlquery ="select YEAR(e.erfassungszeit) as Jahr,MONTH(e.erfassungszeit) as Monat, WEEKOFYEAR(e.erfassungszeit) as Woche, "
+            +  sqlfields 
+            +" count(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then 1 else NULL end) as anzahlHaushalte, "
+            +" sum(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then (e.anzahlKinder+ e.anzahlErwachsene) else 0 end) as anzahlGesamt, "
+            +" sum(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then (e.anzahlErwachsene) else 0 end) as anzahlErwachsene, "
+            +" sum(case  when warentyp != "+Constants.WARENTYPID_GUTSCHRIFT+" then (e.anzahlKinder) else 0 end) as anzahlKinder "
+            +" from einkauf e "
+            + "inner join haushalt h "
+            + "  on e.kunde = h.kundennummer "
+            + "inner join familienmitglied f "
+            + " on e.person = f.personID "
+            + "inner join nation n "
+            + "   on f.nation = n.nationID "
+            + "left join bescheid b " 
+            + " on f.personID=b.personID and " 
+            + " DATE(e.erfassungsZeit) BETWEEN b.gueltigAb AND b.gueltigBis "
+            + " left join bescheidart ba " 
+            + " on b.bescheidArtId=ba.bescheidArtId " 
+            +" where e.storniertAm IS NULL AND YEAR(e.erfassungszeit) = "+year+" AND " 
+            +(verteilstelleId==Constants.ALL_DISTRIBUTION_POINTS ? " true ":" beiVerteilstelle = "+verteilstelleId+ "  ")
+            +" group by YEAR(e.erfassungszeit) , MONTH(e.erfassungszeit) ,WEEKOFYEAR(e.erfassungszeit) "+sqlgroup; 
+           
+      }
+
+      return sqlquery;     
+    }
 
     public String buildSqlQueryAusgabegruppenstatistik(int verteilstellenId,int rangeId)
     {

@@ -6,6 +6,7 @@ import kundenverwaltung.controller.statistiktool.BescheidartStatistikController;
 import kundenverwaltung.controller.statistiktool.GuthabenStatistikController;
 import kundenverwaltung.controller.statistiktool.HerkunftStatistikController;
 import kundenverwaltung.controller.statistiktool.JahresuebersichtStatistikController;
+import kundenverwaltung.controller.statistiktool.JahresuebersichtStatistikDetailController;
 import kundenverwaltung.controller.statistiktool.NationalitaetStatistikController;
 import kundenverwaltung.controller.statistiktool.StatistiktoolHeaderController;
 import kundenverwaltung.controller.statistiktool.StatistiktoolMasterClassController;
@@ -559,6 +560,33 @@ public class StatistiktoolController extends StatistiktoolMasterClassController<
             // Szene setzen und anzeigen
             Scene scene = new Scene(root);
             GlobalEventLogger.attachTo("JahresuebersichtStatistik.fxml", scene);
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    @FXML
+    // Methode, um das Jahresübersicht-Fenster zu öffnen
+    public void openJahresuebersichtDetail()
+    {
+        try
+        {
+            // FXML-Datei laden
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/kundenverwaltung/fxml/statistiktool/JahresuebersichtStatistikDetail.fxml"));
+            Parent root = loader.load();
+            // Den Controller abrufen und das DAO setzen
+            JahresuebersichtStatistikDetailController controller = loader.getController();
+            controller.setUser(user);
+ 
+            // Neue Stage (Fenster) erstellen
+            Stage stage = new Stage();
+            stage.setTitle("Jahresübersicht Detail");
+
+            // Szene setzen und anzeigen
+            Scene scene = new Scene(root);
+            GlobalEventLogger.attachTo("JahresuebersichtStatistikDetail.fxml", scene);
             stage.setScene(scene);
             stage.show();
         } catch (Exception e)

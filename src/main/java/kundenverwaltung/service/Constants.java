@@ -61,7 +61,10 @@ public class Constants {
   public static final int STATISTIK_NOTIFICATION_TYPE_VALID = 1;
   public static final int STATISTIK_NOTIFICATION_TYPE_INVALID = 2;
   
-   
+  public static final int STATISTIK_FIELD_ALL=0;
+  public static final int STATISTIK_FIELD_NATION=1;
+  public static final int STATISTIK_FIELD_BESCHEID = 2;
+  
   public static final int WARENTYPID_GUTSCHRIFT = 3; // change this value when change in sql table warentyp
   
   public static final String ADMIN_USER_RIGHT = "Administrator";
